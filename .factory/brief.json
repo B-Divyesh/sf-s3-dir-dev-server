@@ -1,0 +1,9 @@
+{
+  "slug": "s3-dir-dev-server",
+  "title": "Local S3-compatible dev server that maps a plain directory, with a built-in UI",
+  "artifact_class": "cli",
+  "user": "Application developers who need a lightweight S3 endpoint in local development and tests.",
+  "smallest_useful_product": "A single binary exposing core S3 operations over ordinary files, with multipart uploads, presigned request support, CORS, metadata and tag sidecars, fixture seeding, and event webhooks.",
+  "constraints": "Development only; no IAM, versioning, replication, erasure coding, or production-readiness claim.",
+  "monetization": "free"
+}

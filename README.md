@@ -1,14 +1,58 @@
-# Local S3-compatible dev server that maps a plain directory, with a built-in UI
+# s3-dir-dev-server
 
-Live: https://s3-dir-dev-server.sociobot.in — built by the Param Factory (`cli`).
+A small, development-only S3-compatible server that stores objects as ordinary files and includes a browser console. It is for application developers who want `docker compose up` to provide an inspectable S3 endpoint without running a production object store.
 
-See `.factory/brief.json` for the researched problem this solves and `.factory/design.md` for the visual system.
+> Not production software. There is no IAM enforcement, versioning, replication, encryption, or durability guarantee.
 
-## Develop
+## Run it
 
+```sh
+cargo build --release
+./target/release/s3dir serve ./data --port 9000
+./target/release/s3dir serve ./data --seed ./fixtures \
+  --events http://localhost:4000/s3-events --cors http://localhost:5173
 ```
+
+The endpoint is `http://localhost:9000`; the console is `/ui`. AWS SDKs can use any non-empty development credentials. Signatures and presigned query parameters are accepted but intentionally not authenticated:
+
+```ts
+const s3 = new S3Client({
+  endpoint: "http://localhost:9000",
+  region: "us-east-1",
+  credentials: { accessKeyId: "local", secretAccessKey: "local" },
+  forcePathStyle: true,
+});
+await s3.send(new PutObjectCommand({ Bucket: "assets", Key: "hello.txt", Body: "hello" }));
+```
+
+Supported: create/list/head/delete buckets; put/get/head/delete objects; ListObjectsV2; multipart create/upload/complete/abort; presigned GET/PUT; CORS/preflight; `x-amz-meta-*`; object tagging; fixture seeding; object-created/removed webhook events. Run `s3dir serve --help` for all options and `s3dir serve --json` for a machine-readable startup record.
+
+On disk, `bucket/path/file.ext` is the object. Metadata and tags live in hidden `bucket/.s3dir/*.json` sidecars. A file key such as `foo` cannot coexist with `foo/bar`; this POSIX conflict returns `409 Conflict`.
+
+## Docker Compose
+
+```yaml
+services:
+  s3:
+    build: .
+    command: ["serve", "/data", "--host", "0.0.0.0", "--port", "9000", "--cors", "http://localhost:5173"]
+    ports: ["9000:9000"]
+    volumes: ["./dev-data:/data"]
+```
+
+## Develop, test, and package
+
+```sh
+cargo test
 npm install
-npm run dev
 npm test
-npm run build   # -> dist/
+npm run build       # complete quality gate; site lands in dist/site
+npm run build:site  # static landing only
+cargo package --allow-dirty
 ```
+
+The static documentation site deploys from `dist/site`. The server UI is compiled into the Rust binary. No telemetry or third-party runtime requests are present.
+
+## License
+
+Apache-2.0. See [LICENSE](LICENSE).
