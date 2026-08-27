@@ -21,6 +21,11 @@
 * {
   box-sizing: border-box;
 }
+/* The console state machine uses the native hidden attribute. Keep it
+   authoritative when component display rules (such as .state) are present. */
+[hidden] {
+  display: none !important;
+}
 body {
   margin: 0;
   min-height: 100vh;

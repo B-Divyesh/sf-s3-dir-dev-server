@@ -27,6 +27,7 @@ async function startServer() {
   const child = spawn('cargo', ['run', '--quiet', '--', 'serve', directory, '--port', '0', '--json'], {
     cwd: process.cwd(),
     stdio: ['ignore', 'pipe', 'pipe'],
+    detached: process.platform !== 'win32',
   });
   let output = '';
   let errors = '';
@@ -49,9 +50,38 @@ async function startServer() {
   return { child, endpoint };
 }
 
+function stopServer(child) {
+  if (process.platform === 'win32') {
+    child.kill('SIGTERM');
+    return;
+  }
+  try {
+    process.kill(-child.pid, 'SIGTERM');
+  } catch (error) {
+    if (error.code !== 'ESRCH') throw error;
+  }
+}
+
+async function seedPopulatedConsole(endpoint) {
+  const bucket = await fetch(`${endpoint}/_s3dir/api/buckets`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name: 'qa-assets' }),
+  });
+  assert.equal(bucket.status, 201);
+
+  const key = Buffer.from('note.txt').toString('base64url');
+  const object = await fetch(`${endpoint}/_s3dir/api/buckets/qa-assets/objects/${key}`, {
+    method: 'PUT',
+    headers: { 'content-type': 'text/plain' },
+    body: 'local console fixture',
+  });
+  assert.equal(object.status, 200);
+}
+
 test('Create bucket accepts a valid Chromium bucket name without console errors', async (t) => {
   const { child, endpoint } = await startServer();
-  t.after(() => child.kill('SIGTERM'));
+  t.after(() => stopServer(child));
   const browser = await chromium.launch({ executablePath: chromiumExecutable() });
   t.after(() => browser.close());
   const page = await browser.newPage();
@@ -72,4 +102,44 @@ test('Create bucket accepts a valid Chromium bucket name without console errors'
   assert.equal((await created).status(), 201);
   await assert.doesNotReject(page.getByRole('heading', { name: 'qa-bucket' }).waitFor());
   assert.deepEqual(errors, []);
+});
+
+test('Populated /ui hides every inactive state panel on desktop and 390px mobile', async (t) => {
+  const { child, endpoint } = await startServer();
+  t.after(() => stopServer(child));
+  await seedPopulatedConsole(endpoint);
+  const browser = await chromium.launch({ executablePath: chromiumExecutable() });
+  t.after(() => browser.close());
+
+  for (const [name, viewport] of [
+    ['desktop', { width: 1366, height: 900 }],
+    ['390px mobile', { width: 390, height: 844 }],
+  ]) {
+    const page = await browser.newPage({ viewport });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+
+    await page.goto(`${endpoint}/ui`, { waitUntil: 'networkidle' });
+    await page.locator('#object-rows tr').waitFor();
+    assert.equal(await page.locator('#table-wrap').isVisible(), true, `${name}: object table is visible`);
+
+    const inactivePanels = await page.locator('#loading, #error, #object-empty').evaluateAll((panels) =>
+      panels.map((panel) => ({
+        id: panel.id,
+        hidden: panel.hidden,
+        display: getComputedStyle(panel).display,
+        visible: !!(panel.offsetWidth || panel.offsetHeight || panel.getClientRects().length),
+      })),
+    );
+    assert.deepEqual(inactivePanels, [
+      { id: 'loading', hidden: true, display: 'none', visible: false },
+      { id: 'error', hidden: true, display: 'none', visible: false },
+      { id: 'object-empty', hidden: true, display: 'none', visible: false },
+    ], `${name}: populated table has no loading, error, or empty panel beside it`);
+    assert.deepEqual(errors, [], `${name}: no browser console or page errors`);
+    await page.close();
+  }
 });
