@@ -1,0 +1,13 @@
+{
+  "name": "s3-dir-dev-server-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite site",
+    "test": "cargo test && node --test tests/site.test.js",
+    "build:site": "vite build --config site/vite.config.js",
+    "build": "npm test && npm run build:site"
+  },
+  "devDependencies": { "vite": "^7.1.3" }
+}

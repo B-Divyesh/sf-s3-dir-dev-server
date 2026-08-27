@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
+test('landing has required semantic and privacy elements',async()=>{const html=await readFile('site/index.html','utf8');assert.match(html,/<html lang="en">/);assert.equal((html.match(/<h1[ >]/g)||[]).length,1);assert.match(html,/<main id="main">/);assert.match(html,/alt="[^"]+"/);assert.match(html,/\/privacy\//)});
+test('styles honor motion and mobile constraints',async()=>{const css=await readFile('site/styles.css','utf8');assert.match(css,/prefers-reduced-motion:\s*reduce/);assert.match(css,/@media\s*\(max-width:\s*800px\)/);assert.ok(Buffer.byteLength(css)<50_000)});
+test('embedded UI has one h1 and live feedback',async()=>{const html=await readFile('src/ui.html','utf8');assert.equal((html.match(/<h1[ >]/g)||[]).length,1);assert.match(html,/aria-live="polite"/);assert.match(html,/id="offline"/)});
