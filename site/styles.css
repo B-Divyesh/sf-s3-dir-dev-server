@@ -324,10 +324,15 @@ h1 em {
   padding: 25px 15px;
 }
 .demo small {
-  color: var(--orange);
   font-size: 9px;
   font-weight: 850;
   letter-spacing: 0.15em;
+}
+.demo aside small {
+  color: #ffd2b5;
+}
+.demo-main small {
+  color: var(--orange);
 }
 .demo aside strong {
   display: block;
@@ -336,7 +341,7 @@ h1 em {
     serif;
   margin: 5px 8px 24px;
 }
-.demo button {
+.demo-bucket {
   width: 100%;
   height: 46px;
   border: 0;
@@ -349,7 +354,7 @@ h1 em {
   align-items: center;
   font-weight: 700;
 }
-.demo button.selected {
+.demo-bucket.selected {
   border-left: 3px solid var(--orange);
   background: #283c44;
   color: white;

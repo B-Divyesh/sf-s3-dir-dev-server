@@ -29,6 +29,12 @@ Supported: create/list/head/delete buckets; put/get/head/delete objects; ListObj
 
 On disk, `bucket/path/file.ext` is the object. Metadata and tags live in hidden `bucket/.s3dir/*.json` sidecars. A file key such as `foo` cannot coexist with `foo/bar`; this POSIX conflict returns `409 Conflict`.
 
+The public documentation URL is a static installation guide and visual tour. It does not run an S3 endpoint: start `s3dir` locally, then use the printed local endpoint and its `/ui` console.
+
+## Filesystem boundary
+
+Every bucket name and object key is validated before it reaches the filesystem. The server stores a canonical data-root path, rejects traversal and internal `.s3dir` segments, and refuses bucket, object-parent, sidecar, and multipart paths that are symlinks or canonically resolve outside that root. This is a development safeguard, not a reason to expose the unauthenticated server to untrusted users or networks.
+
 ## Docker Compose
 
 ```yaml

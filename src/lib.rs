@@ -81,6 +81,11 @@ struct EventObject {
 }
 
 pub fn app(root: PathBuf, cors: Vec<String>, events: Option<String>) -> Router {
+    // The CLI creates the directory before building the router. Keeping this
+    // canonical form in state gives every subsequent containment check one
+    // stable root to compare against, even when the user supplied a relative
+    // directory on the command line.
+    let root = std::fs::canonicalize(&root).unwrap_or(root);
     let state = AppState {
         root: Arc::new(root),
         cors: Arc::new(cors),
@@ -293,6 +298,9 @@ fn valid_bucket(bucket: &str) -> bool {
 }
 
 fn safe_object_path(root: &Path, bucket: &str, key: &str) -> Option<PathBuf> {
+    if !valid_bucket(bucket) {
+        return None;
+    }
     let rel = Path::new(key);
     if key.is_empty()
         || key.starts_with('/')
@@ -301,7 +309,84 @@ fn safe_object_path(root: &Path, bucket: &str, key: &str) -> Option<PathBuf> {
     {
         return None;
     }
-    Some(root.join(bucket).join(rel))
+    let path = root.join(bucket).join(rel);
+    path.strip_prefix(root).ok()?;
+    Some(path)
+}
+
+fn safe_bucket_path(root: &Path, bucket: &str) -> Option<PathBuf> {
+    if !valid_bucket(bucket) {
+        return None;
+    }
+    let path = root.join(bucket);
+    path.strip_prefix(root).ok()?;
+    Some(path)
+}
+
+fn canonically_contained(root: &Path, path: &Path) -> Option<PathBuf> {
+    let canonical = std::fs::canonicalize(path).ok()?;
+    canonical.strip_prefix(root).ok()?;
+    Some(canonical)
+}
+
+async fn existing_bucket_path(state: &AppState, bucket: &str) -> Option<PathBuf> {
+    let path = safe_bucket_path(&state.root, bucket)?;
+    let metadata = fs::symlink_metadata(&path).await.ok()?;
+    if !metadata.file_type().is_dir() || metadata.file_type().is_symlink() {
+        return None;
+    }
+    let canonical = canonically_contained(&state.root, &path)?;
+    (canonical.parent() == Some(state.root.as_ref())).then_some(canonical)
+}
+
+async fn existing_object_path(state: &AppState, bucket: &str, key: &str) -> Option<PathBuf> {
+    let candidate = safe_object_path(&state.root, bucket, key)?;
+    existing_bucket_path(state, bucket).await?;
+    let metadata = fs::symlink_metadata(&candidate).await.ok()?;
+    if metadata.file_type().is_symlink() {
+        return None;
+    }
+    canonically_contained(&state.root, &candidate)
+}
+
+/// Creates missing object parent directories one component at a time.  This
+/// rejects an existing symlink before traversing it and verifies the
+/// canonical location after each creation, so a key can never cause normal
+/// request handling to create files outside the configured root.
+async fn object_path_for_write(state: &AppState, bucket: &str, key: &str) -> Option<PathBuf> {
+    let candidate = safe_object_path(&state.root, bucket, key)?;
+    let mut current = existing_bucket_path(state, bucket).await?;
+    let rel = Path::new(key);
+    let parent = rel.parent()?;
+    for component in parent.components() {
+        let Component::Normal(name) = component else {
+            return None;
+        };
+        let next = current.join(name);
+        match fs::symlink_metadata(&next).await {
+            Ok(metadata) if metadata.file_type().is_dir() && !metadata.file_type().is_symlink() => {
+            }
+            Ok(_) => return None,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                if fs::create_dir(&next).await.is_err() {
+                    return None;
+                }
+            }
+            Err(_) => return None,
+        }
+        current = canonically_contained(&state.root, &next)?;
+    }
+    let path = current.join(rel.file_name()?);
+    if let Ok(metadata) = fs::symlink_metadata(&path).await
+        && (metadata.file_type().is_symlink()
+            || canonically_contained(&state.root, &path).is_none())
+    {
+        return None;
+    }
+    // `candidate` is retained as a lexical containment assertion as well as
+    // the component-by-component canonical verification above.
+    candidate.strip_prefix(&*state.root).ok()?;
+    Some(path)
 }
 
 async fn bucket_request(
@@ -310,14 +395,31 @@ async fn bucket_request(
     bucket: &str,
     params: &HashMap<String, String>,
 ) -> Response {
-    let path = state.root.join(bucket);
+    let Some(path) = safe_bucket_path(&state.root, bucket) else {
+        return s3_error(
+            StatusCode::BAD_REQUEST,
+            "InvalidBucketName",
+            "Invalid bucket name",
+        );
+    };
     match method {
-        Method::PUT => match fs::create_dir_all(&path).await {
+        Method::PUT => match fs::create_dir(&path).await {
             Ok(_) => StatusCode::OK.into_response(),
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+                if existing_bucket_path(state, bucket).await.is_some() {
+                    StatusCode::OK.into_response()
+                } else {
+                    s3_error(
+                        StatusCode::BAD_REQUEST,
+                        "InvalidBucketName",
+                        "Bucket is not a safe directory",
+                    )
+                }
+            }
             Err(e) => io_error(e),
         },
         Method::HEAD => {
-            if path.is_dir() {
+            if existing_bucket_path(state, bucket).await.is_some() {
                 StatusCode::OK.into_response()
             } else {
                 s3_error(
@@ -329,13 +431,13 @@ async fn bucket_request(
         }
         Method::GET => list_objects(state, bucket, params).await,
         Method::DELETE => {
-            if !path.is_dir() {
+            let Some(path) = existing_bucket_path(state, bucket).await else {
                 return s3_error(
                     StatusCode::NOT_FOUND,
                     "NoSuchBucket",
                     "Bucket does not exist",
                 );
-            }
+            };
             let non_internal = WalkDir::new(&path)
                 .min_depth(1)
                 .into_iter()
@@ -368,7 +470,15 @@ async fn list_buckets(state: &AppState) -> Response {
     let mut names = vec![];
     if let Ok(mut entries) = fs::read_dir(&*state.root).await {
         while let Ok(Some(e)) = entries.next_entry().await {
-            if e.path().is_dir() && e.file_name() != ".s3dir" {
+            if e.file_name() != ".s3dir"
+                && valid_bucket(&e.file_name().to_string_lossy())
+                && e.file_type()
+                    .await
+                    .map(|t| t.is_dir() && !t.is_symlink())
+                    .unwrap_or(false)
+                && canonically_contained(&state.root, &e.path())
+                    .is_some_and(|p| p.parent() == Some(state.root.as_ref()))
+            {
                 names.push(e.file_name().to_string_lossy().to_string());
             }
         }
@@ -388,13 +498,9 @@ async fn list_buckets(state: &AppState) -> Response {
     ))
 }
 
-fn collect_objects(root: &Path, bucket: &str) -> Vec<ObjectInfo> {
-    let bucket_path = root.join(bucket);
-    if !bucket_path.is_dir() {
-        return vec![];
-    }
+fn collect_objects(bucket_path: &Path) -> Vec<ObjectInfo> {
     let mut out = vec![];
-    for entry in WalkDir::new(&bucket_path)
+    for entry in WalkDir::new(bucket_path)
         .follow_links(false)
         .into_iter()
         .filter_map(Result::ok)
@@ -406,7 +512,7 @@ fn collect_objects(root: &Path, bucket: &str) -> Vec<ObjectInfo> {
         }
         let key = entry
             .path()
-            .strip_prefix(&bucket_path)
+            .strip_prefix(bucket_path)
             .unwrap()
             .to_string_lossy()
             .replace('\\', "/");
@@ -435,13 +541,13 @@ async fn list_objects(
     bucket: &str,
     params: &HashMap<String, String>,
 ) -> Response {
-    if !state.root.join(bucket).is_dir() {
+    let Some(bucket_path) = existing_bucket_path(state, bucket).await else {
         return s3_error(
             StatusCode::NOT_FOUND,
             "NoSuchBucket",
             "Bucket does not exist",
         );
-    }
+    };
     let prefix = params.get("prefix").map(String::as_str).unwrap_or("");
     let delimiter = params.get("delimiter").map(String::as_str);
     let max = params
@@ -453,7 +559,7 @@ async fn list_objects(
         .get("continuation-token")
         .and_then(|v| URL_SAFE_NO_PAD.decode(v).ok())
         .and_then(|v| String::from_utf8(v).ok());
-    let objects = collect_objects(&state.root, bucket);
+    let objects = collect_objects(&bucket_path);
     let filtered: Vec<_> = objects
         .iter()
         .filter(|o| o.key.starts_with(prefix) && token.as_ref().is_none_or(|t| o.key > *t))
@@ -470,7 +576,7 @@ async fn list_objects(
                 continue;
             }
         }
-        contents.push_str(&format!("<Contents><Key>{}</Key><LastModified>{}</LastModified><ETag>&quot;{}&quot;</ETag><Size>{}</Size><StorageClass>STANDARD</StorageClass></Contents>", xml(&o.key), o.modified, etag_path(&state.root.join(bucket).join(&o.key)), o.size));
+        contents.push_str(&format!("<Contents><Key>{}</Key><LastModified>{}</LastModified><ETag>&quot;{}&quot;</ETag><Size>{}</Size><StorageClass>STANDARD</StorageClass></Contents>", xml(&o.key), o.modified, etag_path(&bucket_path.join(&o.key)), o.size));
     }
     let common_xml = common
         .into_iter()
@@ -507,30 +613,24 @@ async fn put_object(
     state: &AppState,
     bucket: &str,
     key: &str,
-    path: PathBuf,
+    _path: PathBuf,
     headers: HeaderMap,
     body: Body,
 ) -> Response {
-    if !state.root.join(bucket).is_dir() {
+    if existing_bucket_path(state, bucket).await.is_none() {
         return s3_error(
             StatusCode::NOT_FOUND,
             "NoSuchBucket",
             "Create the bucket first",
         );
     }
-    if let Some(parent) = path.parent()
-        && let Err(e) = fs::create_dir_all(parent).await
-    {
-        if e.kind() == std::io::ErrorKind::AlreadyExists {
-            return s3_error(
-                StatusCode::CONFLICT,
-                "KeyPathConflict",
-                "A file already occupies part of this key's directory path",
-            );
-        } else {
-            return io_error(e);
-        }
-    }
+    let Some(path) = object_path_for_write(state, bucket, key).await else {
+        return s3_error(
+            StatusCode::BAD_REQUEST,
+            "InvalidObjectName",
+            "Object path is outside the configured directory or crosses a symlink",
+        );
+    };
     if path.is_dir() {
         return s3_error(
             StatusCode::CONFLICT,
@@ -606,10 +706,13 @@ async fn get_object(
     state: &AppState,
     bucket: &str,
     key: &str,
-    path: PathBuf,
+    _path: PathBuf,
     headers: HeaderMap,
     head: bool,
 ) -> Response {
+    let Some(path) = existing_object_path(state, bucket, key).await else {
+        return s3_error(StatusCode::NOT_FOUND, "NoSuchKey", "Object does not exist");
+    };
     let bytes = match fs::read(&path).await {
         Ok(v) => v,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
@@ -674,11 +777,16 @@ async fn get_object(
     response
 }
 
-async fn delete_object(state: &AppState, bucket: &str, key: &str, path: PathBuf) -> Response {
+async fn delete_object(state: &AppState, bucket: &str, key: &str, _path: PathBuf) -> Response {
+    let Some(path) = existing_object_path(state, bucket, key).await else {
+        return StatusCode::NO_CONTENT.into_response();
+    };
     let size = fs::metadata(&path).await.map(|m| m.len()).unwrap_or(0);
     let etag = etag_path(&path);
     let _ = fs::remove_file(&path).await;
-    let _ = fs::remove_file(sidecar_path(state, bucket, key)).await;
+    if let Some(sidecar) = sidecar_path(state, bucket, key, false).await {
+        let _ = fs::remove_file(sidecar).await;
+    }
     notify(state, "s3:ObjectRemoved:Delete", bucket, key, size, &etag);
     StatusCode::NO_CONTENT.into_response()
 }
@@ -688,12 +796,12 @@ async fn tagging_request(
     method: Method,
     bucket: &str,
     key: &str,
-    path: &Path,
+    _path: &Path,
     body: Body,
 ) -> Response {
-    if !path.is_file() {
+    let Some(_path) = existing_object_path(state, bucket, key).await else {
         return s3_error(StatusCode::NOT_FOUND, "NoSuchKey", "Object does not exist");
-    }
+    };
     let mut side = read_sidecar(state, bucket, key).await.unwrap_or_default();
     match method {
         Method::GET => {
@@ -730,7 +838,9 @@ async fn tagging_request(
 }
 
 async fn multipart_start(state: &AppState, bucket: &str, key: &str) -> Response {
-    if !state.root.join(bucket).is_dir() {
+    if existing_bucket_path(state, bucket).await.is_none()
+        || safe_object_path(&state.root, bucket, key).is_none()
+    {
         return s3_error(
             StatusCode::NOT_FOUND,
             "NoSuchBucket",
@@ -738,8 +848,15 @@ async fn multipart_start(state: &AppState, bucket: &str, key: &str) -> Response 
         );
     };
     let id = uuid::Uuid::new_v4().to_string();
-    let dir = state.root.join(".s3dir/uploads").join(&id);
-    if let Err(e) = fs::create_dir_all(&dir).await {
+    let Some(uploads) = uploads_dir(state, true).await else {
+        return s3_error(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "InternalError",
+            "Unsafe upload directory",
+        );
+    };
+    let dir = uploads.join(&id);
+    if let Err(e) = fs::create_dir(&dir).await {
         return io_error(e);
     };
     let _ = fs::write(
@@ -770,8 +887,20 @@ async fn multipart_request(
             "Invalid upload ID",
         );
     };
-    let dir = state.root.join(".s3dir/uploads").join(id);
-    if !dir.is_dir() {
+    let Some(uploads) = uploads_dir(state, false).await else {
+        return s3_error(
+            StatusCode::NOT_FOUND,
+            "NoSuchUpload",
+            "Multipart upload does not exist",
+        );
+    };
+    let dir = uploads.join(id);
+    let valid_upload_dir = fs::symlink_metadata(&dir)
+        .await
+        .ok()
+        .is_some_and(|m| m.file_type().is_dir() && !m.file_type().is_symlink())
+        && canonically_contained(&state.root, &dir).is_some();
+    if !valid_upload_dir {
         return s3_error(
             StatusCode::NOT_FOUND,
             "NoSuchUpload",
@@ -814,14 +943,12 @@ async fn multipart_request(
             "Unsupported multipart operation",
         );
     }
-    let path = match safe_object_path(&state.root, bucket, key) {
-        Some(p) => p,
-        None => return s3_error(StatusCode::BAD_REQUEST, "InvalidObjectName", "Unsafe key"),
-    };
-    if let Some(parent) = path.parent()
-        && let Err(e) = fs::create_dir_all(parent).await
-    {
-        return io_error(e);
+    let Some(path) = object_path_for_write(state, bucket, key).await else {
+        return s3_error(
+            StatusCode::BAD_REQUEST,
+            "InvalidObjectName",
+            "Unsafe object path",
+        );
     };
     let mut out = match fs::File::create(&path).await {
         Ok(f) => f,
@@ -869,6 +996,26 @@ async fn multipart_request(
     ))
 }
 
+async fn uploads_dir(state: &AppState, create: bool) -> Option<PathBuf> {
+    let mut current = state.root.join(".s3dir");
+    for name in [".s3dir", "uploads"] {
+        if name == "uploads" {
+            current = current.join(name);
+        }
+        match fs::symlink_metadata(&current).await {
+            Ok(metadata) if metadata.file_type().is_dir() && !metadata.file_type().is_symlink() => {
+            }
+            Ok(_) => return None,
+            Err(e) if create && e.kind() == std::io::ErrorKind::NotFound => {
+                fs::create_dir(&current).await.ok()?;
+            }
+            Err(_) => return None,
+        }
+        current = canonically_contained(&state.root, &current)?;
+    }
+    Some(current)
+}
+
 async fn api_handle(
     state: &AppState,
     method: Method,
@@ -905,6 +1052,12 @@ async fn api_handle(
         }
         if seg.len() >= 2 {
             let bucket = seg[1];
+            if !valid_bucket(bucket) {
+                return json_error(
+                    StatusCode::BAD_REQUEST,
+                    "Use 3–63 lowercase letters, numbers, dots, or dashes.",
+                );
+            }
             if seg.len() == 2 && method == Method::GET {
                 return json_objects(state, bucket, query);
             };
@@ -939,11 +1092,16 @@ async fn api_handle(
 fn json_buckets(state: &AppState) -> Response {
     let mut buckets = vec![];
     if let Ok(entries) = std::fs::read_dir(&*state.root) {
-        for e in entries
-            .flatten()
-            .filter(|e| e.path().is_dir() && e.file_name() != ".s3dir")
-        {
-            let objects = collect_objects(&state.root, &e.file_name().to_string_lossy());
+        for e in entries.flatten().filter(|e| {
+            let name = e.file_name();
+            valid_bucket(&name.to_string_lossy())
+                && e.file_type()
+                    .map(|t| t.is_dir() && !t.is_symlink())
+                    .unwrap_or(false)
+                && canonically_contained(&state.root, &e.path())
+                    .is_some_and(|p| p.parent() == Some(state.root.as_ref()))
+        }) {
+            let objects = collect_objects(&e.path());
             buckets.push(BucketInfo {
                 name: e.file_name().to_string_lossy().to_string(),
                 objects: objects.len(),
@@ -955,26 +1113,48 @@ fn json_buckets(state: &AppState) -> Response {
     json_response(&serde_json::json!({"buckets":buckets}))
 }
 fn json_objects(state: &AppState, bucket: &str, query: Option<&str>) -> Response {
-    if !state.root.join(bucket).is_dir() {
+    let Some(lexical_bucket) = safe_bucket_path(&state.root, bucket) else {
+        return json_error(StatusCode::NOT_FOUND, "Bucket not found");
+    };
+    let Some(bucket_path) = std::fs::symlink_metadata(&lexical_bucket)
+        .ok()
+        .filter(|m| m.file_type().is_dir() && !m.file_type().is_symlink())
+        .and_then(|_| canonically_contained(&state.root, &lexical_bucket))
+        .filter(|p| p.parent() == Some(state.root.as_ref()))
+    else {
         return json_error(StatusCode::NOT_FOUND, "Bucket not found");
     };
     let prefix = query_params(query).remove("prefix").unwrap_or_default();
-    let objects = collect_objects(&state.root, bucket)
+    let objects = collect_objects(&bucket_path)
         .into_iter()
         .filter(|o| o.key.starts_with(&prefix))
         .collect::<Vec<_>>();
     json_response(&serde_json::json!({"bucket":bucket,"prefix":prefix,"objects":objects}))
 }
 
-fn sidecar_path(state: &AppState, bucket: &str, key: &str) -> PathBuf {
-    state
-        .root
-        .join(bucket)
-        .join(".s3dir")
-        .join(format!("{}.json", URL_SAFE_NO_PAD.encode(key.as_bytes())))
+async fn sidecar_path(state: &AppState, bucket: &str, key: &str, create: bool) -> Option<PathBuf> {
+    let bucket_path = existing_bucket_path(state, bucket).await?;
+    let internal = bucket_path.join(".s3dir");
+    match fs::symlink_metadata(&internal).await {
+        Ok(metadata) if metadata.file_type().is_dir() && !metadata.file_type().is_symlink() => {}
+        Ok(_) => return None,
+        Err(e) if create && e.kind() == std::io::ErrorKind::NotFound => {
+            fs::create_dir(&internal).await.ok()?;
+        }
+        Err(_) => return None,
+    }
+    let internal = canonically_contained(&state.root, &internal)?;
+    let path = internal.join(format!("{}.json", URL_SAFE_NO_PAD.encode(key.as_bytes())));
+    if let Ok(metadata) = fs::symlink_metadata(&path).await
+        && (metadata.file_type().is_symlink()
+            || canonically_contained(&state.root, &path).is_none())
+    {
+        return None;
+    }
+    Some(path)
 }
 async fn read_sidecar(state: &AppState, bucket: &str, key: &str) -> Option<Sidecar> {
-    fs::read(sidecar_path(state, bucket, key))
+    fs::read(sidecar_path(state, bucket, key, false).await?)
         .await
         .ok()
         .and_then(|v| serde_json::from_slice(&v).ok())
@@ -985,8 +1165,11 @@ async fn write_sidecar(
     key: &str,
     side: &Sidecar,
 ) -> std::io::Result<()> {
-    let p = sidecar_path(state, bucket, key);
-    fs::create_dir_all(p.parent().unwrap()).await?;
+    let p = sidecar_path(state, bucket, key, true)
+        .await
+        .ok_or_else(|| {
+            std::io::Error::new(std::io::ErrorKind::PermissionDenied, "unsafe sidecar path")
+        })?;
     fs::write(p, serde_json::to_vec_pretty(side).unwrap()).await
 }
 fn notify(state: &AppState, event: &str, bucket: &str, key: &str, size: u64, etag: &str) {
@@ -1253,6 +1436,111 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(r.status(), 409);
+    }
+    #[tokio::test]
+    async fn console_api_rejects_traversal_bucket_segments_and_escape_writes() {
+        let tmp = tempfile::tempdir().unwrap();
+        let root = tmp.path().join("data");
+        let outside = tmp.path().join("secret-bucket");
+        fs::create_dir(&root).await.unwrap();
+        fs::create_dir(&outside).await.unwrap();
+        fs::write(outside.join("secret.txt"), b"outside-root-secret")
+            .await
+            .unwrap();
+        let app = app(root.clone(), vec![], None);
+        let key = URL_SAFE_NO_PAD.encode(b"secret-bucket/secret.txt");
+        for bucket in ["..", "%2e%2e", "."] {
+            let listing = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .uri(format!("/_s3dir/api/buckets/{bucket}"))
+                        .body(Body::empty())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(
+                listing.status(),
+                400,
+                "bucket {bucket} listing must be rejected"
+            );
+            let uri = format!("/_s3dir/api/buckets/{bucket}/objects/{key}");
+            let r = app
+                .clone()
+                .oneshot(Request::builder().uri(uri).body(Body::empty()).unwrap())
+                .await
+                .unwrap();
+            assert_eq!(r.status(), 400, "bucket {bucket} must be rejected");
+        }
+        let r = app
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri(format!("/_s3dir/api/buckets/../objects/{key}"))
+                    .body(Body::from("overwrite attempt"))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(r.status(), 400);
+        assert_eq!(
+            fs::read(outside.join("secret.txt")).await.unwrap(),
+            b"outside-root-secret"
+        );
+    }
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn rejects_bucket_and_object_symlinks_outside_the_canonical_root() {
+        use std::os::unix::fs::symlink;
+
+        let tmp = tempfile::tempdir().unwrap();
+        let root = tmp.path().join("data");
+        let outside = tmp.path().join("outside");
+        fs::create_dir(&root).await.unwrap();
+        fs::create_dir(&outside).await.unwrap();
+        fs::write(outside.join("secret.txt"), b"outside-root-secret")
+            .await
+            .unwrap();
+        symlink(&outside, root.join("assets")).unwrap();
+        let app = app(root.clone(), vec![], None);
+        let r = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/assets/secret.txt")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(r.status(), 404);
+        fs::remove_file(root.join("assets")).await.unwrap();
+        fs::create_dir(root.join("assets")).await.unwrap();
+        symlink(&outside, root.join("assets/link")).unwrap();
+        let r = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri("/assets/link/escaped.txt")
+                    .body(Body::from("must not escape"))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(r.status(), 400);
+        assert!(!outside.join("escaped.txt").exists());
+        let r = app
+            .oneshot(
+                Request::builder()
+                    .uri("/assets/link/secret.txt")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(r.status(), 404);
     }
     #[tokio::test]
     async fn multipart_assembles_parts() {
