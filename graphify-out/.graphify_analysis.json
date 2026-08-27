@@ -1,0 +1,277 @@
+{
+  "communities": {
+    "0": [
+      "hashmap",
+      "intoresponse",
+      "router",
+      "src_lib",
+      "src_lib_app",
+      "src_lib_blocks_traversal_and_nonempty_bucket_delete",
+      "src_lib_bucket_request",
+      "src_lib_bucketinfo",
+      "src_lib_decodes_sigv4_streaming_payloads",
+      "src_lib_documented_put_get_list_flow",
+      "src_lib_etag_path",
+      "src_lib_eventbucket",
+      "src_lib_eventobject",
+      "src_lib_eventrecord",
+      "src_lib_events3",
+      "src_lib_list_buckets",
+      "src_lib_list_objects",
+      "src_lib_multipart_assembles_parts",
+      "src_lib_objectinfo",
+      "src_lib_parse_form",
+      "src_lib_parse_tag_xml",
+      "src_lib_query_params",
+      "src_lib_rs_string",
+      "src_lib_sidecar",
+      "src_lib_ui_css",
+      "src_lib_ui_html",
+      "src_lib_ui_js",
+      "src_lib_xml",
+      "src_lib_xml_response"
+    ],
+    "1": [
+      "arc",
+      "body",
+      "client",
+      "headermap",
+      "method",
+      "request",
+      "src_lib_api_handle",
+      "src_lib_appstate",
+      "src_lib_cors_response",
+      "src_lib_decode_aws_chunked",
+      "src_lib_delete_object",
+      "src_lib_get_object",
+      "src_lib_handle",
+      "src_lib_multipart_request",
+      "src_lib_notify",
+      "src_lib_parse_range",
+      "src_lib_put_object",
+      "src_lib_read_sidecar",
+      "src_lib_rs_option",
+      "src_lib_rs_pathbuf",
+      "src_lib_rs_vec",
+      "src_lib_s3_handle",
+      "src_lib_safe_object_path",
+      "src_lib_sidecar_path",
+      "src_lib_tagging_request",
+      "src_lib_valid_bucket",
+      "src_lib_write_sidecar",
+      "state"
+    ],
+    "2": [
+      "src_ui",
+      "src_ui_choose",
+      "src_ui_els",
+      "src_ui_enc",
+      "src_ui_escapeattr",
+      "src_ui_escapehtml",
+      "src_ui_human",
+      "src_ui_loadbuckets",
+      "src_ui_online",
+      "src_ui_openeditor",
+      "src_ui_removeobject",
+      "src_ui_render",
+      "src_ui_request",
+      "src_ui_state",
+      "src_ui_tell",
+      "src_ui_uploadfiles"
+    ],
+    "3": [
+      "box",
+      "ipaddr",
+      "src_main",
+      "src_main_cli",
+      "src_main_command",
+      "src_main_main",
+      "src_main_rs_error",
+      "src_main_rs_option",
+      "src_main_rs_pathbuf",
+      "src_main_rs_result",
+      "src_main_rs_string",
+      "src_main_rs_vec",
+      "src_main_serve"
+    ],
+    "4": [
+      "package",
+      "package_devdependencies",
+      "package_devdependencies_vite",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_build_site",
+      "package_scripts_dev",
+      "package_scripts_test",
+      "package_type",
+      "package_version",
+      "vite"
+    ],
+    "5": [
+      "response",
+      "src_lib_collect_objects",
+      "src_lib_io_error",
+      "src_lib_json_buckets",
+      "src_lib_json_error",
+      "src_lib_json_objects",
+      "src_lib_json_response",
+      "src_lib_multipart_start",
+      "src_lib_rs_error",
+      "src_lib_s3_error",
+      "statuscode",
+      "value"
+    ],
+    "6": [
+      "path",
+      "src_lib_rs_result",
+      "src_lib_seed"
+    ],
+    "7": [
+      "site_main",
+      "site_main_copy",
+      "site_main_toast"
+    ],
+    "8": [
+      "site_public_sw",
+      "site_public_sw_shell"
+    ],
+    "9": [
+      "pkg_s3_dir_dev_server"
+    ],
+    "10": [
+      "site_vite_config"
+    ],
+    "11": [
+      "tests_site_test"
+    ]
+  },
+  "cohesion": {
+    "0": 0.14285714285714285,
+    "1": 0.1984126984126984,
+    "2": 0.3416666666666667,
+    "3": 0.24358974358974358,
+    "4": 0.15384615384615385,
+    "5": 0.2878787878787879,
+    "6": 0.6666666666666666,
+    "7": 0.6666666666666666,
+    "8": 1.0,
+    "9": 1.0,
+    "10": 1.0,
+    "11": 1.0
+  },
+  "gods": [
+    {
+      "id": "src_lib_appstate",
+      "label": "AppState",
+      "degree": 26
+    },
+    {
+      "id": "src_lib_s3_handle",
+      "label": "s3_handle()",
+      "degree": 20
+    },
+    {
+      "id": "src_lib_api_handle",
+      "label": "api_handle()",
+      "degree": 18
+    },
+    {
+      "id": "src_lib_put_object",
+      "label": "put_object()",
+      "degree": 14
+    },
+    {
+      "id": "src_lib_tagging_request",
+      "label": "tagging_request()",
+      "degree": 13
+    },
+    {
+      "id": "src_lib_multipart_request",
+      "label": "multipart_request()",
+      "degree": 13
+    },
+    {
+      "id": "src_lib_s3_error",
+      "label": "s3_error()",
+      "degree": 12
+    },
+    {
+      "id": "src_lib_bucket_request",
+      "label": "bucket_request()",
+      "degree": 11
+    },
+    {
+      "id": "src_lib_get_object",
+      "label": "get_object()",
+      "degree": 11
+    },
+    {
+      "id": "src_lib_io_error",
+      "label": "io_error()",
+      "degree": 11
+    }
+  ],
+  "surprises": [
+    {
+      "source": "AppState",
+      "target": "String",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 1 \u2192 community 0"
+    },
+    {
+      "source": "json_buckets()",
+      "target": "AppState",
+      "source_files": [
+        "src/lib.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 1 \u2192 community 5"
+    },
+    {
+      "source": "collect_objects()",
+      "target": "ObjectInfo",
+      "source_files": [
+        "src/lib.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 0 \u2192 community 5"
+    },
+    {
+      "source": "safe_object_path()",
+      "target": "Path",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 1 \u2192 community 6"
+    },
+    {
+      "source": "collect_objects()",
+      "target": "Path",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 6 \u2192 community 5"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
