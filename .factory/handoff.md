@@ -30,6 +30,7 @@ The exact factory build command is `npm run build`; it runs Rust and site tests,
 
 - `npm test`: 4 Rust tests and 3 site contract tests passed.
 - `cargo clippy --all-targets -- -D warnings`: passed.
+- `cargo build --release`: passed; produced a stripped 4.1 MB `target/release/s3dir` binary.
 - Live HTTP smoke test: bucket creation, object put/get/list, metadata round-trip, console JSON API, embedded UI route, seed import, and CORS preflight passed.
 - Factory URL verification, desktop 1366×900 and mobile 390×844: title, `lang`, exactly one `h1`, main landmark, alt text, labeled buttons, and zero console errors passed for both landing and console.
 - axe-core 4.13: 0 violations on the landing page. Console automated audit was rerun after its single low-contrast rail label was corrected.
