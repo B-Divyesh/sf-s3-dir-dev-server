@@ -34,10 +34,13 @@ Completed locally:
 - `verify-url.sh` against the production build: title/lang/main/alt checks passed with no browser console errors.
 - Playwright axe (`wcag2a,wcag2aa`): 0 serious/critical findings at 1366×900 and 390×844.
 - Lighthouse local production build: Performance 100, Accessibility 100, LCP 1.2 s, CLS 0.
+- The extracted packaged crate installed into a clean temporary consumer root; its `serve --help` exposes `--seed`, `--events`, `--cors`, and `--json` as documented. There is no Go package in this repository.
 
 ## Deployment and known gaps
 
-Deploy the already-built Standard static site with:
+Deployed as an Azure Static Web Apps **Standard** site at https://s3-dir-dev-server.sociobot.in/ from `dist/site` (deployment `7a947422-6bad-4175-81cf-4edf060cb2f6`). Live verification passed: the required CSP, frame, Permissions-Policy headers are present and a fingerprinted `/assets/*` script has `Cache-Control: public, max-age=31536000, immutable`; `verify-url.sh` has no browser console errors; live axe has no violations at desktop or mobile sizes.
+
+To redeploy the already-built Standard static site:
 
 ```sh
 /opt/fleet/lib/deploy-static.sh s3-dir-dev-server dist/site
