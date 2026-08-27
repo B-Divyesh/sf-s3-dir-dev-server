@@ -222,6 +222,11 @@
       "degree": 14
     },
     {
+      "id": "src_lib_bucket_request",
+      "label": "bucket_request()",
+      "degree": 13
+    },
+    {
       "id": "src_lib_canonically_contained",
       "label": "canonically_contained()",
       "degree": 13
@@ -229,11 +234,6 @@
     {
       "id": "src_lib_existing_bucket_path",
       "label": "existing_bucket_path()",
-      "degree": 13
-    },
-    {
-      "id": "src_lib_bucket_request",
-      "label": "bucket_request()",
       "degree": 13
     },
     {
