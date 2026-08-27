@@ -183,13 +183,13 @@
       "degree": 14
     },
     {
-      "id": "src_lib_tagging_request",
-      "label": "tagging_request()",
+      "id": "src_lib_multipart_request",
+      "label": "multipart_request()",
       "degree": 13
     },
     {
-      "id": "src_lib_multipart_request",
-      "label": "multipart_request()",
+      "id": "src_lib_tagging_request",
+      "label": "tagging_request()",
       "degree": 13
     },
     {
@@ -215,37 +215,48 @@
   ],
   "surprises": [
     {
-      "source": "AppState",
-      "target": "String",
+      "source": "app()",
+      "target": "Option",
       "source_files": [
         "src/lib.rs",
         ""
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 1 \u2192 community 0"
+      "note": "Bridges community 0 \u2192 community 1"
     },
     {
-      "source": "json_buckets()",
-      "target": "AppState",
+      "source": "bucket_request()",
+      "target": "Response",
       "source_files": [
         "src/lib.rs",
-        "src/lib.rs"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "note": "Bridges community 1 \u2192 community 5"
-    },
-    {
-      "source": "collect_objects()",
-      "target": "ObjectInfo",
-      "source_files": [
-        "src/lib.rs",
-        "src/lib.rs"
+        ""
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
       "note": "Bridges community 0 \u2192 community 5"
+    },
+    {
+      "source": "etag_path()",
+      "target": "Path",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 0 \u2192 community 6"
+    },
+    {
+      "source": "api_handle()",
+      "target": "Response",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 1 \u2192 community 5"
     },
     {
       "source": "safe_object_path()",
@@ -257,17 +268,6 @@
       "confidence": "EXTRACTED",
       "relation": "references",
       "note": "Bridges community 1 \u2192 community 6"
-    },
-    {
-      "source": "collect_objects()",
-      "target": "Path",
-      "source_files": [
-        "src/lib.rs",
-        ""
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "note": "Bridges community 6 \u2192 community 5"
     }
   ],
   "tokens": {
