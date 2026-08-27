@@ -1,6 +1,6 @@
-node_modules/
-dist/
-.env
-*.log
-graphify-out/
-.DS_Store
+/target/
+/node_modules/
+/dist/
+/dev-data/
+/output/imagegen/*.png
+*.tmp

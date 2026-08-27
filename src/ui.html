@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101b24"><title>s3dir console</title>
+  <link rel="stylesheet" href="/ui/app.css">
+</head>
+<body>
+  <a class="skip" href="#workspace">Skip to objects</a>
+  <header>
+    <a class="brand" href="/ui" aria-label="s3dir console home"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M3 8h12l3 4h13v17H3z"/><path d="M8 3h18v9H8z"/></svg><span><b>s3dir</b><small>local object desk</small></span></a>
+    <div class="status"><i></i><span>Local endpoint</span></div>
+  </header>
+  <main id="workspace">
+    <section class="rail" aria-labelledby="bucket-title">
+      <div class="section-head"><div><span class="eyebrow">Filesystem root</span><h1 id="bucket-title">Buckets</h1></div><button class="icon" id="new-bucket" aria-label="Create bucket" title="Create bucket">＋</button></div>
+      <ul id="buckets" class="bucket-list" aria-label="Buckets"></ul>
+      <div id="bucket-empty" class="empty" hidden><span class="empty-mark">□</span><b>No buckets yet</b><p>Create one here or with your AWS SDK.</p></div>
+    </section>
+    <section class="objects" aria-labelledby="objects-title">
+      <div class="object-head">
+        <div><span class="eyebrow">S3 objects</span><h2 id="objects-title">Choose a bucket</h2><p class="crumb" id="crumb">The files on disk appear here.</p></div>
+        <div class="actions"><button class="secondary" id="delete-bucket" hidden>Delete bucket</button><label class="upload" id="upload-label" hidden>Upload files<input id="upload" type="file" multiple></label></div>
+      </div>
+      <div id="loading" class="state"><span class="spinner"></span><b>Reading the directory…</b></div>
+      <div id="error" class="state error" hidden><span>!</span><b>Couldn’t reach the local endpoint</b><p id="error-message">Check that s3dir is still running, then retry.</p><button id="retry">Retry</button></div>
+      <div id="object-empty" class="state" hidden><span class="large-icon">↳</span><b>This bucket is an empty room</b><p>Drop files here or choose Upload files. Nested keys become ordinary folders.</p></div>
+      <div class="table-wrap" id="table-wrap" hidden>
+        <table><thead><tr><th scope="col">Key</th><th scope="col">Type</th><th scope="col">Size</th><th scope="col">Modified</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody id="object-rows"></tbody></table>
+      </div>
+    </section>
+  </main>
+  <div class="offline" id="offline" hidden role="status">Browser is offline. Existing files remain on disk.</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="bucket-dialog"><form method="dialog" id="bucket-form"><span class="eyebrow">New filesystem folder</span><h2>Create a bucket</h2><label for="bucket-name">Bucket name</label><input id="bucket-name" name="name" required minlength="3" maxlength="63" pattern="[a-z0-9][a-z0-9.-]*[a-z0-9]" aria-describedby="bucket-hint bucket-form-error"><small id="bucket-hint">3–63 lowercase letters, numbers, dots, or dashes.</small><p class="form-error" id="bucket-form-error" aria-live="assertive"></p><div class="dialog-actions"><button value="cancel" type="button" class="secondary" id="cancel-dialog">Cancel</button><button value="create" type="submit">Create bucket</button></div></form></dialog>
+  <dialog id="editor-dialog"><form method="dialog" id="editor-form"><span class="eyebrow">Plain-file editor</span><h2 id="editor-title">Edit object</h2><label for="editor-content">Object contents</label><textarea id="editor-content" spellcheck="false"></textarea><p class="form-error" id="editor-error" aria-live="assertive"></p><div class="dialog-actions"><button type="button" class="secondary" id="cancel-editor">Cancel</button><button type="submit">Save to disk</button></div></form></dialog>
+  <script type="module" src="/ui/app.js"></script>
+</body></html>
