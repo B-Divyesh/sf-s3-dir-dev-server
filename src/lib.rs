@@ -93,12 +93,19 @@ pub fn app(root: PathBuf, cors: Vec<String>, events: Option<String>) -> Router {
         client: reqwest::Client::new(),
     };
     Router::new()
+        // Keep Chromium from emitting a 404 console error for its automatic
+        // favicon probe when the local console is opened.
+        .route("/favicon.ico", get(favicon))
         .route("/ui", get(ui_html))
         .route("/ui/", get(ui_html))
         .route("/ui/app.css", get(ui_css))
         .route("/ui/app.js", get(ui_js))
         .fallback(handle)
         .with_state(state)
+}
+
+async fn favicon() -> StatusCode {
+    StatusCode::NO_CONTENT
 }
 
 async fn ui_html() -> impl IntoResponse {
@@ -349,44 +356,64 @@ async fn existing_object_path(state: &AppState, bucket: &str, key: &str) -> Opti
     canonically_contained(&state.root, &candidate)
 }
 
+enum ObjectWritePathError {
+    KeyPathConflict,
+    Unsafe,
+}
+
 /// Creates missing object parent directories one component at a time.  This
 /// rejects an existing symlink before traversing it and verifies the
 /// canonical location after each creation, so a key can never cause normal
 /// request handling to create files outside the configured root.
-async fn object_path_for_write(state: &AppState, bucket: &str, key: &str) -> Option<PathBuf> {
-    let candidate = safe_object_path(&state.root, bucket, key)?;
-    let mut current = existing_bucket_path(state, bucket).await?;
+async fn object_path_for_write(
+    state: &AppState,
+    bucket: &str,
+    key: &str,
+) -> Result<PathBuf, ObjectWritePathError> {
+    let candidate =
+        safe_object_path(&state.root, bucket, key).ok_or(ObjectWritePathError::Unsafe)?;
+    let mut current = existing_bucket_path(state, bucket)
+        .await
+        .ok_or(ObjectWritePathError::Unsafe)?;
     let rel = Path::new(key);
-    let parent = rel.parent()?;
+    let parent = rel.parent().ok_or(ObjectWritePathError::Unsafe)?;
     for component in parent.components() {
         let Component::Normal(name) = component else {
-            return None;
+            return Err(ObjectWritePathError::Unsafe);
         };
         let next = current.join(name);
         match fs::symlink_metadata(&next).await {
             Ok(metadata) if metadata.file_type().is_dir() && !metadata.file_type().is_symlink() => {
             }
-            Ok(_) => return None,
+            // An ordinary object file already occupies a required parent
+            // directory (for example, `foo` before `foo/bar`).  This is the
+            // documented POSIX key-path conflict, not malformed input.
+            Ok(metadata) if metadata.file_type().is_file() => {
+                return Err(ObjectWritePathError::KeyPathConflict);
+            }
+            Ok(_) => return Err(ObjectWritePathError::Unsafe),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
                 if fs::create_dir(&next).await.is_err() {
-                    return None;
+                    return Err(ObjectWritePathError::Unsafe);
                 }
             }
-            Err(_) => return None,
+            Err(_) => return Err(ObjectWritePathError::Unsafe),
         }
-        current = canonically_contained(&state.root, &next)?;
+        current = canonically_contained(&state.root, &next).ok_or(ObjectWritePathError::Unsafe)?;
     }
-    let path = current.join(rel.file_name()?);
+    let path = current.join(rel.file_name().ok_or(ObjectWritePathError::Unsafe)?);
     if let Ok(metadata) = fs::symlink_metadata(&path).await
         && (metadata.file_type().is_symlink()
             || canonically_contained(&state.root, &path).is_none())
     {
-        return None;
+        return Err(ObjectWritePathError::Unsafe);
     }
     // `candidate` is retained as a lexical containment assertion as well as
     // the component-by-component canonical verification above.
-    candidate.strip_prefix(&*state.root).ok()?;
-    Some(path)
+    candidate
+        .strip_prefix(&*state.root)
+        .map_err(|_| ObjectWritePathError::Unsafe)?;
+    Ok(path)
 }
 
 async fn bucket_request(
@@ -624,12 +651,22 @@ async fn put_object(
             "Create the bucket first",
         );
     }
-    let Some(path) = object_path_for_write(state, bucket, key).await else {
-        return s3_error(
-            StatusCode::BAD_REQUEST,
-            "InvalidObjectName",
-            "Object path is outside the configured directory or crosses a symlink",
-        );
+    let path = match object_path_for_write(state, bucket, key).await {
+        Ok(path) => path,
+        Err(ObjectWritePathError::KeyPathConflict) => {
+            return s3_error(
+                StatusCode::CONFLICT,
+                "KeyPathConflict",
+                "An object file already occupies a parent directory for this key",
+            );
+        }
+        Err(ObjectWritePathError::Unsafe) => {
+            return s3_error(
+                StatusCode::BAD_REQUEST,
+                "InvalidObjectName",
+                "Object path is outside the configured directory or crosses a symlink",
+            );
+        }
     };
     if path.is_dir() {
         return s3_error(
@@ -943,12 +980,22 @@ async fn multipart_request(
             "Unsupported multipart operation",
         );
     }
-    let Some(path) = object_path_for_write(state, bucket, key).await else {
-        return s3_error(
-            StatusCode::BAD_REQUEST,
-            "InvalidObjectName",
-            "Unsafe object path",
-        );
+    let path = match object_path_for_write(state, bucket, key).await {
+        Ok(path) => path,
+        Err(ObjectWritePathError::KeyPathConflict) => {
+            return s3_error(
+                StatusCode::CONFLICT,
+                "KeyPathConflict",
+                "An object file already occupies a parent directory for this key",
+            );
+        }
+        Err(ObjectWritePathError::Unsafe) => {
+            return s3_error(
+                StatusCode::BAD_REQUEST,
+                "InvalidObjectName",
+                "Unsafe object path",
+            );
+        }
     };
     let mut out = match fs::File::create(&path).await {
         Ok(f) => f,
@@ -1436,6 +1483,38 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(r.status(), 409);
+    }
+    #[tokio::test]
+    async fn reports_documented_key_path_conflicts_for_file_directory_pairs() {
+        let tmp = tempfile::tempdir().unwrap();
+        fs::create_dir(tmp.path().join("assets")).await.unwrap();
+        let app = app(tmp.path().into(), vec![], None);
+
+        let put = |key: &str| {
+            Request::builder()
+                .method("PUT")
+                .uri(format!("/assets/{key}"))
+                .body(Body::from("object"))
+                .unwrap()
+        };
+        assert_eq!(app.clone().oneshot(put("foo")).await.unwrap().status(), 200);
+        let conflict = app.clone().oneshot(put("foo/bar")).await.unwrap();
+        assert_eq!(conflict.status(), StatusCode::CONFLICT);
+        let body = to_bytes(conflict.into_body(), 4096).await.unwrap();
+        assert!(String::from_utf8_lossy(&body).contains("<Code>KeyPathConflict</Code>"));
+
+        assert_eq!(
+            app.clone()
+                .oneshot(put("nested/child"))
+                .await
+                .unwrap()
+                .status(),
+            200
+        );
+        let conflict = app.oneshot(put("nested")).await.unwrap();
+        assert_eq!(conflict.status(), StatusCode::CONFLICT);
+        let body = to_bytes(conflict.into_body(), 4096).await.unwrap();
+        assert!(String::from_utf8_lossy(&body).contains("<Code>KeyPathConflict</Code>"));
     }
     #[tokio::test]
     async fn console_api_rejects_traversal_bucket_segments_and_escape_writes() {

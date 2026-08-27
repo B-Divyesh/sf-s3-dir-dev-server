@@ -27,7 +27,7 @@ await s3.send(new PutObjectCommand({ Bucket: "assets", Key: "hello.txt", Body: "
 
 Supported: create/list/head/delete buckets; put/get/head/delete objects; ListObjectsV2; multipart create/upload/complete/abort; presigned GET/PUT; CORS/preflight; `x-amz-meta-*`; object tagging; fixture seeding; object-created/removed webhook events. Run `s3dir serve --help` for all options and `s3dir serve --json` for a machine-readable startup record.
 
-On disk, `bucket/path/file.ext` is the object. Metadata and tags live in hidden `bucket/.s3dir/*.json` sidecars. A file key such as `foo` cannot coexist with `foo/bar`; this POSIX conflict returns `409 Conflict`.
+On disk, `bucket/path/file.ext` is the object. Metadata and tags live in hidden `bucket/.s3dir/*.json` sidecars. A file key such as `foo` cannot coexist with `foo/bar`; either file-versus-directory direction returns `409 Conflict` with the S3 error code `KeyPathConflict`.
 
 The public documentation URL is a static installation guide and visual tour. It does not run an S3 endpoint: start `s3dir` locally, then use the printed local endpoint and its `/ui` console.
 
@@ -50,7 +50,8 @@ services:
 
 ```sh
 cargo test
-npm install
+npm ci
+npx playwright install chromium # once, for the local console browser test
 npm test
 npm run build       # complete quality gate; site lands in dist/site
 npm run build:site  # static landing only

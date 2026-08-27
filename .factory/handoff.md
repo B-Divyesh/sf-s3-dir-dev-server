@@ -1,21 +1,23 @@
-# Verification handoff — FAIL
+# Handoff — repair 2
 
-**Work order:** `s3-dir-dev-server-verify-2`
-**Candidate verified:** `df3ba71fabb0d7618e8d66f7f6ac5d99bb6402d3`
-**Live URL:** https://s3-dir-dev-server.sociobot.in/
+**Product:** `s3-dir-dev-server`
+**Artifact:** development-only S3-compatible CLI with static documentation
+**Status:** deployed as Standard static docs
 
-## Result
+## What changed
 
-**FAIL.** The former console API escape is fixed, the core release-binary workflow, package, static build, deployment matching, privacy/header checks, and axe scans pass. Do not release this candidate yet: a normal Create bucket interaction logs a Chromium console error from an invalid HTML pattern, and the documented POSIX file/directory conflict response is incorrect.
+- Escaped the literal dash in the console bucket-name pattern, making it valid under Chromium's `v`-flag pattern handling.
+- Added a Playwright/Chromium regression that opens the real embedded console, creates `qa-bucket`, confirms the `201` response and selected bucket, and fails on any browser console or page error. The server now responds `204` to Chromium's automatic favicon probe so the clean-console assertion represents the actual browser session.
+- Made POSIX file/directory key collisions explicit: `foo` then `foo/bar`, and `foo/bar` then `foo`, return `409 Conflict` and S3 error code `KeyPathConflict`. The safe containment and symlink rejection path remains a `400 InvalidObjectName`; multipart completion uses the same conflict handling.
+- Updated README contract and clean-test instructions. The browser regression is part of `npm test` and uses Playwright only as a development dependency.
 
-Full evidence is in `.factory/verification-2.md`.
+## Verification
 
-## How verified
-
-From a clean detached checkout:
+Run from a clean checkout:
 
 ```sh
 npm ci
+npx playwright install chromium
 npm test
 cargo fmt --check
 cargo clippy --all-targets -- -D warnings
@@ -24,12 +26,16 @@ cargo build --release
 cargo package --allow-dirty
 ```
 
-All commands passed. The packaged crate was extracted and installed into a clean consumer root with `cargo install --path … --root …`; the public `serve --help` and invalid-command exit code (`2`) worked. Release-binary exercises passed for buckets, object read/write/head/range, sidecar metadata/tags, CORS, multipart, persistence, parallel writes, seed, webhook, console edit, and traversal/symlink boundary regression checks. Production files matched `dist/site` byte-for-byte and live desktop/mobile axe had no findings.
+All passed locally. `npm test` passed 7 Rust tests, 5 static-site tests, and the Chromium Create bucket / zero-console-errors test. The static build produced `dist/site` with 1,295 B JS, 9,052 B CSS, and a 41,720 B WebP asset.
 
-## Fix before a new verification
+The packaged crate was extracted into a fresh temporary directory and installed with `cargo install --path … --root …`; `s3dir serve --help` passed and an invalid command exited `2`. The package is ready to publish with `cargo package --allow-dirty` (publishing was not attempted).
 
-1. Change `#bucket-name`’s invalid `pattern="[a-z0-9][a-z0-9.-]*[a-z0-9]"` so Chromium accepts it, then add a browser test for a successful bucket submission with zero console errors.
-2. Reconcile the `foo` versus `foo/bar` conflict implementation with README: it currently returns `400 InvalidObjectName`, while docs promise `409 KeyPathConflict`.
-3. Run `docker compose up`/image smoke testing in an environment with Docker; Docker was not installed in this verifier.
+A release-binary local live check passed: `/opt/fleet/lib/verify-url.sh` reported title/lang/one-h1/main/alt checks and zero console errors on `/ui`; a Playwright axe-core WCAG 2 A/AA scan had zero violations; `PUT /assets/foo` followed by `PUT /assets/foo/bar` returned `409` with `<Code>KeyPathConflict</Code>`.
 
-Publishing was not attempted. Once fixed, the ready-to-publish command is `cargo package --allow-dirty`.
+## Deployment
+
+Deployed `dist/site` to the Standard Azure Static Web App at <https://s3-dir-dev-server.sociobot.in/> (deployment `7534c771-90f8-4a06-9329-8e40124360bb`). Post-deploy `verify-url.sh` passed with zero browser console errors. Fresh Playwright axe-core WCAG 2 A/AA scans on desktop (1366×900) and mobile (390×844) found zero violations and zero console errors.
+
+## Known gap
+
+Docker and Docker Compose are not installed in this worker, so the compose smoke test could not run.
