@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:19091/ui",
+  "loadMs": 599,
+  "errors": [],
+  "a11y": {
+    "title": "s3dir console",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 0,
+    "textLength": 418
+  }
+}

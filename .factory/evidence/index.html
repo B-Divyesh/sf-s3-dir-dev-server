@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A tiny local S3-compatible server that maps buckets to ordinary directories and includes a browser console.">
+  <meta name="theme-color" content="#101b24"><title>s3dir — your filesystem, speaking S3</title>
+  <link rel="icon" href="/assets/mark-DYr8SVrC.svg" type="image/svg+xml">
+  <script type="module" crossorigin src="/assets/index-JrCVNM2P.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/styles-CFFq_Lky.css">
+</head>
+<body>
+  <a href="#main" class="skip">Skip to content</a>
+  <header class="nav"><a class="logo" href="/" aria-label="s3dir home"><svg width="32" height="32" viewBox="0 0 34 34" aria-hidden="true"><path d="M3 8h12l3 4h13v17H3zM8 3h18v9H8z"/></svg><b>s3dir</b></a><nav aria-label="Primary"><a href="#how">How it maps</a><a href="#api">API support</a><a href="https://github.com/B-Divyesh/sf-s3-dir-dev-server">GitHub <span aria-hidden="true">↗</span></a></nav></header>
+  <main id="main">
+    <section class="hero">
+      <div class="hero-copy"><p class="eyebrow">A local object room</p><h1>Your filesystem,<br><em>speaking S3.</em></h1><p class="lede">One small dev server. Real files on disk. A browser console when you need to see what your app just uploaded.</p><div class="hero-actions"><a class="button" href="#install">Run it locally</a><a class="text-link" href="#console">Tour the console <span aria-hidden="true">↓</span></a></div><dl><div><dt>Storage</dt><dd>Plain files</dd></div><div><dt>Console</dt><dd>Built in</dd></div><div><dt>Telemetry</dt><dd>None</dd></div></dl></div>
+      <figure><img src="/impossible-archive.webp" width="1152" height="768" fetchpriority="high" alt="A surreal filing cabinet opening into a night sky of floating green object-storage cubes"><figcaption><span>DIRECTORY</span><i></i><span>S3 OBJECTS</span></figcaption></figure>
+    </section>
+    <section class="route" id="how" aria-labelledby="route-title"><div><p class="eyebrow">The whole idea</p><h2 id="route-title">No proprietary volume to decode.</h2><p>Stop the server and your data is still exactly where you put it. Buckets are folders. Keys are paths. Metadata and tags stay in quiet sidecars.</p></div><div class="mapping" aria-label="Mapping example"><code>./data/<strong>assets</strong>/<b>avatars/ada.webp</b></code><span aria-hidden="true">→</span><code>s3://<strong>assets</strong>/<b>avatars/ada.webp</b></code></div></section>
+    <section class="console-section" id="console" aria-labelledby="console-title"><div class="section-copy"><p class="eyebrow">The catalog desk</p><h2 id="console-title">Inspect the upload before your next line of code.</h2><p>Browse buckets, upload or download objects, inspect sizes and types, and remove test data. It is available at <code>/ui</code> the moment the server starts.</p></div><div class="demo" role="img" aria-label="Recorded interface demonstration showing an assets bucket with three objects"><div class="demo-top"><b>s3dir</b><span><i></i> Local endpoint</span></div><aside><small>FILESYSTEM ROOT</small><strong>Buckets</strong><button type="button" class="selected">assets <span>3</span></button><button type="button">fixtures <span>8</span></button></aside><div class="demo-main"><small>S3 OBJECTS</small><h3>assets</h3><code>./data/assets/</code><div class="demo-row"><b>avatars/ada.webp</b><span>84.2 KB</span></div><div class="demo-row"><b>receipts/0042.pdf</b><span>19.8 KB</span></div><div class="demo-row"><b>welcome.txt</b><span>43 B</span></div></div></div></section>
+    <section class="api" id="api" aria-labelledby="api-title"><p class="eyebrow">Enough S3 for the dev loop</p><h2 id="api-title">The parts your app actually touches.</h2><ul><li><span>01</span><b>Core objects</b><p>Put, get, head, delete, ListObjectsV2, buckets, byte ranges.</p></li><li><span>02</span><b>Realistic flows</b><p>Multipart uploads, presigned GET/PUT, metadata and object tags.</p></li><li><span>03</span><b>App edges</b><p>CORS, fixture seeding, and object-created/removed webhooks.</p></li></ul><p class="honest"><b>Deliberately not production-ready.</b> No IAM, versioning, replication, or durability theatre—just a fast, legible local loop.</p></section>
+    <section class="install" id="install" aria-labelledby="install-title"><div><p class="eyebrow">From zero to a bucket</p><h2 id="install-title">One binary. One directory.</h2><p>Build from source today. Release binaries and the container image will follow the same interface.</p></div><div class="terminal"><div><span></span><span></span><span></span><b>terminal</b></div><pre><code><i>$</i> cargo install --path .
+<i>$</i> s3dir serve ./data --port 9000
+
+<span>s3dir ready</span>  http://127.0.0.1:9000
+<span>console</span>      http://127.0.0.1:9000/ui
+<span>directory</span>    ./data</code></pre><button id="copy" type="button" data-copy="cargo install --path .&#10;s3dir serve ./data --port 9000">Copy commands</button></div></section>
+  </main>
+  <footer><a class="logo" href="/"><svg width="28" height="28" viewBox="0 0 34 34" aria-hidden="true"><path d="M3 8h12l3 4h13v17H3zM8 3h18v9H8z"/></svg><b>s3dir</b></a><p>Built for local loops, not production loads.</p><nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-s3-dir-dev-server">Source</a></nav></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body></html>
