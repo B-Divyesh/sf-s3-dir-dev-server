@@ -2,7 +2,7 @@
 
 **Product:** `s3-dir-dev-server`
 **Artifact:** development-only S3-compatible Rust CLI with static documentation
-**Status:** local repair and release checks passed; ready for Standard static-docs deployment.
+**Status:** deployed as Standard static docs.
 
 ## What changed
 
@@ -29,7 +29,9 @@ The static build produced `dist/site` (1.30 KB JavaScript, 9.05 KB CSS, 41.72 KB
 
 ## Deploy
 
-Deploy `dist/site` as Standard static docs with:
+Deployed `dist/site` as Standard static docs to https://s3-dir-dev-server.sociobot.in/ (deployment `11f7000c-0308-4eb2-89c8-023e32cad6fe`). The live post-deploy `verify-url.sh` check passed: HTTPS 200, 683 ms local load measurement, zero browser-console errors, title/language/main/one-H1 checks, and no missing image alt text or unlabeled buttons.
+
+Deploy future static builds with:
 
 ```sh
 /opt/fleet/lib/deploy-static.sh s3-dir-dev-server dist/site
