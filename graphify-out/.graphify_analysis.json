@@ -254,12 +254,34 @@
       "degree": 13
     },
     {
-      "id": "src_lib_get_object",
-      "label": "get_object()",
+      "id": "src_lib_app",
+      "label": "app()",
       "degree": 12
     }
   ],
   "surprises": [
+    {
+      "source": "bucket_request()",
+      "target": "HashMap",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 0 \u2192 community 1"
+    },
+    {
+      "source": "Sidecar",
+      "target": "HashMap",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 0 \u2192 community 2"
+    },
     {
       "source": "delete_object()",
       "target": "Response",
@@ -270,28 +292,6 @@
       "confidence": "EXTRACTED",
       "relation": "references",
       "note": "Bridges community 1 \u2192 community 2"
-    },
-    {
-      "source": "AppState",
-      "target": "String",
-      "source_files": [
-        "src/lib.rs",
-        ""
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "note": "Bridges community 2 \u2192 community 0"
-    },
-    {
-      "source": "bucket_request()",
-      "target": "HashMap",
-      "source_files": [
-        "src/lib.rs",
-        ""
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "note": "Bridges community 1 \u2192 community 0"
     }
   ],
   "tokens": {
