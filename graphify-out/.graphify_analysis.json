@@ -1,43 +1,6 @@
 {
   "communities": {
     "0": [
-      "arc",
-      "body",
-      "client",
-      "error",
-      "headermap",
-      "method",
-      "request",
-      "response",
-      "src_lib_api_handle",
-      "src_lib_appstate",
-      "src_lib_bucket_request",
-      "src_lib_collect_objects",
-      "src_lib_cors_response",
-      "src_lib_get_object",
-      "src_lib_handle",
-      "src_lib_io_error",
-      "src_lib_json_buckets",
-      "src_lib_json_error",
-      "src_lib_json_objects",
-      "src_lib_json_response",
-      "src_lib_list_buckets",
-      "src_lib_list_objects",
-      "src_lib_multipart_request",
-      "src_lib_multipart_start",
-      "src_lib_notify",
-      "src_lib_put_object",
-      "src_lib_s3_error",
-      "src_lib_s3_handle",
-      "src_lib_tagging_request",
-      "src_lib_uploads_dir",
-      "src_lib_valid_bucket",
-      "src_lib_xml_response",
-      "state",
-      "statuscode",
-      "value"
-    ],
-    "1": [
       "hashmap",
       "intoresponse",
       "router",
@@ -45,6 +8,7 @@
       "src_lib_app",
       "src_lib_blocks_traversal_and_nonempty_bucket_delete",
       "src_lib_bucketinfo",
+      "src_lib_collect_objects",
       "src_lib_console_api_rejects_traversal_bucket_segments_and_escape_writes",
       "src_lib_decode_aws_chunked",
       "src_lib_decodes_sigv4_streaming_payloads",
@@ -70,16 +34,51 @@
       "string",
       "vec"
     ],
+    "1": [
+      "body",
+      "error",
+      "headermap",
+      "method",
+      "request",
+      "response",
+      "src_lib_api_handle",
+      "src_lib_bucket_request",
+      "src_lib_cors_response",
+      "src_lib_get_object",
+      "src_lib_handle",
+      "src_lib_io_error",
+      "src_lib_json_buckets",
+      "src_lib_json_error",
+      "src_lib_json_response",
+      "src_lib_list_buckets",
+      "src_lib_list_objects",
+      "src_lib_multipart_request",
+      "src_lib_multipart_start",
+      "src_lib_put_object",
+      "src_lib_s3_error",
+      "src_lib_s3_handle",
+      "src_lib_tagging_request",
+      "src_lib_valid_bucket",
+      "src_lib_xml_response",
+      "state",
+      "statuscode",
+      "value"
+    ],
     "2": [
+      "arc",
+      "client",
       "option",
       "path",
       "pathbuf",
       "result",
+      "src_lib_appstate",
       "src_lib_canonically_contained",
       "src_lib_delete_object",
       "src_lib_etag_path",
       "src_lib_existing_bucket_path",
       "src_lib_existing_object_path",
+      "src_lib_json_objects",
+      "src_lib_notify",
       "src_lib_object_path_for_write",
       "src_lib_read_sidecar",
       "src_lib_safe_bucket_path",
@@ -87,6 +86,7 @@
       "src_lib_seed",
       "src_lib_sidecar",
       "src_lib_sidecar_path",
+      "src_lib_uploads_dir",
       "src_lib_write_sidecar"
     ],
     "3": [
@@ -142,9 +142,12 @@
     ],
     "6": [
       "tests_ui_browser_test",
+      "tests_ui_browser_test_assertonlystate",
       "tests_ui_browser_test_chromiumexecutable",
-      "tests_ui_browser_test_seedpopulatedconsole",
+      "tests_ui_browser_test_createbucket",
+      "tests_ui_browser_test_seedconsolestates",
       "tests_ui_browser_test_startserver",
+      "tests_ui_browser_test_statesnapshot",
       "tests_ui_browser_test_stopserver"
     ],
     "7": [
@@ -185,13 +188,13 @@
     ]
   },
   "cohesion": {
-    "0": 0.18487394957983194,
-    "1": 0.11397849462365592,
-    "2": 0.3014705882352941,
+    "0": 0.11290322580645161,
+    "1": 0.21428571428571427,
+    "2": 0.2450592885375494,
     "3": 0.125,
     "4": 0.3416666666666667,
     "5": 0.24358974358974358,
-    "6": 0.4,
+    "6": 0.32142857142857145,
     "7": 0.6666666666666666,
     "8": 1.0,
     "9": 1.0,
@@ -251,12 +254,34 @@
       "degree": 13
     },
     {
-      "id": "src_lib_app",
-      "label": "app()",
+      "id": "src_lib_get_object",
+      "label": "get_object()",
       "degree": 12
     }
   ],
   "surprises": [
+    {
+      "source": "delete_object()",
+      "target": "Response",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 1 \u2192 community 2"
+    },
+    {
+      "source": "AppState",
+      "target": "String",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 2 \u2192 community 0"
+    },
     {
       "source": "bucket_request()",
       "target": "HashMap",
@@ -267,28 +292,6 @@
       "confidence": "EXTRACTED",
       "relation": "references",
       "note": "Bridges community 1 \u2192 community 0"
-    },
-    {
-      "source": "Sidecar",
-      "target": "HashMap",
-      "source_files": [
-        "src/lib.rs",
-        ""
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "note": "Bridges community 1 \u2192 community 2"
-    },
-    {
-      "source": "collect_objects()",
-      "target": "Path",
-      "source_files": [
-        "src/lib.rs",
-        ""
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "note": "Bridges community 0 \u2192 community 2"
     }
   ],
   "tokens": {
