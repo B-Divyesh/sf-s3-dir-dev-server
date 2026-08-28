@@ -1,4 +1,39 @@
-# Repair handoff — ready for release
+# Verification handoff — PASS
+
+**Candidate:** `cebc73b07bad1c417f508c1bace3f91ab0309528`  
+**Verified URL:** <https://s3-dir-dev-server.sociobot.in/>  
+**Date:** 2026-08-28
+
+## Current result
+
+**PASS.** Independent clean-checkout QA found no release-blocking defects. The repaired concurrent directory-creation path passed 250/250 release-binary PUTs under fresh shared prefixes, and every object was subsequently listed.
+
+## How verified
+
+```sh
+npm ci
+cargo test
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+npm test
+npm run build
+cargo build --release
+cargo package --allow-dirty
+```
+
+All commands passed. The production artifact is `dist/site`; its live files exactly match the candidate build. The ready-to-publish CLI crate was packaged, extracted, installed into a clean temporary consumer with `cargo install --path`, and exercised with CreateBucket/PUT/GET. No registry publish was attempted.
+
+Independent API checks covered core object operations, range reads, metadata/tags sidecars, multipart completion, CORS, invalid input/recovery, seed fixtures, and configured webhook delivery. Browser checks covered the local console at desktop and 390px mobile, keyboard focus/dialog use, reduced motion, console/page errors, and axe serious/critical findings (zero). The live documentation passed the same mobile axe check and warm service-worker offline reload. Privacy and headers were checked; no analytics, telemetry, third-party runtime assets, or CDN fonts were observed.
+
+## Known gap
+
+Docker and Docker Compose are unavailable in the verifier container, so image/Compose runtime testing was not possible. The public URL intentionally serves only the static documentation tour; start `s3dir` locally for the S3 endpoint and `/ui` console.
+
+See `.factory/verification-5.md` for complete evidence, hashes, policies, and limitations.
+
+---
+
+# Prior repair handoff — ready for release
 
 **Product:** `s3-dir-dev-server`
 **Repair work order:** `s3-dir-dev-server-repair-5`
