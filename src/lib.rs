@@ -393,8 +393,23 @@ async fn object_path_for_write(
             }
             Ok(_) => return Err(ObjectWritePathError::Unsafe),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                if fs::create_dir(&next).await.is_err() {
-                    return Err(ObjectWritePathError::Unsafe);
+                match fs::create_dir(&next).await {
+                    Ok(()) => {}
+                    // A concurrent PUT may create this same shared parent
+                    // after the metadata check above. It is still safe only
+                    // if the winner made an ordinary directory inside root.
+                    Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+                        match fs::symlink_metadata(&next).await {
+                            Ok(metadata)
+                                if metadata.file_type().is_dir()
+                                    && !metadata.file_type().is_symlink() => {}
+                            Ok(metadata) if metadata.file_type().is_file() => {
+                                return Err(ObjectWritePathError::KeyPathConflict);
+                            }
+                            Ok(_) | Err(_) => return Err(ObjectWritePathError::Unsafe),
+                        }
+                    }
+                    Err(_) => return Err(ObjectWritePathError::Unsafe),
                 }
             }
             Err(_) => return Err(ObjectWritePathError::Unsafe),
@@ -1515,6 +1530,63 @@ mod tests {
         assert_eq!(conflict.status(), StatusCode::CONFLICT);
         let body = to_bytes(conflict.into_body(), 4096).await.unwrap();
         assert!(String::from_utf8_lossy(&body).contains("<Code>KeyPathConflict</Code>"));
+    }
+    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+    async fn concurrent_puts_create_every_object_under_a_new_shared_prefix() {
+        let tmp = tempfile::tempdir().unwrap();
+        fs::create_dir(tmp.path().join("assets")).await.unwrap();
+        let app = app(tmp.path().into(), vec![], None);
+
+        // Five fresh prefixes mirror the verifier's repeated 50-way load
+        // check, making this former create-directory race a regression gate.
+        for round in 0..5 {
+            let prefix = format!("concurrent-{round}");
+            let mut writes = tokio::task::JoinSet::new();
+            for number in 0..50 {
+                let app = app.clone();
+                let prefix = prefix.clone();
+                writes.spawn(async move {
+                    app.oneshot(
+                        Request::builder()
+                            .method("PUT")
+                            .uri(format!("/assets/{prefix}/{number}.txt"))
+                            .body(Body::from(number.to_string()))
+                            .unwrap(),
+                    )
+                    .await
+                    .unwrap()
+                    .status()
+                });
+            }
+            while let Some(result) = writes.join_next().await {
+                assert_eq!(result.unwrap(), StatusCode::OK);
+            }
+
+            let listed = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .uri(format!("/assets?list-type=2&prefix={prefix}/"))
+                        .body(Body::empty())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(listed.status(), StatusCode::OK);
+            let body = String::from_utf8(
+                to_bytes(listed.into_body(), 128 * 1024)
+                    .await
+                    .unwrap()
+                    .to_vec(),
+            )
+            .unwrap();
+            for number in 0..50 {
+                assert!(
+                    body.contains(&format!("<Key>{prefix}/{number}.txt</Key>")),
+                    "{prefix}/{number}.txt must be listed"
+                );
+            }
+        }
     }
     #[tokio::test]
     async fn console_api_rejects_traversal_bucket_segments_and_escape_writes() {
