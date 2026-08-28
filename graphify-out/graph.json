@@ -292,7 +292,7 @@
       "file_type": "code",
       "norm_label": "blocks_traversal_and_nonempty_bucket_delete()",
       "source_file": "src/lib.rs",
-      "source_location": "L1458"
+      "source_location": "L1473"
     },
     {
       "id": "src_lib_bucketinfo",
@@ -312,7 +312,17 @@
       "file_type": "code",
       "norm_label": "collect_objects()",
       "source_file": "src/lib.rs",
-      "source_location": "L528"
+      "source_location": "L543"
+    },
+    {
+      "id": "src_lib_concurrent_puts_create_every_object_under_a_new_shared_prefix",
+      "label": "concurrent_puts_create_every_object_under_a_new_shared_prefix()",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "concurrent_puts_create_every_object_under_a_new_shared_prefix()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1535"
     },
     {
       "id": "src_lib_console_api_rejects_traversal_bucket_segments_and_escape_writes",
@@ -322,7 +332,7 @@
       "file_type": "code",
       "norm_label": "console_api_rejects_traversal_bucket_segments_and_escape_writes()",
       "source_file": "src/lib.rs",
-      "source_location": "L1520"
+      "source_location": "L1592"
     },
     {
       "id": "src_lib_decode_aws_chunked",
@@ -332,7 +342,7 @@
       "file_type": "code",
       "norm_label": "decode_aws_chunked()",
       "source_file": "src/lib.rs",
-      "source_location": "L1321"
+      "source_location": "L1336"
     },
     {
       "id": "src_lib_decodes_sigv4_streaming_payloads",
@@ -342,7 +352,7 @@
       "file_type": "code",
       "norm_label": "decodes_sigv4_streaming_payloads()",
       "source_file": "src/lib.rs",
-      "source_location": "L1688"
+      "source_location": "L1760"
     },
     {
       "id": "src_lib_documented_put_get_list_flow",
@@ -352,7 +362,7 @@
       "file_type": "code",
       "norm_label": "documented_put_get_list_flow()",
       "source_file": "src/lib.rs",
-      "source_location": "L1404"
+      "source_location": "L1419"
     },
     {
       "id": "src_lib_eventbucket",
@@ -405,6 +415,16 @@
       "source_location": "L107"
     },
     {
+      "id": "src_lib_list_objects",
+      "label": "list_objects()",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "list_objects()",
+      "source_file": "src/lib.rs",
+      "source_location": "L581"
+    },
+    {
       "id": "src_lib_multipart_assembles_parts",
       "label": "multipart_assembles_parts()",
       "_origin": "ast",
@@ -412,7 +432,7 @@
       "file_type": "code",
       "norm_label": "multipart_assembles_parts()",
       "source_file": "src/lib.rs",
-      "source_location": "L1625"
+      "source_location": "L1697"
     },
     {
       "id": "src_lib_objectinfo",
@@ -442,7 +462,7 @@
       "file_type": "code",
       "norm_label": "parse_form()",
       "source_file": "src/lib.rs",
-      "source_location": "L1298"
+      "source_location": "L1313"
     },
     {
       "id": "src_lib_parse_range",
@@ -452,7 +472,7 @@
       "file_type": "code",
       "norm_label": "parse_range()",
       "source_file": "src/lib.rs",
-      "source_location": "L1283"
+      "source_location": "L1298"
     },
     {
       "id": "src_lib_parse_tag_xml",
@@ -462,7 +482,7 @@
       "file_type": "code",
       "norm_label": "parse_tag_xml()",
       "source_file": "src/lib.rs",
-      "source_location": "L1305"
+      "source_location": "L1320"
     },
     {
       "id": "src_lib_query_params",
@@ -472,7 +492,7 @@
       "file_type": "code",
       "norm_label": "query_params()",
       "source_file": "src/lib.rs",
-      "source_location": "L1341"
+      "source_location": "L1356"
     },
     {
       "id": "src_lib_rejects_bucket_and_object_symlinks_outside_the_canonical_root",
@@ -482,7 +502,7 @@
       "file_type": "code",
       "norm_label": "rejects_bucket_and_object_symlinks_outside_the_canonical_root()",
       "source_file": "src/lib.rs",
-      "source_location": "L1573"
+      "source_location": "L1645"
     },
     {
       "id": "src_lib_reports_documented_key_path_conflicts_for_file_directory_pairs",
@@ -492,7 +512,7 @@
       "file_type": "code",
       "norm_label": "reports_documented_key_path_conflicts_for_file_directory_pairs()",
       "source_file": "src/lib.rs",
-      "source_location": "L1488"
+      "source_location": "L1503"
     },
     {
       "id": "src_lib_ui_css",
@@ -532,7 +552,7 @@
       "file_type": "code",
       "norm_label": "xml()",
       "source_file": "src/lib.rs",
-      "source_location": "L1355"
+      "source_location": "L1370"
     },
     {
       "id": "string",
@@ -555,154 +575,134 @@
       "source_location": ""
     },
     {
-      "id": "body",
-      "label": "Body",
+      "id": "arc",
+      "label": "Arc",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "body",
+      "norm_label": "arc",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "error",
-      "label": "Error",
+      "id": "client",
+      "label": "Client",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "error",
+      "norm_label": "client",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "headermap",
-      "label": "HeaderMap",
+      "id": "option",
+      "label": "Option",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "headermap",
+      "norm_label": "option",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "method",
-      "label": "Method",
+      "id": "path",
+      "label": "Path",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "method",
+      "norm_label": "path",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "request",
-      "label": "Request",
+      "id": "pathbuf",
+      "label": "PathBuf",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "request",
+      "norm_label": "pathbuf",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "response",
-      "label": "Response",
+      "id": "result",
+      "label": "Result",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "response",
+      "norm_label": "result",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "src_lib_api_handle",
-      "label": "api_handle()",
+      "id": "src_lib_appstate",
+      "label": "AppState",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "api_handle()",
+      "norm_label": "appstate",
       "source_file": "src/lib.rs",
-      "source_location": "L1066"
+      "source_location": "L26"
     },
     {
-      "id": "src_lib_bucket_request",
-      "label": "bucket_request()",
+      "id": "src_lib_canonically_contained",
+      "label": "canonically_contained()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "bucket_request()",
+      "norm_label": "canonically_contained()",
       "source_file": "src/lib.rs",
-      "source_location": "L419"
+      "source_location": "L333"
     },
     {
-      "id": "src_lib_cors_response",
-      "label": "cors_response()",
+      "id": "src_lib_delete_object",
+      "label": "delete_object()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "cors_response()",
+      "norm_label": "delete_object()",
       "source_file": "src/lib.rs",
-      "source_location": "L168"
+      "source_location": "L832"
     },
     {
-      "id": "src_lib_get_object",
-      "label": "get_object()",
+      "id": "src_lib_etag_path",
+      "label": "etag_path()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "get_object()",
+      "norm_label": "etag_path()",
       "source_file": "src/lib.rs",
-      "source_location": "L742"
+      "source_location": "L1293"
     },
     {
-      "id": "src_lib_handle",
-      "label": "handle()",
+      "id": "src_lib_existing_bucket_path",
+      "label": "existing_bucket_path()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "handle()",
+      "norm_label": "existing_bucket_path()",
       "source_file": "src/lib.rs",
-      "source_location": "L136"
+      "source_location": "L339"
     },
     {
-      "id": "src_lib_io_error",
-      "label": "io_error()",
+      "id": "src_lib_existing_object_path",
+      "label": "existing_object_path()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "io_error()",
+      "norm_label": "existing_object_path()",
       "source_file": "src/lib.rs",
-      "source_location": "L1390"
+      "source_location": "L349"
     },
     {
-      "id": "src_lib_json_buckets",
-      "label": "json_buckets()",
+      "id": "src_lib_json_objects",
+      "label": "json_objects()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "json_buckets()",
+      "norm_label": "json_objects()",
       "source_file": "src/lib.rs",
-      "source_location": "L1139"
-    },
-    {
-      "id": "src_lib_json_error",
-      "label": "json_error()",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "json_error()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1379"
-    },
-    {
-      "id": "src_lib_json_response",
-      "label": "json_response()",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "json_response()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1369"
+      "source_location": "L1177"
     },
     {
       "id": "src_lib_list_buckets",
@@ -712,17 +712,7 @@
       "file_type": "code",
       "norm_label": "list_buckets()",
       "source_file": "src/lib.rs",
-      "source_location": "L496"
-    },
-    {
-      "id": "src_lib_list_objects",
-      "label": "list_objects()",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "list_objects()",
-      "source_file": "src/lib.rs",
-      "source_location": "L566"
+      "source_location": "L511"
     },
     {
       "id": "src_lib_multipart_request",
@@ -732,7 +722,7 @@
       "file_type": "code",
       "norm_label": "multipart_request()",
       "source_file": "src/lib.rs",
-      "source_location": "L911"
+      "source_location": "L926"
     },
     {
       "id": "src_lib_multipart_start",
@@ -742,57 +732,107 @@
       "file_type": "code",
       "norm_label": "multipart_start()",
       "source_file": "src/lib.rs",
-      "source_location": "L877"
+      "source_location": "L892"
     },
     {
-      "id": "src_lib_put_object",
-      "label": "put_object()",
+      "id": "src_lib_notify",
+      "label": "notify()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "put_object()",
+      "norm_label": "notify()",
       "source_file": "src/lib.rs",
-      "source_location": "L639"
+      "source_location": "L1237"
     },
     {
-      "id": "src_lib_s3_error",
-      "label": "s3_error()",
+      "id": "src_lib_object_path_for_write",
+      "label": "object_path_for_write()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "s3_error()",
+      "norm_label": "object_path_for_write()",
       "source_file": "src/lib.rs",
-      "source_location": "L1387"
+      "source_location": "L368"
     },
     {
-      "id": "src_lib_s3_handle",
-      "label": "s3_handle()",
+      "id": "src_lib_read_sidecar",
+      "label": "read_sidecar()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "s3_handle()",
+      "norm_label": "read_sidecar()",
       "source_file": "src/lib.rs",
-      "source_location": "L213"
+      "source_location": "L1218"
     },
     {
-      "id": "src_lib_tagging_request",
-      "label": "tagging_request()",
+      "id": "src_lib_safe_bucket_path",
+      "label": "safe_bucket_path()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "tagging_request()",
+      "norm_label": "safe_bucket_path()",
       "source_file": "src/lib.rs",
-      "source_location": "L831"
+      "source_location": "L324"
     },
     {
-      "id": "src_lib_valid_bucket",
-      "label": "valid_bucket()",
+      "id": "src_lib_safe_object_path",
+      "label": "safe_object_path()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "valid_bucket()",
+      "norm_label": "safe_object_path()",
       "source_file": "src/lib.rs",
-      "source_location": "L298"
+      "source_location": "L307"
+    },
+    {
+      "id": "src_lib_seed",
+      "label": "seed()",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "seed()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1267"
+    },
+    {
+      "id": "src_lib_sidecar",
+      "label": "Sidecar",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "sidecar",
+      "source_file": "src/lib.rs",
+      "source_location": "L34"
+    },
+    {
+      "id": "src_lib_sidecar_path",
+      "label": "sidecar_path()",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "sidecar_path()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1197"
+    },
+    {
+      "id": "src_lib_uploads_dir",
+      "label": "uploads_dir()",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "uploads_dir()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1061"
+    },
+    {
+      "id": "src_lib_write_sidecar",
+      "label": "write_sidecar()",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "write_sidecar()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1224"
     },
     {
       "id": "src_lib_xml_response",
@@ -802,37 +842,7 @@
       "file_type": "code",
       "norm_label": "xml_response()",
       "source_file": "src/lib.rs",
-      "source_location": "L1362"
-    },
-    {
-      "id": "state",
-      "label": "State",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "state",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "statuscode",
-      "label": "StatusCode",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "statuscode",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "value",
-      "label": "Value",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "value",
-      "source_file": "",
-      "source_location": ""
+      "source_location": "L1377"
     },
     {
       "id": "site_vite_config",
@@ -915,234 +925,234 @@
       "source_location": "L1"
     },
     {
-      "id": "arc",
-      "label": "Arc",
+      "id": "body",
+      "label": "Body",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "arc",
+      "norm_label": "body",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "client",
-      "label": "Client",
+      "id": "error",
+      "label": "Error",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "client",
+      "norm_label": "error",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "option",
-      "label": "Option",
+      "id": "headermap",
+      "label": "HeaderMap",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "option",
+      "norm_label": "headermap",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "path",
-      "label": "Path",
+      "id": "method",
+      "label": "Method",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "path",
+      "norm_label": "method",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "pathbuf",
-      "label": "PathBuf",
+      "id": "request",
+      "label": "Request",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "pathbuf",
+      "norm_label": "request",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "result",
-      "label": "Result",
+      "id": "response",
+      "label": "Response",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "result",
+      "norm_label": "response",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "src_lib_appstate",
-      "label": "AppState",
+      "id": "src_lib_api_handle",
+      "label": "api_handle()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "appstate",
+      "norm_label": "api_handle()",
       "source_file": "src/lib.rs",
-      "source_location": "L26"
+      "source_location": "L1081"
     },
     {
-      "id": "src_lib_canonically_contained",
-      "label": "canonically_contained()",
+      "id": "src_lib_bucket_request",
+      "label": "bucket_request()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "canonically_contained()",
+      "norm_label": "bucket_request()",
       "source_file": "src/lib.rs",
-      "source_location": "L333"
+      "source_location": "L434"
     },
     {
-      "id": "src_lib_delete_object",
-      "label": "delete_object()",
+      "id": "src_lib_cors_response",
+      "label": "cors_response()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "delete_object()",
+      "norm_label": "cors_response()",
       "source_file": "src/lib.rs",
-      "source_location": "L817"
+      "source_location": "L168"
     },
     {
-      "id": "src_lib_etag_path",
-      "label": "etag_path()",
+      "id": "src_lib_get_object",
+      "label": "get_object()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "etag_path()",
+      "norm_label": "get_object()",
       "source_file": "src/lib.rs",
-      "source_location": "L1278"
+      "source_location": "L757"
     },
     {
-      "id": "src_lib_existing_bucket_path",
-      "label": "existing_bucket_path()",
+      "id": "src_lib_handle",
+      "label": "handle()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "existing_bucket_path()",
+      "norm_label": "handle()",
       "source_file": "src/lib.rs",
-      "source_location": "L339"
+      "source_location": "L136"
     },
     {
-      "id": "src_lib_existing_object_path",
-      "label": "existing_object_path()",
+      "id": "src_lib_io_error",
+      "label": "io_error()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "existing_object_path()",
+      "norm_label": "io_error()",
       "source_file": "src/lib.rs",
-      "source_location": "L349"
+      "source_location": "L1405"
     },
     {
-      "id": "src_lib_json_objects",
-      "label": "json_objects()",
+      "id": "src_lib_json_buckets",
+      "label": "json_buckets()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "json_objects()",
+      "norm_label": "json_buckets()",
       "source_file": "src/lib.rs",
-      "source_location": "L1162"
+      "source_location": "L1154"
     },
     {
-      "id": "src_lib_notify",
-      "label": "notify()",
+      "id": "src_lib_json_error",
+      "label": "json_error()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "notify()",
+      "norm_label": "json_error()",
       "source_file": "src/lib.rs",
-      "source_location": "L1222"
+      "source_location": "L1394"
     },
     {
-      "id": "src_lib_object_path_for_write",
-      "label": "object_path_for_write()",
+      "id": "src_lib_json_response",
+      "label": "json_response()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "object_path_for_write()",
+      "norm_label": "json_response()",
       "source_file": "src/lib.rs",
-      "source_location": "L368"
+      "source_location": "L1384"
     },
     {
-      "id": "src_lib_read_sidecar",
-      "label": "read_sidecar()",
+      "id": "src_lib_put_object",
+      "label": "put_object()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "read_sidecar()",
+      "norm_label": "put_object()",
       "source_file": "src/lib.rs",
-      "source_location": "L1203"
+      "source_location": "L654"
     },
     {
-      "id": "src_lib_safe_bucket_path",
-      "label": "safe_bucket_path()",
+      "id": "src_lib_s3_error",
+      "label": "s3_error()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "safe_bucket_path()",
+      "norm_label": "s3_error()",
       "source_file": "src/lib.rs",
-      "source_location": "L324"
+      "source_location": "L1402"
     },
     {
-      "id": "src_lib_safe_object_path",
-      "label": "safe_object_path()",
+      "id": "src_lib_s3_handle",
+      "label": "s3_handle()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "safe_object_path()",
+      "norm_label": "s3_handle()",
       "source_file": "src/lib.rs",
-      "source_location": "L307"
+      "source_location": "L213"
     },
     {
-      "id": "src_lib_seed",
-      "label": "seed()",
+      "id": "src_lib_tagging_request",
+      "label": "tagging_request()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "seed()",
+      "norm_label": "tagging_request()",
       "source_file": "src/lib.rs",
-      "source_location": "L1252"
+      "source_location": "L846"
     },
     {
-      "id": "src_lib_sidecar",
-      "label": "Sidecar",
+      "id": "src_lib_valid_bucket",
+      "label": "valid_bucket()",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "sidecar",
+      "norm_label": "valid_bucket()",
       "source_file": "src/lib.rs",
-      "source_location": "L34"
+      "source_location": "L298"
     },
     {
-      "id": "src_lib_sidecar_path",
-      "label": "sidecar_path()",
+      "id": "state",
+      "label": "State",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "sidecar_path()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1182"
+      "norm_label": "state",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "src_lib_uploads_dir",
-      "label": "uploads_dir()",
+      "id": "statuscode",
+      "label": "StatusCode",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "uploads_dir()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1046"
+      "norm_label": "statuscode",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "src_lib_write_sidecar",
-      "label": "write_sidecar()",
+      "id": "value",
+      "label": "Value",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "write_sidecar()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1209"
+      "norm_label": "value",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "package",
@@ -1538,7 +1548,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1077",
+      "source_location": "L1092",
       "weight": 1.0
     },
     {
@@ -1550,7 +1560,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1084",
+      "source_location": "L1099",
       "weight": 1.0
     },
     {
@@ -1562,36 +1572,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1085",
+      "source_location": "L1100",
       "weight": 1.0
     },
     {
       "source": "src_lib_api_handle",
       "target": "src_lib_io_error",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib.rs",
-      "source_location": "L1097",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_api_handle",
-      "target": "src_lib_json_objects",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib.rs",
-      "source_location": "L1109",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_api_handle",
-      "target": "src_lib_bucket_request",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -1603,6 +1589,30 @@
     },
     {
       "source": "src_lib_api_handle",
+      "target": "src_lib_json_objects",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1124",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_api_handle",
+      "target": "src_lib_bucket_request",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1127",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_api_handle",
       "target": "src_lib_safe_object_path",
       "relation": "calls",
       "_origin": "ast",
@@ -1610,7 +1620,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1123",
+      "source_location": "L1138",
       "weight": 1.0
     },
     {
@@ -1622,7 +1632,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1128",
+      "source_location": "L1143",
       "weight": 1.0
     },
     {
@@ -1634,7 +1644,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1129",
+      "source_location": "L1144",
       "weight": 1.0
     },
     {
@@ -1646,7 +1656,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1130",
+      "source_location": "L1145",
       "weight": 1.0
     },
     {
@@ -1658,7 +1668,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1462",
+      "source_location": "L1477",
       "weight": 1.0
     },
     {
@@ -1670,7 +1680,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L425",
+      "source_location": "L440",
       "weight": 1.0
     },
     {
@@ -1682,7 +1692,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L426",
+      "source_location": "L441",
       "weight": 1.0
     },
     {
@@ -1694,7 +1704,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L436",
+      "source_location": "L451",
       "weight": 1.0
     },
     {
@@ -1706,7 +1716,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L446",
+      "source_location": "L461",
       "weight": 1.0
     },
     {
@@ -1718,7 +1728,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L459",
+      "source_location": "L474",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_concurrent_puts_create_every_object_under_a_new_shared_prefix",
+      "target": "src_lib_app",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1538",
       "weight": 1.0
     },
     {
@@ -1730,7 +1752,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1529",
+      "source_location": "L1601",
       "weight": 1.0
     },
     {
@@ -1742,7 +1764,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L818",
+      "source_location": "L833",
       "weight": 1.0
     },
     {
@@ -1754,7 +1776,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L822",
+      "source_location": "L837",
       "weight": 1.0
     },
     {
@@ -1766,7 +1788,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L824",
+      "source_location": "L839",
       "weight": 1.0
     },
     {
@@ -1778,7 +1800,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L827",
+      "source_location": "L842",
       "weight": 1.0
     },
     {
@@ -1790,7 +1812,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1406",
+      "source_location": "L1421",
       "weight": 1.0
     },
     {
@@ -1862,7 +1884,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L750",
+      "source_location": "L765",
       "weight": 1.0
     },
     {
@@ -1874,7 +1896,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L751",
+      "source_location": "L766",
       "weight": 1.0
     },
     {
@@ -1886,7 +1908,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L758",
+      "source_location": "L773",
       "weight": 1.0
     },
     {
@@ -1898,7 +1920,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L760",
+      "source_location": "L775",
       "weight": 1.0
     },
     {
@@ -1910,7 +1932,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L766",
+      "source_location": "L781",
       "weight": 1.0
     },
     {
@@ -1958,7 +1980,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1391",
+      "source_location": "L1406",
       "weight": 1.0
     },
     {
@@ -1970,48 +1992,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1144",
+      "source_location": "L1159",
       "weight": 1.0
     },
     {
       "source": "src_lib_json_buckets",
       "target": "src_lib_canonically_contained",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib.rs",
-      "source_location": "L1148",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_json_buckets",
-      "target": "src_lib_collect_objects",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib.rs",
-      "source_location": "L1151",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_json_buckets",
-      "target": "src_lib_json_response",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib.rs",
-      "source_location": "L1160",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_json_objects",
-      "target": "src_lib_safe_bucket_path",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -2022,44 +2008,20 @@
       "weight": 1.0
     },
     {
-      "source": "src_lib_json_objects",
-      "target": "src_lib_json_error",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib.rs",
-      "source_location": "L1164",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_json_objects",
-      "target": "src_lib_canonically_contained",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib.rs",
-      "source_location": "L1169",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_json_objects",
-      "target": "src_lib_query_params",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib.rs",
-      "source_location": "L1174",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_json_objects",
+      "source": "src_lib_json_buckets",
       "target": "src_lib_collect_objects",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1166",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_json_buckets",
+      "target": "src_lib_json_response",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -2071,7 +2033,19 @@
     },
     {
       "source": "src_lib_json_objects",
-      "target": "src_lib_json_response",
+      "target": "src_lib_safe_bucket_path",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1178",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_json_objects",
+      "target": "src_lib_json_error",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -2079,6 +2053,54 @@
       "context": "call",
       "source_file": "src/lib.rs",
       "source_location": "L1179",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_json_objects",
+      "target": "src_lib_canonically_contained",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1184",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_json_objects",
+      "target": "src_lib_query_params",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1189",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_json_objects",
+      "target": "src_lib_collect_objects",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1190",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_json_objects",
+      "target": "src_lib_json_response",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib.rs",
+      "source_location": "L1194",
       "weight": 1.0
     },
     {
@@ -2090,7 +2112,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L501",
+      "source_location": "L516",
       "weight": 1.0
     },
     {
@@ -2102,7 +2124,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L506",
+      "source_location": "L521",
       "weight": 1.0
     },
     {
@@ -2114,7 +2136,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L523",
+      "source_location": "L538",
       "weight": 1.0
     },
     {
@@ -2126,7 +2148,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L571",
+      "source_location": "L586",
       "weight": 1.0
     },
     {
@@ -2138,7 +2160,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L572",
+      "source_location": "L587",
       "weight": 1.0
     },
     {
@@ -2150,7 +2172,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L589",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -2162,7 +2184,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L629",
+      "source_location": "L644",
       "weight": 1.0
     },
     {
@@ -2174,7 +2196,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1628",
+      "source_location": "L1700",
       "weight": 1.0
     },
     {
@@ -2186,7 +2208,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1028",
+      "source_location": "L1043",
       "weight": 1.0
     },
     {
@@ -2198,7 +2220,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1036",
+      "source_location": "L1051",
       "weight": 1.0
     },
     {
@@ -2210,7 +2232,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L921",
+      "source_location": "L936",
       "weight": 1.0
     },
     {
@@ -2222,7 +2244,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L927",
+      "source_location": "L942",
       "weight": 1.0
     },
     {
@@ -2234,7 +2256,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L939",
+      "source_location": "L954",
       "weight": 1.0
     },
     {
@@ -2246,7 +2268,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L962",
+      "source_location": "L977",
       "weight": 1.0
     },
     {
@@ -2258,7 +2280,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L983",
+      "source_location": "L998",
       "weight": 1.0
     },
     {
@@ -2270,7 +2292,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L878",
+      "source_location": "L893",
       "weight": 1.0
     },
     {
@@ -2282,7 +2304,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L879",
+      "source_location": "L894",
       "weight": 1.0
     },
     {
@@ -2294,7 +2316,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L881",
+      "source_location": "L896",
       "weight": 1.0
     },
     {
@@ -2306,7 +2328,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L888",
+      "source_location": "L903",
       "weight": 1.0
     },
     {
@@ -2318,7 +2340,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L897",
+      "source_location": "L912",
       "weight": 1.0
     },
     {
@@ -2330,7 +2352,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L904",
+      "source_location": "L919",
       "weight": 1.0
     },
     {
@@ -2366,7 +2388,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L402",
+      "source_location": "L417",
       "weight": 1.0
     },
     {
@@ -2378,7 +2400,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L647",
+      "source_location": "L662",
       "weight": 1.0
     },
     {
@@ -2390,7 +2412,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L648",
+      "source_location": "L663",
       "weight": 1.0
     },
     {
@@ -2402,7 +2424,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L654",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -2414,7 +2436,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L693",
+      "source_location": "L708",
       "weight": 1.0
     },
     {
@@ -2426,7 +2448,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L705",
+      "source_location": "L720",
       "weight": 1.0
     },
     {
@@ -2438,7 +2460,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L722",
+      "source_location": "L737",
       "weight": 1.0
     },
     {
@@ -2450,7 +2472,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L724",
+      "source_location": "L739",
       "weight": 1.0
     },
     {
@@ -2462,7 +2484,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L726",
+      "source_location": "L741",
       "weight": 1.0
     },
     {
@@ -2474,7 +2496,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1204",
+      "source_location": "L1219",
       "weight": 1.0
     },
     {
@@ -2486,7 +2508,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1585",
+      "source_location": "L1657",
       "weight": 1.0
     },
     {
@@ -2498,7 +2520,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1491",
+      "source_location": "L1506",
       "weight": 1.0
     },
     {
@@ -2678,7 +2700,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1183",
+      "source_location": "L1198",
       "weight": 1.0
     },
     {
@@ -2690,7 +2712,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1193",
+      "source_location": "L1208",
       "weight": 1.0
     },
     {
@@ -2702,7 +2724,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L839",
+      "source_location": "L854",
       "weight": 1.0
     },
     {
@@ -2714,7 +2736,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L840",
+      "source_location": "L855",
       "weight": 1.0
     },
     {
@@ -2726,7 +2748,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L842",
+      "source_location": "L857",
       "weight": 1.0
     },
     {
@@ -2738,7 +2760,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L850",
+      "source_location": "L865",
       "weight": 1.0
     },
     {
@@ -2750,7 +2772,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L858",
+      "source_location": "L873",
       "weight": 1.0
     },
     {
@@ -2762,7 +2784,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L859",
+      "source_location": "L874",
       "weight": 1.0
     },
     {
@@ -2774,7 +2796,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L861",
+      "source_location": "L876",
       "weight": 1.0
     },
     {
@@ -2786,7 +2808,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1061",
+      "source_location": "L1076",
       "weight": 1.0
     },
     {
@@ -2798,7 +2820,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib.rs",
-      "source_location": "L1215",
+      "source_location": "L1230",
       "weight": 1.0
     },
     {
@@ -3410,7 +3432,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L419",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -3434,7 +3456,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L528",
+      "source_location": "L543",
       "weight": 1.0
     },
     {
@@ -3446,7 +3468,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L1321",
+      "source_location": "L1336",
       "weight": 1.0
     },
     {
@@ -3494,7 +3516,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L566",
+      "source_location": "L581",
       "weight": 1.0
     },
     {
@@ -3506,7 +3528,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L911",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -3542,7 +3564,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L1298",
+      "source_location": "L1313",
       "weight": 1.0
     },
     {
@@ -3554,7 +3576,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L1305",
+      "source_location": "L1320",
       "weight": 1.0
     },
     {
@@ -3566,7 +3588,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L1341",
+      "source_location": "L1356",
       "weight": 1.0
     },
     {
@@ -3578,7 +3600,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L1203",
+      "source_location": "L1218",
       "weight": 1.0
     },
     {
@@ -3626,7 +3648,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L1182",
+      "source_location": "L1197",
       "weight": 1.0
     },
     {
@@ -3638,7 +3660,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib.rs",
-      "source_location": "L1046",
+      "source_location": "L1061",
       "weight": 1.0
     },
     {
@@ -3746,7 +3768,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1066",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -3758,7 +3780,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1066",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -3770,7 +3792,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1066",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -3782,7 +3804,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1066",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -3794,7 +3816,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1066",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -3842,7 +3864,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L419",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -3854,7 +3876,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L419",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -3866,7 +3888,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L419",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -3890,7 +3912,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L528",
+      "source_location": "L543",
       "weight": 1.0
     },
     {
@@ -3926,7 +3948,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L817",
+      "source_location": "L832",
       "weight": 1.0
     },
     {
@@ -3938,7 +3960,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L817",
+      "source_location": "L832",
       "weight": 1.0
     },
     {
@@ -3950,7 +3972,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1278",
+      "source_location": "L1293",
       "weight": 1.0
     },
     {
@@ -3986,7 +4008,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L742",
+      "source_location": "L757",
       "weight": 1.0
     },
     {
@@ -3998,7 +4020,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L742",
+      "source_location": "L757",
       "weight": 1.0
     },
     {
@@ -4010,7 +4032,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L742",
+      "source_location": "L757",
       "weight": 1.0
     },
     {
@@ -4046,7 +4068,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1390",
+      "source_location": "L1405",
       "weight": 1.0
     },
     {
@@ -4058,7 +4080,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1139",
+      "source_location": "L1154",
       "weight": 1.0
     },
     {
@@ -4070,7 +4092,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1379",
+      "source_location": "L1394",
       "weight": 1.0
     },
     {
@@ -4082,7 +4104,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1162",
+      "source_location": "L1177",
       "weight": 1.0
     },
     {
@@ -4094,7 +4116,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1162",
+      "source_location": "L1177",
       "weight": 1.0
     },
     {
@@ -4106,7 +4128,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1369",
+      "source_location": "L1384",
       "weight": 1.0
     },
     {
@@ -4118,7 +4140,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L496",
+      "source_location": "L511",
       "weight": 1.0
     },
     {
@@ -4130,7 +4152,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L566",
+      "source_location": "L581",
       "weight": 1.0
     },
     {
@@ -4142,7 +4164,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L566",
+      "source_location": "L581",
       "weight": 1.0
     },
     {
@@ -4154,7 +4176,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L911",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -4166,7 +4188,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L911",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -4178,7 +4200,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L911",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -4190,7 +4212,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L911",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -4202,7 +4224,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L877",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -4214,7 +4236,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1222",
+      "source_location": "L1237",
       "weight": 1.0
     },
     {
@@ -4238,7 +4260,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L639",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -4250,7 +4272,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L639",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -4262,7 +4284,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L639",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -4274,7 +4296,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L639",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -4286,7 +4308,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1341",
+      "source_location": "L1356",
       "weight": 1.0
     },
     {
@@ -4298,7 +4320,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1203",
+      "source_location": "L1218",
       "weight": 1.0
     },
     {
@@ -4310,7 +4332,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1387",
+      "source_location": "L1402",
       "weight": 1.0
     },
     {
@@ -4406,7 +4428,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1252",
+      "source_location": "L1267",
       "weight": 1.0
     },
     {
@@ -4418,7 +4440,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1182",
+      "source_location": "L1197",
       "weight": 1.0
     },
     {
@@ -4430,7 +4452,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L831",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -4442,7 +4464,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L831",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -4454,7 +4476,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L831",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -4466,7 +4488,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L831",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -4478,7 +4500,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1046",
+      "source_location": "L1061",
       "weight": 1.0
     },
     {
@@ -4490,7 +4512,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1209",
+      "source_location": "L1224",
       "weight": 1.0
     },
     {
@@ -4502,7 +4524,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1209",
+      "source_location": "L1224",
       "weight": 1.0
     },
     {
@@ -4514,7 +4536,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1362",
+      "source_location": "L1377",
       "weight": 1.0
     },
     {
@@ -4562,7 +4584,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1066",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -4586,7 +4608,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L419",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -4610,7 +4632,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L528",
+      "source_location": "L543",
       "weight": 1.0
     },
     {
@@ -4634,7 +4656,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1321",
+      "source_location": "L1336",
       "weight": 1.0
     },
     {
@@ -4646,7 +4668,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L817",
+      "source_location": "L832",
       "weight": 1.0
     },
     {
@@ -4658,7 +4680,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1278",
+      "source_location": "L1293",
       "weight": 1.0
     },
     {
@@ -4706,7 +4728,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L742",
+      "source_location": "L757",
       "weight": 1.0
     },
     {
@@ -4730,7 +4752,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1390",
+      "source_location": "L1405",
       "weight": 1.0
     },
     {
@@ -4742,7 +4764,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1139",
+      "source_location": "L1154",
       "weight": 1.0
     },
     {
@@ -4754,7 +4776,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1379",
+      "source_location": "L1394",
       "weight": 1.0
     },
     {
@@ -4766,7 +4788,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1162",
+      "source_location": "L1177",
       "weight": 1.0
     },
     {
@@ -4778,7 +4800,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1369",
+      "source_location": "L1384",
       "weight": 1.0
     },
     {
@@ -4790,7 +4812,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L496",
+      "source_location": "L511",
       "weight": 1.0
     },
     {
@@ -4802,7 +4824,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L566",
+      "source_location": "L581",
       "weight": 1.0
     },
     {
@@ -4814,7 +4836,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L911",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -4826,7 +4848,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L877",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -4850,7 +4872,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1298",
+      "source_location": "L1313",
       "weight": 1.0
     },
     {
@@ -4862,7 +4884,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1283",
+      "source_location": "L1298",
       "weight": 1.0
     },
     {
@@ -4874,7 +4896,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1305",
+      "source_location": "L1320",
       "weight": 1.0
     },
     {
@@ -4886,7 +4908,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L639",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -4898,7 +4920,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1341",
+      "source_location": "L1356",
       "weight": 1.0
     },
     {
@@ -4910,7 +4932,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1203",
+      "source_location": "L1218",
       "weight": 1.0
     },
     {
@@ -4922,7 +4944,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1387",
+      "source_location": "L1402",
       "weight": 1.0
     },
     {
@@ -4970,7 +4992,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1252",
+      "source_location": "L1267",
       "weight": 1.0
     },
     {
@@ -4982,7 +5004,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1182",
+      "source_location": "L1197",
       "weight": 1.0
     },
     {
@@ -4994,7 +5016,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L831",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -5042,7 +5064,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1046",
+      "source_location": "L1061",
       "weight": 1.0
     },
     {
@@ -5054,7 +5076,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1209",
+      "source_location": "L1224",
       "weight": 1.0
     },
     {
@@ -5066,7 +5088,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1355",
+      "source_location": "L1370",
       "weight": 1.0
     },
     {
@@ -5078,7 +5100,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib.rs",
-      "source_location": "L1362",
+      "source_location": "L1377",
       "weight": 1.0
     },
     {
@@ -5277,18 +5299,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1046",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib",
-      "target": "src_lib_api_handle",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib.rs",
-      "source_location": "L1066",
+      "source_location": "L1061",
       "weight": 1.0
     },
     {
@@ -5300,6 +5311,17 @@
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
       "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib",
+      "target": "src_lib_api_handle",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib.rs",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -5321,18 +5343,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1139",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib",
-      "target": "src_lib_json_objects",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib.rs",
-      "source_location": "L1162",
+      "source_location": "L1154",
       "weight": 1.0
     },
     {
@@ -5348,13 +5359,24 @@
     },
     {
       "source": "src_lib",
+      "target": "src_lib_json_objects",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib.rs",
+      "source_location": "L1177",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib",
       "target": "src_lib_sidecar_path",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1182",
+      "source_location": "L1197",
       "weight": 1.0
     },
     {
@@ -5365,7 +5387,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1203",
+      "source_location": "L1218",
       "weight": 1.0
     },
     {
@@ -5376,7 +5398,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1209",
+      "source_location": "L1224",
       "weight": 1.0
     },
     {
@@ -5387,18 +5409,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1222",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib",
-      "target": "src_lib_seed",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib.rs",
-      "source_location": "L1252",
+      "source_location": "L1237",
       "weight": 1.0
     },
     {
@@ -5414,13 +5425,24 @@
     },
     {
       "source": "src_lib",
+      "target": "src_lib_seed",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib.rs",
+      "source_location": "L1267",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib",
       "target": "src_lib_etag_path",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1278",
+      "source_location": "L1293",
       "weight": 1.0
     },
     {
@@ -5431,7 +5453,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1283",
+      "source_location": "L1298",
       "weight": 1.0
     },
     {
@@ -5442,7 +5464,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1298",
+      "source_location": "L1313",
       "weight": 1.0
     },
     {
@@ -5453,7 +5475,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1305",
+      "source_location": "L1320",
       "weight": 1.0
     },
     {
@@ -5464,7 +5486,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1321",
+      "source_location": "L1336",
       "weight": 1.0
     },
     {
@@ -5475,18 +5497,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1341",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib",
-      "target": "src_lib_xml",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib.rs",
-      "source_location": "L1355",
+      "source_location": "L1356",
       "weight": 1.0
     },
     {
@@ -5502,13 +5513,24 @@
     },
     {
       "source": "src_lib",
+      "target": "src_lib_xml",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib.rs",
+      "source_location": "L1370",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib",
       "target": "src_lib_xml_response",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1362",
+      "source_location": "L1377",
       "weight": 1.0
     },
     {
@@ -5519,7 +5541,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1369",
+      "source_location": "L1384",
       "weight": 1.0
     },
     {
@@ -5530,7 +5552,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1379",
+      "source_location": "L1394",
       "weight": 1.0
     },
     {
@@ -5541,7 +5563,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1387",
+      "source_location": "L1402",
       "weight": 1.0
     },
     {
@@ -5552,7 +5574,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1390",
+      "source_location": "L1405",
       "weight": 1.0
     },
     {
@@ -5563,7 +5585,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1404",
+      "source_location": "L1419",
       "weight": 1.0
     },
     {
@@ -5574,7 +5596,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1458",
+      "source_location": "L1473",
       "weight": 1.0
     },
     {
@@ -5585,7 +5607,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1488",
+      "source_location": "L1503",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib",
+      "target": "src_lib_concurrent_puts_create_every_object_under_a_new_shared_prefix",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib.rs",
+      "source_location": "L1535",
       "weight": 1.0
     },
     {
@@ -5596,7 +5629,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1520",
+      "source_location": "L1592",
       "weight": 1.0
     },
     {
@@ -5607,18 +5640,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1573",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib",
-      "target": "src_lib_multipart_assembles_parts",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib.rs",
-      "source_location": "L1625",
+      "source_location": "L1645",
       "weight": 1.0
     },
     {
@@ -5634,13 +5656,24 @@
     },
     {
       "source": "src_lib",
+      "target": "src_lib_multipart_assembles_parts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib.rs",
+      "source_location": "L1697",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib",
       "target": "src_lib_decodes_sigv4_streaming_payloads",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L1688",
+      "source_location": "L1760",
       "weight": 1.0
     },
     {
@@ -5772,7 +5805,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L419",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -5794,7 +5827,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L496",
+      "source_location": "L511",
       "weight": 1.0
     },
     {
@@ -5816,7 +5849,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L528",
+      "source_location": "L543",
       "weight": 1.0
     },
     {
@@ -5827,7 +5860,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L566",
+      "source_location": "L581",
       "weight": 1.0
     },
     {
@@ -5849,7 +5882,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L639",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -5882,7 +5915,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L742",
+      "source_location": "L757",
       "weight": 1.0
     },
     {
@@ -5898,17 +5931,6 @@
     },
     {
       "source": "src_lib",
-      "target": "src_lib_delete_object",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib.rs",
-      "source_location": "L817",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib",
       "target": "src_lib_app",
       "relation": "contains",
       "_origin": "ast",
@@ -5920,13 +5942,24 @@
     },
     {
       "source": "src_lib",
+      "target": "src_lib_delete_object",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib.rs",
+      "source_location": "L832",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib",
       "target": "src_lib_tagging_request",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L831",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -5937,7 +5970,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L877",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -5948,7 +5981,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib.rs",
-      "source_location": "L911",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -6240,5 +6273,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ed3595b331f6d5172b61a428c134d342fdaa0080"
+  "built_at_commit": "cebc73b07bad1c417f508c1bace3f91ab0309528"
 }
