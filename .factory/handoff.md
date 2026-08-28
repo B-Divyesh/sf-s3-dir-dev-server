@@ -29,7 +29,7 @@ preserved.
 
 | Check | Result |
 | --- | --- |
-| Clean JS install | `npm ci`: 17 packages, audit reports 0 vulnerabilities |
+| Clean JS install | `npm ci`: 17 packages, audit reports 0 vulnerabilities; Playwright is pinned and installed at 1.58.2 to match the available Chromium |
 | Unit + browser suite | `npm test`: 8 Rust tests and 9 Node/Chromium tests passed |
 | Formatting + lint | `cargo fmt --check` and `cargo clippy --all-targets -- -D warnings` passed |
 | Production binary | `cargo build --release` passed; `target/release/s3dir` is 4.1 MiB |
