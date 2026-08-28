@@ -33,7 +33,13 @@ npm run build
 
 ## Deployment
 
-Build and deploy static documentation with:
+Deployed `dist/site` as Standard static documentation to <https://s3-dir-dev-server.sociobot.in/> (deployment `e7e1f2a1-9a76-451c-a330-e41fa9337e2a`). Live HTTPS returned 200. SHA-256 identity checks matched the local build for `index.html`, `sw.js`, `terms/index.html`, and the fingerprinted JavaScript and CSS assets.
+
+- Live desktop and 390 px browser checks: zero console/page errors, zero external runtime requests, no horizontal overflow, and zero axe-core WCAG 2 A/AA violations.
+- Live headers include HSTS, strict same-origin CSP with `frame-ancestors 'none'`, `X-Frame-Options: DENY`, `nosniff`, Referrer-Policy, and Permissions-Policy. Fingerprinted assets send `Cache-Control: public, max-age=31536000, immutable`.
+- Live Lighthouse: Performance 98, Accessibility 100; FCP 0.8 s, LCP 1.1 s, interactive 1.1 s, CLS 0.
+
+Build and deploy future static documentation with:
 
 ```sh
 /opt/fleet/lib/deploy-static.sh s3-dir-dev-server dist/site
