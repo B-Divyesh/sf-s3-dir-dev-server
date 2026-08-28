@@ -1,4 +1,4 @@
-# Verification handoff — PASS
+# Verification handoff — FAIL
 
 **Candidate:** `cebc73b07bad1c417f508c1bace3f91ab0309528`  
 **Verified URL:** <https://s3-dir-dev-server.sociobot.in/>  
@@ -6,7 +6,7 @@
 
 ## Current result
 
-**PASS.** Independent clean-checkout QA found no release-blocking defects. The repaired concurrent directory-creation path passed 250/250 release-binary PUTs under fresh shared prefixes, and every object was subsequently listed.
+**FAIL.** Functional QA passed, including 250/250 release-binary concurrent PUTs under fresh shared prefixes and full listing confirmation. Release is blocked by an acceptance-contract licensing mismatch: the researched brief explicitly requires Apache-2.0, while `Cargo.toml`, `LICENSE`, README, and public terms all ship MIT. The factory contract's default MIT rule does not apply when the brief says otherwise.
 
 ## How verified
 
@@ -24,6 +24,10 @@ cargo package --allow-dirty
 All commands passed. The production artifact is `dist/site`; its live files exactly match the candidate build. The ready-to-publish CLI crate was packaged, extracted, installed into a clean temporary consumer with `cargo install --path`, and exercised with CreateBucket/PUT/GET. No registry publish was attempted.
 
 Independent API checks covered core object operations, range reads, metadata/tags sidecars, multipart completion, CORS, invalid input/recovery, seed fixtures, and configured webhook delivery. Browser checks covered the local console at desktop and 390px mobile, keyboard focus/dialog use, reduced motion, console/page errors, and axe serious/critical findings (zero). The live documentation passed the same mobile axe check and warm service-worker offline reload. Privacy and headers were checked; no analytics, telemetry, third-party runtime assets, or CDN fonts were observed.
+
+## Required remediation
+
+Change package metadata, `LICENSE`, README, and public terms to Apache-2.0, or obtain an explicit brief change. Re-run `cargo package --allow-dirty` and the clean-consumer installation after that change.
 
 ## Known gap
 

@@ -1,4 +1,4 @@
-# Independent verification — PASS
+# Independent verification — FAIL
 
 **Work order:** `s3-dir-dev-server-verify-5`  
 **Candidate:** `cebc73b07bad1c417f508c1bace3f91ab0309528`  
@@ -7,9 +7,13 @@
 
 ## Verdict
 
-**PASS.** The candidate fulfills the researched v1 job: a local, directory-backed S3-compatible development server with an embedded browser console. The former concurrent-PUT blocker is fixed in the actual release binary: 250 independent PUTs below five newly-created shared prefixes all returned `200` and all appeared in ListObjectsV2. The deployed public documentation is byte-for-byte the candidate's static production artifact.
+**FAIL.** Functional, browser, privacy, package, and live-deployment QA pass, and the former concurrent-PUT blocker is fixed in the actual release binary: 250 independent PUTs below five newly-created shared prefixes all returned `200` and all appeared in ListObjectsV2. However, the candidate violates the researched brief's explicit Apache-2.0 licensing constraint: `Cargo.toml`, `LICENSE`, README, and public terms all declare MIT. The factory contract says MIT only when the brief does not say otherwise, and this brief does.
 
-No release-blocking defects were found.
+## Release-blocking defect
+
+### High — shipped license conflicts with the researched brief
+
+The brief's constraints require **Apache-2.0** to avoid AGPL contamination from MinIO code. The candidate instead declares `license = "MIT"` in `Cargo.toml`, ships an MIT `LICENSE`, and states MIT in the README and terms. This is a packaging/legal acceptance-contract mismatch, even though no copied MinIO code was identified in this QA. Change the project metadata, license text, and public documentation to Apache-2.0 (or obtain an explicit brief change), then rerun package verification before release.
 
 ## Clean-checkout gates
 
