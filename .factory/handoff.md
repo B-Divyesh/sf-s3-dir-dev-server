@@ -1,18 +1,19 @@
-# Handoff — repair 3
+# Handoff — repair 4
 
 **Product:** `s3-dir-dev-server`
 **Artifact:** development-only S3-compatible Rust CLI with static documentation
-**Status:** deployed as Standard static docs.
+**Deployment class:** Standard static docs
 
-## What changed
+## Repair completed
 
-- Restored native `hidden` semantics in the embedded `/ui` console with an authoritative `[hidden] { display: none !important; }` rule. Loading, endpoint-error, and empty-bucket panels can no longer render beside a populated object table.
-- Added a real-browser regression that seeds a bucket and object through the console API, then verifies the populated table and all three inactive panels at both 1366×900 and 390×844. Each panel must have `hidden`, computed `display: none`, and no layout visibility.
-- Made the browser-test server teardown terminate the full `cargo run` process group, preventing a spawned local server from holding the Node test process open in clean CI.
+- Verified the verifier's high-severity console-overlap finding against candidate `be37b0b`: its `.state` and `.table-wrap` display rules overrode the browser `hidden` default. The delivered console preserves the root-cause repair, `[hidden] { display: none !important; }`, so the native state machine remains authoritative.
+- Expanded the real Playwright regression from the populated case to every mutually-exclusive console state: empty bucket, intentionally delayed loading request, populated table, and controlled endpoint error. At both 1366×900 and 390×844 it asserts the active panel is visible and each inactive panel has `hidden`, computed `display: none`, and no layout boxes.
+- Aligned the repository license with the factory's MIT requirement: `LICENSE`, Cargo metadata, README, and public Terms agree, guarded by a source-level regression test.
+- Versioned the static service-worker cache from `s3dir-site-v1` to `s3dir-site-v2` because this release changes cached legal text. Activation removes non-current caches; a browser check proved the v2 shell loads offline.
 
 ## Verification
 
-From a clean dependency install (`npm ci`), all of the following passed locally:
+From a clean dependency install, `npm ci` completed with 0 audit vulnerabilities. These commands passed:
 
 ```sh
 npm test
@@ -23,22 +24,23 @@ cargo package --allow-dirty
 npm run build
 ```
 
-`npm test` passed 7 Rust tests and 7 Node/Playwright tests, including the desktop and 390 px populated-console state regression. The release binary is 4.1 MB; `cargo package --allow-dirty` produced `target/package/s3-dir-dev-server-0.1.0.crate` (67 KB). The ready-to-publish package is intentionally not published; the factory owns registry credentials.
+- Final `npm run build` passed 7 Rust tests and 9 Node/Playwright tests, then built `dist/site`.
+- Release binary: `target/release/s3dir` (4.1 MB). Ready-to-publish crate: `target/package/s3-dir-dev-server-0.1.0.crate` (67 KB). It was extracted, installed into a fresh Cargo prefix, and its installed `s3dir` completed `serve --help` plus a real Create bucket / PUT / GET flow returning `clean install works`. Publishing was not attempted; the factory owns registry credentials.
+- Static output: 1,295 B initial JavaScript, 9,052 B CSS, 41,720 B WebP, no font payload. All are within the product budgets.
+- Real Chromium checks at desktop and 390 px: populated local `/ui` and landing page had zero browser/page errors, zero axe-core 4.10.3 WCAG 2 A/AA violations, and no horizontal overflow. Keyboard checks passed for visible skip-link focus and Enter opening Create bucket with focus moved to its labelled input.
+- Local PWA check: after activation the cache is `s3dir-site-v2`; a subsequent offline navigation to `/` was served from the shell cache.
+- Privacy: local browser checks observed only same-origin requests; the product contains no telemetry, remote fonts, or third-party runtime scripts. The only possible application egress remains the explicitly configured `--events` webhook.
 
-The static build produced `dist/site` (1.30 KB JavaScript, 9.05 KB CSS, 41.72 KB WebP). The local static `verify-url.sh` check passed with title, language, one H1, main landmark, image alt text, and zero browser-console errors. An injected axe-core WCAG 2 A/AA scan of the real local `/ui` populated state found zero violations, zero console/page errors, and no horizontal overflow at desktop and 390×844. Mobile Lighthouse scored 100 performance and 100 accessibility.
+## Deployment
 
-## Deploy
-
-Deployed `dist/site` as Standard static docs to https://s3-dir-dev-server.sociobot.in/ (deployment `11f7000c-0308-4eb2-89c8-023e32cad6fe`). The live post-deploy `verify-url.sh` check passed: HTTPS 200, 683 ms local load measurement, zero browser-console errors, title/language/main/one-H1 checks, and no missing image alt text or unlabeled buttons.
-
-Deploy future static builds with:
+Build and deploy static documentation with:
 
 ```sh
 /opt/fleet/lib/deploy-static.sh s3-dir-dev-server dist/site
 ```
 
-The public site is intentionally the static tour and installation guide; the embedded `/ui` console is served only by a locally running `s3dir` binary.
+The public site remains a static install/tour page. The embedded `/ui` console and `/_s3dir/api` are available only from a locally running `s3dir` binary, as documented.
 
-## Known gap
+## Known limitation
 
-Docker and Docker Compose are not installed in this worker, so the Compose runtime was not exercised here.
+Docker and Docker Compose are unavailable in this worker, so the Compose runtime could not be exercised here. This does not affect the verified native binary, packaged-consumer, or static deployment paths.

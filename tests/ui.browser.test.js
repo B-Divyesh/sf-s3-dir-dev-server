@@ -62,13 +62,18 @@ function stopServer(child) {
   }
 }
 
-async function seedPopulatedConsole(endpoint) {
+async function createBucket(endpoint, name) {
   const bucket = await fetch(`${endpoint}/_s3dir/api/buckets`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: 'qa-assets' }),
+    body: JSON.stringify({ name }),
   });
   assert.equal(bucket.status, 201);
+}
+
+async function seedConsoleStates(endpoint) {
+  await createBucket(endpoint, 'qa-empty');
+  await createBucket(endpoint, 'qa-assets');
 
   const key = Buffer.from('note.txt').toString('base64url');
   const object = await fetch(`${endpoint}/_s3dir/api/buckets/qa-assets/objects/${key}`, {
@@ -77,6 +82,27 @@ async function seedPopulatedConsole(endpoint) {
     body: 'local console fixture',
   });
   assert.equal(object.status, 200);
+}
+
+async function stateSnapshot(page) {
+  return page.locator('#loading, #error, #object-empty, #table-wrap').evaluateAll((panels) =>
+    panels.map((panel) => ({
+      id: panel.id,
+      hidden: panel.hidden,
+      display: getComputedStyle(panel).display,
+      visible: !!(panel.offsetWidth || panel.offsetHeight || panel.getClientRects().length),
+    })),
+  );
+}
+
+async function assertOnlyState(page, active, label) {
+  const panels = await stateSnapshot(page);
+  assert.deepEqual(panels, panels.map((panel) => ({
+    ...panel,
+    hidden: panel.id !== active,
+    display: panel.id === active ? panel.display : 'none',
+    visible: panel.id === active,
+  })), `${label}: only ${active} participates in layout`);
 }
 
 test('Create bucket accepts a valid Chromium bucket name without console errors', async (t) => {
@@ -104,10 +130,10 @@ test('Create bucket accepts a valid Chromium bucket name without console errors'
   assert.deepEqual(errors, []);
 });
 
-test('Populated /ui hides every inactive state panel on desktop and 390px mobile', async (t) => {
+test('Console state panels are mutually exclusive on desktop and 390px mobile', async (t) => {
   const { child, endpoint } = await startServer();
   t.after(() => stopServer(child));
-  await seedPopulatedConsole(endpoint);
+  await seedConsoleStates(endpoint);
   const browser = await chromium.launch({ executablePath: chromiumExecutable() });
   t.after(() => browser.close());
 
@@ -123,23 +149,40 @@ test('Populated /ui hides every inactive state panel on desktop and 390px mobile
     });
 
     await page.goto(`${endpoint}/ui`, { waitUntil: 'networkidle' });
-    await page.locator('#object-rows tr').waitFor();
-    assert.equal(await page.locator('#table-wrap').isVisible(), true, `${name}: object table is visible`);
+    await page.getByRole('button', { name: 'qa-empty' }).click();
+    await page.locator('#object-empty').waitFor();
+    await assertOnlyState(page, 'object-empty', `${name}: empty bucket`);
 
-    const inactivePanels = await page.locator('#loading, #error, #object-empty').evaluateAll((panels) =>
-      panels.map((panel) => ({
-        id: panel.id,
-        hidden: panel.hidden,
-        display: getComputedStyle(panel).display,
-        visible: !!(panel.offsetWidth || panel.offsetHeight || panel.getClientRects().length),
-      })),
+    let releaseLoadingRequest;
+    await page.route('**/_s3dir/api/buckets/qa-assets', async (route) => {
+      await new Promise((resolve) => { releaseLoadingRequest = resolve; });
+      await route.continue();
+    });
+    await page.getByRole('button', { name: 'qa-assets' }).click();
+    await page.locator('#loading').waitFor();
+    await assertOnlyState(page, 'loading', `${name}: object request in flight`);
+    releaseLoadingRequest();
+    await page.locator('#object-rows tr').waitFor();
+    await page.unroute('**/_s3dir/api/buckets/qa-assets');
+    await assertOnlyState(page, 'table-wrap', `${name}: populated bucket`);
+
+    await page.route('**/_s3dir/api/buckets/qa-empty', (route) => route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'Planned endpoint failure' }),
+    }));
+    await page.getByRole('button', { name: 'qa-empty' }).click();
+    await page.locator('#error').waitFor();
+    await assertOnlyState(page, 'error', `${name}: endpoint failure`);
+    await page.unroute('**/_s3dir/api/buckets/qa-empty');
+    // The deliberately fulfilled 503 is surfaced by Chromium as a console
+    // network error. It proves the endpoint-error panel path; every other
+    // console or page error remains a regression.
+    assert.deepEqual(
+      errors.filter((message) => !message.includes('server responded with a status of 503')),
+      [],
+      `${name}: no unexpected browser console or page errors`,
     );
-    assert.deepEqual(inactivePanels, [
-      { id: 'loading', hidden: true, display: 'none', visible: false },
-      { id: 'error', hidden: true, display: 'none', visible: false },
-      { id: 'object-empty', hidden: true, display: 'none', visible: false },
-    ], `${name}: populated table has no loading, error, or empty panel beside it`);
-    assert.deepEqual(errors, [], `${name}: no browser console or page errors`);
     await page.close();
   }
 });

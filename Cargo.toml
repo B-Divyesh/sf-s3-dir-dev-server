@@ -2,7 +2,7 @@
 name = "s3-dir-dev-server"
 version = "0.1.0"
 edition = "2024"
-license = "Apache-2.0"
+license = "MIT"
 description = "A development-only S3-compatible server backed by an ordinary directory"
 repository = "https://github.com/B-Divyesh/sf-s3-dir-dev-server"
 readme = "README.md"
