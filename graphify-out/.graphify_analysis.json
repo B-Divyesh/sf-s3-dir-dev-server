@@ -298,19 +298,14 @@
       "degree": 17
     },
     {
-      "id": "src_lib_put_object",
-      "label": "put_object()",
-      "degree": 16
-    },
-    {
       "id": "src_lib_multipart_request",
       "label": "multipart_request()",
       "degree": 16
     },
     {
-      "id": "src_lib_tagging_request",
-      "label": "tagging_request()",
-      "degree": 14
+      "id": "src_lib_put_object",
+      "label": "put_object()",
+      "degree": 16
     },
     {
       "id": "src_lib_s3_error",
@@ -318,20 +313,25 @@
       "degree": 14
     },
     {
-      "id": "src_lib_canonically_contained",
-      "label": "canonically_contained()",
+      "id": "src_lib_tagging_request",
+      "label": "tagging_request()",
+      "degree": 14
+    },
+    {
+      "id": "src_lib_bucket_request",
+      "label": "bucket_request()",
       "degree": 13
     },
     {
-      "id": "src_lib_existing_bucket_path",
-      "label": "existing_bucket_path()",
+      "id": "src_lib_get_object",
+      "label": "get_object()",
       "degree": 13
     }
   ],
   "surprises": [
     {
       "source": "AppState",
-      "target": "String",
+      "target": "HashMap",
       "source_files": [
         "src/lib.rs",
         ""
@@ -341,8 +341,8 @@
       "note": "Bridges community 0 \u2192 community 1"
     },
     {
-      "source": "etag_path()",
-      "target": "String",
+      "source": "app()",
+      "target": "Option",
       "source_files": [
         "src/lib.rs",
         ""
