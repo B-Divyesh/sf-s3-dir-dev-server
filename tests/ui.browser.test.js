@@ -6,6 +6,9 @@ import { spawn } from 'node:child_process';
 import test from 'node:test';
 import { chromium } from 'playwright';
 
+const binary = join(process.cwd(), 'target', 'debug', process.platform === 'win32' ? 's3dir.exe' : 's3dir');
+let debugBinaryBuild;
+
 function chromiumExecutable() {
   for (const candidate of [
     process.env.CHROMIUM_PATH,
@@ -23,8 +26,9 @@ function chromiumExecutable() {
 }
 
 async function startServer() {
+  await buildDebugBinary();
   const directory = mkdtempSync(join(tmpdir(), 's3dir-browser-'));
-  const child = spawn('cargo', ['run', '--quiet', '--', 'serve', directory, '--port', '0', '--json'], {
+  const child = spawn(binary, ['serve', directory, '--port', '0', '--json'], {
     cwd: process.cwd(),
     stdio: ['ignore', 'pipe', 'pipe'],
     detached: process.platform !== 'win32',
@@ -33,32 +37,89 @@ async function startServer() {
   let errors = '';
   child.stdout.on('data', (chunk) => { output += chunk; });
   child.stderr.on('data', (chunk) => { errors += chunk; });
-  const endpoint = await new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(new Error(`s3dir did not start: ${errors}`)), 30_000);
-    const onData = () => {
-      const ready = output.split('\n').find((line) => line.includes('"status":"ready"'));
-      if (!ready) return;
-      clearTimeout(timeout);
-      resolve(JSON.parse(ready).endpoint);
-    };
-    child.stdout.on('data', onData);
-    child.once('exit', (code) => {
-      clearTimeout(timeout);
-      reject(new Error(`s3dir exited before readiness (${code}): ${errors}`));
+  try {
+    const endpoint = await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error(`s3dir did not start: ${errors}`)), 30_000);
+      const onData = () => {
+        const ready = output.split('\n').find((line) => line.includes('"status":"ready"'));
+        if (!ready) return;
+        clearTimeout(timeout);
+        resolve(JSON.parse(ready).endpoint);
+      };
+      child.stdout.on('data', onData);
+      child.once('exit', (code) => {
+        clearTimeout(timeout);
+        reject(new Error(`s3dir exited before readiness (${code}): ${errors}`));
+      });
     });
-  });
-  return { child, endpoint };
+    return { child, endpoint };
+  } catch (error) {
+    await stopServer(child);
+    throw error;
+  }
 }
 
-function stopServer(child) {
+async function buildDebugBinary() {
+  if (!debugBinaryBuild) {
+    debugBinaryBuild = new Promise((resolve, reject) => {
+      const child = spawn('cargo', ['build', '--quiet', '--locked'], { cwd: process.cwd(), stdio: ['ignore', 'ignore', 'pipe'] });
+      let errors = '';
+      child.stderr.on('data', (chunk) => { errors += chunk; });
+      child.once('error', reject);
+      child.once('exit', (code) => {
+        if (code === 0 && existsSync(binary)) resolve();
+        else reject(new Error(`cargo build must produce the browser test binary: ${errors}`));
+      });
+    }).catch((error) => {
+      debugBinaryBuild = undefined;
+      throw error;
+    });
+  }
+  await debugBinaryBuild;
+}
+
+function hasExited(child) {
+  return child.exitCode !== null || child.signalCode !== null;
+}
+
+function signalServer(child, signal) {
+  if (hasExited(child)) return;
   if (process.platform === 'win32') {
-    child.kill('SIGTERM');
+    child.kill(signal);
     return;
   }
   try {
-    process.kill(-child.pid, 'SIGTERM');
+    process.kill(-child.pid, signal);
   } catch (error) {
     if (error.code !== 'ESRCH') throw error;
+  }
+}
+
+function waitForExit(child, timeoutMs = 5_000) {
+  if (hasExited(child)) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    let timeout;
+    const finish = (callback) => {
+      clearTimeout(timeout);
+      child.removeListener('exit', onExit);
+      callback();
+    };
+    const onExit = () => finish(resolve);
+    timeout = setTimeout(() => finish(() => reject(new Error(`s3dir did not exit within ${timeoutMs}ms`))), timeoutMs);
+    child.once('exit', onExit);
+    if (hasExited(child)) finish(resolve);
+  });
+}
+
+async function stopServer(child) {
+  if (hasExited(child)) return;
+  signalServer(child, 'SIGTERM');
+  try {
+    await waitForExit(child);
+  } catch (error) {
+    signalServer(child, 'SIGKILL');
+    await waitForExit(child);
+    throw error;
   }
 }
 

@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { createServer, request as httpRequest } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join, normalize, extname } from 'node:path';
-import { spawn } from 'node:child_process';
-import { once } from 'node:events';
+import { execFile, spawn } from 'node:child_process';
 import test from 'node:test';
+import { promisify } from 'node:util';
 import { chromium } from 'playwright';
 import axe from 'axe-core';
 import {
@@ -23,6 +23,10 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
+const execFileAsync = promisify(execFile);
+const binary = join(process.cwd(), 'target', 'debug', process.platform === 'win32' ? 's3dir.exe' : 's3dir');
+let debugBinaryBuild;
+
 function chromiumExecutable() {
   for (const candidate of [process.env.CHROMIUM_PATH, process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH]) {
     if (candidate && existsSync(candidate)) return candidate;
@@ -36,17 +40,53 @@ function chromiumExecutable() {
   return undefined;
 }
 
-function stop(child) {
-  if (process.platform === 'win32') child.kill('SIGTERM');
-  else {
-    try { process.kill(-child.pid, 'SIGTERM'); } catch (error) { if (error.code !== 'ESRCH') throw error; }
+function hasExited(child) {
+  return child.exitCode !== null || child.signalCode !== null;
+}
+
+function signalProcess(child, signal) {
+  if (hasExited(child)) return;
+  if (process.platform === 'win32') {
+    child.kill(signal);
+    return;
+  }
+  try {
+    process.kill(-child.pid, signal);
+  } catch (error) {
+    if (error.code !== 'ESRCH') throw error;
+  }
+}
+
+function waitForExit(child, timeoutMs = 5_000) {
+  if (hasExited(child)) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    let timeout;
+    const finish = (callback) => {
+      clearTimeout(timeout);
+      child.removeListener('exit', onExit);
+      callback();
+    };
+    const onExit = () => finish(resolve);
+    timeout = setTimeout(() => finish(() => reject(new Error(`s3dir did not exit within ${timeoutMs}ms`))), timeoutMs);
+    child.once('exit', onExit);
+    if (hasExited(child)) finish(resolve);
+  });
+}
+
+async function stop(child, signal = 'SIGTERM') {
+  if (hasExited(child)) return;
+  signalProcess(child, signal);
+  try {
+    await waitForExit(child);
+  } catch (error) {
+    signalProcess(child, 'SIGKILL');
+    await waitForExit(child);
+    throw error;
   }
 }
 
 async function interruptDemo(child) {
-  if (process.platform === 'win32') child.kill('SIGINT');
-  else process.kill(-child.pid, 'SIGINT');
-  await once(child, 'exit');
+  await stop(child, 'SIGINT');
 }
 
 function sdkClient(endpoint) {
@@ -59,30 +99,65 @@ function sdkClient(endpoint) {
 }
 
 async function buildDebugBinary() {
-  const child = spawn('cargo', ['build', '--quiet'], { cwd: process.cwd(), stdio: 'ignore' });
-  const [code] = await once(child, 'exit');
-  assert.equal(code, 0, 'cargo build must produce the direct CLI test binary');
+  if (!debugBinaryBuild) {
+    debugBinaryBuild = new Promise((resolve, reject) => {
+      const child = spawn('cargo', ['build', '--quiet', '--locked'], { cwd: process.cwd(), stdio: ['ignore', 'ignore', 'pipe'] });
+      let errors = '';
+      child.stderr.on('data', (chunk) => { errors += chunk; });
+      child.once('error', reject);
+      child.once('exit', (code) => {
+        if (code === 0 && existsSync(binary)) resolve();
+        else reject(new Error(`cargo build must produce the direct CLI test binary: ${errors}`));
+      });
+    }).catch((error) => {
+      debugBinaryBuild = undefined;
+      throw error;
+    });
+  }
+  await debugBinaryBuild;
 }
 
-async function startS3(args, { directBinary = false } = {}) {
-  const binary = join(process.cwd(), 'target', 'debug', process.platform === 'win32' ? 's3dir.exe' : 's3dir');
-  const child = spawn(directBinary ? binary : 'cargo', directBinary ? args : ['run', '--quiet', '--', ...args], {
+async function startS3(args) {
+  // Compilation belongs outside the readiness window. A clean clone can take
+  // longer than a server startup, but it must not make the CLI demo flaky.
+  await buildDebugBinary();
+  const child = spawn(binary, args, {
     cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'], detached: process.platform !== 'win32',
   });
   let output = '';
   let errors = '';
   child.stdout.on('data', (chunk) => { output += chunk; });
   child.stderr.on('data', (chunk) => { errors += chunk; });
-  const ready = await new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(new Error(`s3dir did not start: ${errors}`)), 30_000);
+  try {
+    const ready = await new Promise((resolve, reject) => {
+      let settled = false;
+      const finish = (callback, value) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        child.stdout.removeListener('data', receive);
+        child.removeListener('exit', onExit);
+        child.removeListener('error', onError);
+        callback(value);
+      };
     const receive = () => {
       const line = output.split('\n').find((value) => value.includes('"status":"ready"'));
-      if (line) { clearTimeout(timeout); resolve(JSON.parse(line)); }
+      if (!line) return;
+      try { finish(resolve, JSON.parse(line)); } catch (error) { finish(reject, error); }
     };
-    child.stdout.on('data', receive);
-    child.once('exit', (code) => { clearTimeout(timeout); reject(new Error(`s3dir exited (${code}): ${errors}`)); });
-  });
-  return { child, ...ready };
+      const onExit = (code) => finish(reject, new Error(`s3dir exited (${code}): ${errors}`));
+      const onError = (error) => finish(reject, error);
+      const timeout = setTimeout(() => finish(reject, new Error(`s3dir did not start: ${errors}`)), 30_000);
+      child.stdout.on('data', receive);
+      child.once('exit', onExit);
+      child.once('error', onError);
+      receive();
+    });
+    return { child, ...ready };
+  } catch (error) {
+    await stop(child);
+    throw error;
+  }
 }
 
 async function startServer() {
@@ -139,7 +214,46 @@ async function assertNoSeriousAxe(page, label) {
   assert.deepEqual(violations, [], `${label} must have no serious or critical axe violations`);
 }
 
+async function dockerAvailable() {
+  try {
+    await execFileAsync('docker', ['info', '--format', '{{.ServerVersion}}'], { timeout: 10_000 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function runDocker(args, timeout = 120_000) {
+  return execFileAsync('docker', args, { cwd: process.cwd(), timeout, maxBuffer: 1024 * 1024 });
+}
+
+async function unusedLocalPort() {
+  const server = createServer();
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const { port } = server.address();
+  await new Promise((resolve) => server.close(resolve));
+  return port;
+}
+
+async function waitForHealth(endpoint, timeoutMs = 45_000) {
+  const deadline = Date.now() + timeoutMs;
+  let latestError = 'server did not accept connections';
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch(`${endpoint}/health`);
+      if (response.ok) return response;
+      latestError = `health returned ${response.status}`;
+    } catch (error) {
+      latestError = error.message;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  throw new Error(`container did not become ready: ${latestError}`);
+}
+
 test('@claim:demo-cli starts an isolated bundled sample from the CLI and ?demo=1', async (t) => {
+  // This must finish before `startS3` begins its 30-second readiness clock.
+  await buildDebugBinary();
   const server = await startS3(['demo', '--port', '0', '--json']);
   t.after(() => interruptDemo(server.child));
   assert.equal(server.demo, true);
@@ -165,8 +279,7 @@ test('@claim:demo-cli starts an isolated bundled sample from the CLI and ?demo=1
 });
 
 test('@claim:demo-cleanup removes the isolated sample directory after Ctrl-C', async () => {
-  await buildDebugBinary();
-  const server = await startS3(['demo', '--port', '0', '--json'], { directBinary: true });
+  const server = await startS3(['demo', '--port', '0', '--json']);
   assert.ok(existsSync(server.directory));
   await interruptDemo(server.child);
   assert.equal(existsSync(server.directory), false);
@@ -247,7 +360,7 @@ test('@claim:fixture-seeding copies missing fixture files without replacing exis
   writeFileSync(join(fixtures, 'assets', 'existing.txt'), 'do not replace');
   writeFileSync(join(fixtures, 'assets', 'new.txt'), 'copy this');
   const server = await startS3(['serve', directory, '--seed', fixtures, '--port', '0', '--json']);
-  t.after(() => { stop(server.child); rmSync(fixtures, { recursive: true, force: true }); });
+  t.after(async () => { await stop(server.child); rmSync(fixtures, { recursive: true, force: true }); });
   assert.equal(server.seeded, 1);
   assert.equal(await readFile(join(directory, 'assets', 'existing.txt'), 'utf8'), 'keep this');
   assert.equal(await readFile(join(directory, 'assets', 'new.txt'), 'utf8'), 'copy this');
@@ -278,6 +391,9 @@ test('@claim:browser-console browses, uploads, edits, and removes local data wit
   await page.getByRole('button', { name: 'Create bucket' }).click();
   await page.locator('#bucket-name').fill('console-data');
   await page.locator('#bucket-dialog').getByRole('button', { name: 'Create bucket' }).click();
+  // Creating a bucket selects it asynchronously. Waiting for that observable
+  // state prevents a test-only hidden file input from racing ahead of the UI.
+  await page.getByRole('heading', { name: 'console-data' }).waitFor();
   await page.setInputFiles('#upload', { name: 'note.txt', mimeType: 'text/plain', buffer: Buffer.from('first draft') });
   await page.getByRole('button', { name: 'Inspect and edit note.txt' }).click();
   await page.locator('#editor-content').fill('edited from console');
@@ -325,13 +441,44 @@ test('@claim:offline-docs reload after the first visit', async (t) => {
   await assert.doesNotReject(page.getByRole('heading', { name: 'Privacy for local S3 development.' }).waitFor());
 });
 
-test('@claim:filesystem-boundary rejects traversal outside the selected directory', async (t) => {
+test('@claim:filesystem-boundary rejects traversal, internal paths, and symlink escapes', async (t) => {
   const server = await startServer();
   t.after(() => stop(server.child));
   assert.equal((await fetch(`${server.endpoint}/assets`, { method: 'PUT' })).status, 200);
   const escape = await rawRequest(server.endpoint, '/assets/%2e%2e/escape.txt', 'PUT', 'blocked');
   assert.equal(escape.statusCode, 400);
   assert.equal(existsSync(join(server.directory, 'escape.txt')), false);
+  assert.equal((await fetch(`${server.endpoint}/assets/.s3dir/private.txt`, { method: 'PUT', body: 'blocked' })).status, 400);
+  assert.equal(existsSync(join(server.directory, 'assets/.s3dir/private.txt')), false);
+  if (process.platform !== 'win32') {
+    const outside = mkdtempSync(join(tmpdir(), 's3dir-outside-'));
+    t.after(() => rmSync(outside, { recursive: true, force: true }));
+    symlinkSync(outside, join(server.directory, 'assets', 'escape-link'));
+    assert.equal((await fetch(`${server.endpoint}/assets/escape-link/private.txt`, { method: 'PUT', body: 'blocked' })).status, 400);
+    assert.equal(existsSync(join(outside, 'private.txt')), false);
+  }
+});
+
+test('@claim:multipart-rejection rejects incomplete and mismatched completion manifests', async (t) => {
+  const server = await startServer();
+  t.after(() => stop(server.child));
+  assert.equal((await fetch(`${server.endpoint}/assets`, { method: 'PUT' })).status, 200);
+  const started = await (await fetch(`${server.endpoint}/assets/report.txt?uploads`, { method: 'POST' })).text();
+  const uploadId = started.match(/<UploadId>([^<]+)<\/UploadId>/)?.[1];
+  assert.ok(uploadId, 'multipart start must return an upload id');
+  const incomplete = await fetch(`${server.endpoint}/assets/report.txt?uploadId=${encodeURIComponent(uploadId)}`, {
+    method: 'POST', body: '<CompleteMultipartUpload/>',
+  });
+  assert.equal(incomplete.status, 400);
+  assert.match(await incomplete.text(), /MalformedXML/);
+  assert.equal((await fetch(`${server.endpoint}/assets/report.txt?partNumber=1&uploadId=${encodeURIComponent(uploadId)}`, { method: 'PUT', body: 'part one' })).status, 200);
+  const mismatched = await fetch(`${server.endpoint}/assets/report.txt?uploadId=${encodeURIComponent(uploadId)}`, {
+    method: 'POST',
+    body: '<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>not-the-uploaded-part</ETag></Part></CompleteMultipartUpload>',
+  });
+  assert.equal(mismatched.status, 400);
+  assert.match(await mismatched.text(), /InvalidPart/);
+  assert.equal((await fetch(`${server.endpoint}/assets/report.txt`)).status, 404);
 });
 
 test('@claim:key-path-conflict returns 409 when a file and directory need the same key path', async (t) => {
@@ -370,11 +517,41 @@ test('@claim:privacy-default only emits object events to an explicit webhook URL
   assert.match(events[0], /s3:ObjectCreated:Put/);
 });
 
-test('@claim:compose-bind-mount drops privileges only after making /data writable', async () => {
-  const [dockerfile, entrypoint] = await Promise.all([readFile('Dockerfile', 'utf8'), readFile('docker-entrypoint.sh', 'utf8')]);
-  assert.match(dockerfile, /ENTRYPOINT \["\/usr\/local\/bin\/docker-entrypoint\.sh", "s3dir"\]/);
-  assert.match(entrypoint, /chown s3dir:s3dir \/data/);
-  assert.match(entrypoint, /exec su-exec s3dir "\$@"/);
+test('@claim:compose-bind-mount makes a fresh bind mount writable before serving unprivileged', async (t) => {
+  if (!(await dockerAvailable())) {
+    t.skip('Docker daemon unavailable; run this claim in a Docker-enabled release environment.');
+    return;
+  }
+  const token = `${Date.now()}-${process.pid}-${Math.random().toString(36).slice(2, 8)}`;
+  const root = mkdtempSync(join(tmpdir(), 's3dir-compose-'));
+  const data = join(root, 'data');
+  const image = `s3dir-claim-${token}`;
+  const container = `s3dir-claim-${token}`;
+  mkdirSync(data);
+  // A new host directory is not writable by the image's non-root user until
+  // its entrypoint repairs ownership. A successful object write proves the
+  // documented fresh-bind-mount behavior rather than a source-file pattern.
+  chmodSync(data, 0o755);
+  t.after(async () => {
+    await runDocker(['rm', '--force', container], 20_000).catch(() => {});
+    rmSync(root, { recursive: true, force: true });
+  });
+  await runDocker(['build', '--tag', image, '.'], 300_000);
+  const port = await unusedLocalPort();
+  await runDocker([
+    'run', '--detach', '--name', container,
+    '--publish', `127.0.0.1:${port}:9000`,
+    '--volume', `${data}:/data`,
+    image,
+  ]);
+  const endpoint = `http://127.0.0.1:${port}`;
+  assert.equal((await waitForHealth(endpoint)).status, 200);
+  assert.equal((await fetch(`${endpoint}/assets`, { method: 'PUT' })).status, 200);
+  assert.equal((await fetch(`${endpoint}/assets/bind-mount.txt`, { method: 'PUT', body: 'writable' })).status, 200);
+  assert.equal(await readFile(join(data, 'assets', 'bind-mount.txt'), 'utf8'), 'writable');
+  const { stdout } = await runDocker(['exec', container, 'sh', '-c', "awk '/^Uid:/ { print $2 }' /proc/1/status"]);
+  assert.match(stdout.trim(), /^\d+$/);
+  assert.notEqual(stdout.trim(), '0', 'the server process must not run as root');
 });
 
 test('accessibility: built static routes have no serious or critical axe violations', async (t) => {
@@ -395,7 +572,12 @@ test('accessibility: embedded local console has no serious or critical axe viola
   t.after(() => stop(server.child));
   const browser = await chromium.launch({ executablePath: chromiumExecutable() });
   t.after(() => browser.close());
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  // axe injects its audit script inline. Keep the shipped console CSP strict;
+  // only this isolated audit context bypasses it so accessibility can inspect
+  // the real DOM without weakening the runtime response policy.
+  const context = await browser.newContext({ bypassCSP: true, viewport: { width: 390, height: 844 } });
+  t.after(() => context.close());
+  const page = await context.newPage();
   await page.goto(`${server.endpoint}/ui`, { waitUntil: 'networkidle' });
   await assertNoSeriousAxe(page, 'local console');
 });

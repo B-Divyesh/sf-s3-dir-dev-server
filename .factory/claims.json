@@ -78,10 +78,17 @@
   },
   {
     "id": "filesystem-boundary",
-    "claim": "Rejects object paths outside the selected directory.",
+    "claim": "Rejects traversal, .s3dir segments, and symlink paths outside the selected directory.",
     "where": "README Filesystem boundary",
     "test": "npm run build:site && node --test --test-name-pattern '@claim:filesystem-boundary' tests/claims.test.js",
-    "sandbox": "Attempts an encoded traversal write against a fresh server and checks that no outside file exists."
+    "sandbox": "Attempts encoded traversal, .s3dir, and symlink escape writes against a fresh server and checks that no internal or outside file exists."
+  },
+  {
+    "id": "multipart-rejection",
+    "claim": "Rejects incomplete or mismatched multipart completion manifests.",
+    "where": "README Local S3 workflow",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:multipart-rejection' tests/claims.test.js",
+    "sandbox": "Starts a multipart upload on a fresh endpoint, then observes 400 responses for an empty manifest and an ETag that does not match the uploaded part."
   },
   {
     "id": "key-path-conflict",
@@ -102,6 +109,6 @@
     "claim": "The supplied Compose image makes a fresh /data bind mount writable before running s3dir unprivileged.",
     "where": "README Docker Compose, compose.yaml",
     "test": "npm run build:site && node --test --test-name-pattern '@claim:compose-bind-mount' tests/claims.test.js",
-    "sandbox": "Checks the shipped image entrypoint contract: chown occurs before su-exec drops to the s3dir user."
+    "sandbox": "When Docker is available, builds the supplied image, mounts a fresh host directory at /data, writes an object through the running endpoint, and verifies PID 1 is non-root."
   }
 ]

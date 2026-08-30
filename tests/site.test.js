@@ -92,19 +92,6 @@ test('embedded UI has one h1, live feedback, and touch-safe controls', async () 
   assert.match(css, /\.brand \{[\s\S]*?min-height: 44px/);
 });
 
-test('container entrypoint fixes a fresh bind mount before dropping privileges', async () => {
-  const [dockerfile, entrypoint, compose] = await Promise.all([
-    readFile('Dockerfile', 'utf8'),
-    readFile('docker-entrypoint.sh', 'utf8'),
-    readFile('compose.yaml', 'utf8'),
-  ]);
-  assert.match(dockerfile, /su-exec/);
-  assert.match(dockerfile, /ENTRYPOINT \["\/usr\/local\/bin\/docker-entrypoint\.sh", "s3dir"\]/);
-  assert.match(entrypoint, /chown s3dir:s3dir \/data/);
-  assert.match(entrypoint, /exec su-exec s3dir/);
-  assert.match(compose, /\.\/dev-data:\/data/);
-});
-
 test('package and public terms consistently declare the required Apache-2.0 license', async () => {
   const [cargo, license, readme, terms, { stdout }] = await Promise.all([
     readFile('Cargo.toml', 'utf8'), readFile('LICENSE', 'utf8'), readFile('README.md', 'utf8'),
@@ -150,4 +137,10 @@ test('all public routes make the heading focusable and include route announcemen
     assert.match(html, /class="route-status" role="status" aria-live="polite"/);
     assert.match(html, /route-focus\.js/);
   }
+});
+
+test('the shipped integration command serializes browser files with shared local resources', async () => {
+  const manifest = JSON.parse(await readFile('package.json', 'utf8'));
+  assert.match(manifest.scripts.test, /node --test --test-concurrency=1/);
+  assert.match(manifest.scripts.build, /^npm test/);
 });

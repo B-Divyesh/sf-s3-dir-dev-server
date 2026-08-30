@@ -37,7 +37,7 @@ const s3 = new S3Client({
 await s3.send(new PutObjectCommand({ Bucket: "assets", Key: "hello.txt", Body: "hello" }));
 ```
 
-The documented local S3 workflow covers bucket and object operations, ListObjectsV2, valid multipart uploads, metadata, and object tags. Multipart completion requires an ordered manifest with each uploaded part number and ETag. Run `s3dir serve --help` for additional development options.
+The documented local S3 workflow covers bucket and object operations, ListObjectsV2, valid multipart uploads, metadata, and object tags. Multipart completion rejects incomplete or mismatched manifests. It requires an ordered manifest with each uploaded part number and ETag. Run `s3dir serve --help` for additional development options.
 
 On disk, `bucket/path/file.ext` is the object. Metadata and tags use hidden `bucket/.s3dir/*.json` sidecars. A file key such as `foo` cannot coexist with `foo/bar`; either direction returns `409 KeyPathConflict`.
 

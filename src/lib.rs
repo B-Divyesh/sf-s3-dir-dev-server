@@ -3,6 +3,7 @@ use axum::{
     body::Body,
     extract::{ConnectInfo, Request, State},
     http::{HeaderMap, HeaderValue, Method, StatusCode, header},
+    middleware,
     response::{IntoResponse, Response},
     routing::get,
 };
@@ -127,6 +128,35 @@ pub fn app_with_request_limit(
         .route("/ui/app.js", get(ui_js))
         .fallback(handle)
         .with_state(state)
+        .layer(middleware::map_response(local_browser_security_headers))
+}
+
+/// The embedded console is a local development surface, but it is still a
+/// browser document. Keep its executable surface deliberately small so an
+/// application pointed at an untrusted local directory does not lose the
+/// normal browser protections just because it is running on localhost.
+async fn local_browser_security_headers(mut response: Response) -> Response {
+    let headers = response.headers_mut();
+    headers.insert(
+        "content-security-policy",
+        HeaderValue::from_static(
+            "default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'",
+        ),
+    );
+    headers.insert(
+        "x-content-type-options",
+        HeaderValue::from_static("nosniff"),
+    );
+    headers.insert(
+        "referrer-policy",
+        HeaderValue::from_static("strict-origin-when-cross-origin"),
+    );
+    headers.insert("x-frame-options", HeaderValue::from_static("DENY"));
+    headers.insert(
+        "permissions-policy",
+        HeaderValue::from_static("camera=(), geolocation=(), microphone=(), payment=()"),
+    );
+    response
 }
 
 async fn favicon() -> StatusCode {
@@ -2238,6 +2268,34 @@ mod tests {
             .unwrap();
         assert_eq!(limited.status(), StatusCode::TOO_MANY_REQUESTS);
         assert!(limited.headers().contains_key(header::RETRY_AFTER));
+    }
+
+    #[tokio::test]
+    async fn embedded_console_sends_browser_security_headers() {
+        let tmp = tempfile::tempdir().unwrap();
+        let response = app(tmp.path().into(), vec![], None)
+            .oneshot(Request::builder().uri("/ui").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.headers()["x-content-type-options"], "nosniff");
+        assert_eq!(
+            response.headers()["referrer-policy"],
+            "strict-origin-when-cross-origin"
+        );
+        assert_eq!(response.headers()["x-frame-options"], "DENY");
+        assert!(
+            response.headers()["content-security-policy"]
+                .to_str()
+                .unwrap()
+                .contains("frame-ancestors 'none'")
+        );
+        assert!(
+            response.headers()["permissions-policy"]
+                .to_str()
+                .unwrap()
+                .contains("camera=()")
+        );
     }
 
     #[tokio::test]

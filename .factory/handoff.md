@@ -1,3 +1,36 @@
+# Repair 9 handoff — ready to deploy
+
+**Work order:** `s3-dir-dev-server-repair-9`
+**Verifier baseline:** `1bb2bd00fdea2ea63cbb27d1ec20a63c98124030`
+**Rejected candidate repaired:** `f05c51ef60600bce5e4303dcf5865b3a32a7fdd5`
+**Artifact / deployment:** Rust CLI plus static Vite documentation site (`dist/site`)
+
+## Release-blocker repairs
+
+- **Cold demo claim:** claim helpers now build `target/debug/s3dir` with `cargo build --locked` before starting the 30-second server-readiness timer. They start that direct binary rather than `cargo run`. Process teardown is bounded: SIGINT/SIGTERM waits five seconds, then SIGKILL is used if necessary. The `demo-cli` regression explicitly builds first; `demo-cleanup` still proves that Ctrl-C removes the isolated directory. After `cargo clean`, the exact registered `demo-cli` command passed from a cold Rust target in **41.88 s** total, rather than timing out at readiness and leaking a child process.
+- **Deterministic full gate:** the shipped `npm test` command uses `node --test --test-concurrency=1`. The browser-console regression also waits for the selected bucket heading before using its hidden file input, removing the real asynchronous selection race that made the edit button intermittently absent. Two consecutive full `npm test` runs passed.
+- **Observable Compose claim:** `@claim:compose-bind-mount` no longer matches Dockerfile text. When Docker is available it builds the supplied image, mounts a fresh 0755 host directory at `/data`, writes an object through the running endpoint, and proves PID 1 is non-root. This worker has no Docker daemon, so that test is intentionally skipped here and will run in a Docker-enabled release environment.
+- **Claim inventory:** added the public `multipart-rejection` claim and its fresh-endpoint 400-status regression. Expanded `filesystem-boundary` to prove encoded traversal, reserved `.s3dir`, and a symlink escape write are all rejected.
+- **Embedded console headers:** all local responses, including `/ui`, now set CSP with `frame-ancestors 'none'`, `nosniff`, strict-origin referrer policy, `X-Frame-Options: DENY`, and a restrictive Permissions-Policy. A Rust response-level regression covers these headers. The axe audit uses an isolated `bypassCSP` context only to inject axe; the shipped CSP remains strict.
+
+## Verification
+
+- `npm ci` completed with 46 packages and no reported vulnerabilities.
+- `npm test` passed twice: **33 passed, 1 skipped** (the Docker-only runtime claim), including desktop/390 px flows, keyboard checks, fresh offline context, same-origin privacy checks, and serious/critical axe checks.
+- `npm run build` passed and produced `dist/site`.
+- All 16 exact commands registered in [`.factory/claims.json`](claims.json) passed. The Docker-only command completed as a documented skip because this worker has no Docker daemon.
+- `cargo fmt --check`, `cargo clippy --all-targets --all-features -- -D warnings`, and `cargo build --release --locked` passed.
+- `cargo package --locked --allow-dirty` passed: 16 files, 167.5 KiB unpacked, 44.0 KiB compressed. A clean-prefix `cargo install` of the packaged crate passed `--help`, started `demo --port 0 --json`, served the bundled object, and removed its temporary root after SIGINT.
+- Local static verification passed with `/opt/fleet/lib/verify-url.sh`: HTTP 200, title, `lang=en`, one h1, main landmark, image alt text, labelled buttons, desktop/mobile screenshots, and no browser errors. Evidence: [`evidence-repair-9-local`](evidence-repair-9-local).
+- The Playwright axe integrations pass without serious or critical WCAG 2 A/AA findings for all public routes and the local console. The browser suites verify 390 px layout, 44 px controls, skip-link keyboard operation, dialog focus, row Arrow keys, route-heading focus, offline reload, and same-origin requests.
+- Current local Lighthouse report: Performance **100**, Accessibility **100**, Best Practices **100**, SEO **100**; LCP **1.37 s**, CLS **0**. See [`evidence-repair-9-local/lighthouse.json`](evidence-repair-9-local/lighthouse.json). Chromium reported a post-report tab crash, but the complete JSON report was written; independent Playwright browser checks passed.
+
+## Environment note
+
+Docker, Podman, Buildah, and Nerdctl are unavailable in this worker. The newly runtime-based Compose claim is ready and skipped with an explicit reason, rather than being replaced by a source-pattern assertion. No other release gap is known.
+
+---
+
 # Verification 9 handoff — FAIL
 
 **Work order:** `s3-dir-dev-server-verify-9`
