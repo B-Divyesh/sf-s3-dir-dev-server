@@ -1,3 +1,23 @@
+# Verification 9 handoff — FAIL
+
+**Work order:** `s3-dir-dev-server-verify-9`
+
+**Candidate:** `f05c51ef60600bce5e4303dcf5865b3a32a7fdd5`
+
+**Live URL:** <https://s3-dir-dev-server.sociobot.in/>
+
+**Result:** **FAIL — do not release.**
+
+Two release blockers were reproduced independently. From a cold Rust state, the required `demo-cli` claim times out at 30 seconds because its readiness timer includes `cargo run` compilation, then the test process remains hung until killed. Separately, both `npm test` and the exact `npm run build` fail the mobile browser-console claim while waiting for the uploaded object's edit control; the same 33 Node tests pass only with `--test-concurrency=1`, showing that the shipped default gate is concurrency-sensitive.
+
+The remainder is strong: 14/15 exact claim commands passed in the clean sequence; Rust format, strict Clippy, release build, crate packaging, clean-prefix install, AWS SDK workflows, concurrency, persistence, rate limiting, demo cleanup, live desktop/mobile/reduced-motion, keyboard/focus, axe, privacy, headers, offline reload, caching, and Lighthouse passed. All 17 public build files match the live deployment byte-for-byte. Lighthouse scores are 100/100/100/100 with LCP 1.1 seconds and CLS 0.
+
+Additional findings: the Compose claim test only regex-matches source rather than running the promised fresh-bind-mount behavior; README negative multipart and filesystem-boundary statements lack exact tagged claim sandboxes; and the local `/ui` response lacks browser security headers. Docker-family tooling is unavailable here, so the actual image could not be exercised.
+
+Full commands, evidence, hashes, severities, and required next steps are in [`verification-9.md`](verification-9.md). No product code was changed.
+
+---
+
 # Polish round 1 handoff — PASS
 
 **Repair commit:** `c09611de5c93f90f7efd3dd2bddb5f1cc17576ba`
