@@ -17,7 +17,8 @@ Audited 2026-08-30. The landing page uses **directory**, **bucket**, **key**, **
 | Build from source, then open the printed local console URL. | 10 | Pass |
 | The server allows 300 requests per client every 60 seconds. | 10 | Pass |
 | Extra requests receive 429 and Retry-After. | 6 | Pass |
-| Docs: Same-origin only. | 3 | Pass |
+| Privacy: no third-party requests. | 4 | Pass |
+| Supported local S3 operations. | 4 | Pass |
 
 No audited sentence exceeds 22 words or uses the banned marketing terms.
 

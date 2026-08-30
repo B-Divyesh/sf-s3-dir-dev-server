@@ -1,2 +1,6 @@
+if (new URLSearchParams(location.search).get('demo') === '1') {
+  location.replace('/demo/?demo=1');
+}
+
 const copy=document.querySelector('#copy'),toast=document.querySelector('#toast');copy?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(copy.dataset.copy);copy.textContent='Copied';toast.textContent='Commands copied to clipboard';toast.classList.add('show');setTimeout(()=>{copy.textContent='Copy commands';toast.classList.remove('show')},2200)}catch{toast.textContent='Select the commands in the terminal to copy them.';toast.classList.add('show')}});
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));

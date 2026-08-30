@@ -12,7 +12,7 @@ test('landing has a plain first read, semantic landmarks, and a demo action', as
   assert.equal((html.match(/<h1[ >]/g) || []).length, 1);
   assert.match(html, /<main id="main">/);
   assert.match(html, /For application developers/);
-  assert.match(html, /href="\/demo\/">Try it with sample data/);
+  assert.match(html, /href="\/\?demo=1">Try it with sample data/);
   assert.match(html, /alt="[^"]+"/);
 });
 
@@ -47,6 +47,11 @@ test('site metadata, discovery files, and designed 404 are present', async () =>
   assert.match(landing, /apple-touch-icon/);
   assert.match(landing, /social-card\.webp/);
   assert.match(notFound, /That page is not in this directory/);
+  assert.match(notFound, /name="description"/);
+  assert.match(notFound, /rel="canonical" href="https:\/\/s3-dir-dev-server\.sociobot\.in\/404\.html"/);
+  assert.match(notFound, /property="og:image"/);
+  assert.match(notFound, /name="twitter:card"/);
+  assert.match(notFound, /apple-touch-icon/);
   assert.match(robots, /Sitemap:/);
   assert.match(sitemap, /<loc>https:\/\/s3-dir-dev-server\.sociobot\.in\/demo\/<\/loc>/);
   const swa = JSON.parse(config);
@@ -118,7 +123,7 @@ test('package and public terms consistently declare the required Apache-2.0 lice
 
 test('service worker versions, clears, and dynamically caches the offline shell', async () => {
   const [sw, register] = await Promise.all([readFile('site/public/sw.js', 'utf8'), readFile('site/sw-register.js', 'utf8')]);
-  assert.match(sw, /s3dir-site-v4/);
+  assert.match(sw, /s3dir-site-v5/);
   assert.match(sw, /keys\.filter\(key=>key!==CACHE\)/);
   assert.match(sw, /cache\.put\(event\.request,response\.clone\(\)\)/);
   assert.match(register, /serviceWorker\.register\('\/sw\.js'\)/);
@@ -134,5 +139,15 @@ test('each public claim has exactly one tagged sandbox regression', async () => 
     const tag = `@claim:${claim.id}`;
     assert.equal(claimsTests.split(tag).length - 1, 1, `${tag} must name exactly one test`);
     assert.match(claim.test, new RegExp(tag));
+  }
+});
+
+test('all public routes make the heading focusable and include route announcements', async () => {
+  const routes = ['site/index.html', 'site/demo/index.html', 'site/privacy/index.html', 'site/terms/index.html', 'site/404.html'];
+  for (const route of routes) {
+    const html = await readFile(route, 'utf8');
+    assert.match(html, /<h1[^>]*tabindex="-1"/);
+    assert.match(html, /class="route-status" role="status" aria-live="polite"/);
+    assert.match(html, /route-focus\.js/);
   }
 });

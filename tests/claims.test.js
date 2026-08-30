@@ -139,7 +139,7 @@ async function assertNoSeriousAxe(page, label) {
   assert.deepEqual(violations, [], `${label} must have no serious or critical axe violations`);
 }
 
-test('@claim:demo-cli starts an isolated bundled sample', async (t) => {
+test('@claim:demo-cli starts an isolated bundled sample from the CLI and ?demo=1', async (t) => {
   const server = await startS3(['demo', '--port', '0', '--json']);
   t.after(() => interruptDemo(server.child));
   assert.equal(server.demo, true);
@@ -148,6 +148,20 @@ test('@claim:demo-cli starts an isolated bundled sample', async (t) => {
   assert.equal((await fetch(`${server.endpoint}/health`)).status, 200);
   assert.match(await readFile(join(server.directory, 'assets/welcome.txt'), 'utf8'), /s3dir sample bucket/);
   assert.ok(existsSync(join(server.directory, 'fixtures/local-stack.json')));
+
+  const site = await startStaticSite();
+  t.after(site.close);
+  const browser = await chromium.launch({ executablePath: chromiumExecutable() });
+  t.after(() => browser.close());
+  const context = await browser.newContext();
+  t.after(() => context.close());
+  const page = await context.newPage();
+  await page.goto(`${site.origin}/?demo=1`, { waitUntil: 'networkidle' });
+  assert.match(page.url(), /\/demo\/\?demo=1$/);
+  await assert.doesNotReject(page.getByRole('heading', { name: 'Try local S3 with sample files.' }).waitFor());
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('demo:s3dir:active')), '1');
+  await page.getByRole('button', { name: 'Reset demo' }).click();
+  assert.equal(await page.evaluate(() => Object.keys(sessionStorage).every((key) => key.startsWith('demo:s3dir:'))), true);
 });
 
 test('@claim:demo-cleanup removes the isolated sample directory after Ctrl-C', async () => {
@@ -418,4 +432,20 @@ test('browser: static routes work at 390px with keyboard and 44px controls', asy
   await page.getByRole('button', { name: 'Reset demo' }).focus();
   await page.keyboard.press('Enter');
   await assert.doesNotReject(page.getByText('Sample reset. Run the command to create a new temporary directory.').waitFor());
+});
+
+test('browser: landing to demo and Back move focus to the route heading', async (t) => {
+  const site = await startStaticSite();
+  t.after(site.close);
+  const browser = await chromium.launch({ executablePath: chromiumExecutable() });
+  t.after(() => browser.close());
+  const page = await browser.newPage();
+  await page.goto(site.origin, { waitUntil: 'networkidle' });
+  await page.getByRole('link', { name: 'Try it with sample data' }).click();
+  await page.waitForURL(/\/demo\/\?demo=1$/);
+  await page.waitForFunction(() => document.activeElement === document.querySelector('main h1'));
+  assert.match(await page.locator('.route-status').textContent(), /Demo — s3dir loaded/);
+  await page.goBack({ waitUntil: 'networkidle' });
+  await page.waitForFunction(() => document.activeElement === document.querySelector('main h1'));
+  assert.match(await page.locator('.route-status').textContent(), /s3dir — Local S3 from a directory loaded/);
 });

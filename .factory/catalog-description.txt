@@ -1,0 +1,1 @@
+Run a local S3-compatible server from an ordinary directory for development and tests.

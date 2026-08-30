@@ -2,7 +2,7 @@
 
 ## Entry points
 
-- Website: `/demo/` from the deployed documentation site. The first landing-page action opens this recorded CLI sample and exposes **Reset demo** and **Start for real**.
+- Website: `/?demo=1` from the deployed documentation site. It redirects into `/demo/?demo=1`, the recorded CLI sample with **Reset demo** and **Start for real**.
 - CLI: `s3dir demo --port 9000`.
 
 ## Sample data
@@ -15,4 +15,4 @@ The binary compiles three project-original fixtures into the executable:
 
 `s3dir demo` creates a unique `s3dir-demo-<uuid>` directory beneath the operating system temporary directory, starts the normal server against it, prints the directory and local console URL, and never reads or writes a project directory. Press Ctrl-C to leave demo mode and delete the isolated directory; an abrupt kill can leave the temporary directory for operating-system cleanup.
 
-The website route is a self-hosted terminal recording of this same bundled command. It stores no demo data. **Reset demo** restores the recording, and **Start for real** links to the ordinary installation command.
+The website route is a self-hosted terminal recording of this same bundled command. Its only browser state is the `sessionStorage` namespace `demo:s3dir:`; it never reads or writes project data or ordinary product storage. **Reset demo** clears and recreates that namespace, restores the recording, and **Start for real** discards it before linking to the ordinary installation command.

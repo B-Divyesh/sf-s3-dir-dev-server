@@ -1,10 +1,10 @@
 [
   {
     "id": "demo-cli",
-    "claim": "Try the bundled sample without touching your project directory.",
+    "claim": "Try the bundled sample from the CLI or ?demo=1 without touching your project directory.",
     "where": "Landing action, /demo, README",
     "test": "npm run build:site && node --test --test-name-pattern '@claim:demo-cli' tests/claims.test.js",
-    "sandbox": "Runs s3dir demo with a fresh temporary directory and verifies the bundled objects and health endpoint."
+    "sandbox": "Runs s3dir demo with a fresh temporary directory and verifies the bundled objects and health endpoint, then opens ?demo=1 in a fresh browser context and verifies its demo-only session namespace."
   },
   {
     "id": "demo-cleanup",

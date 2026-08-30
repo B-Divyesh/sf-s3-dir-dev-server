@@ -11,7 +11,7 @@
   <header class="nav"><a class="logo" href="/" aria-label="s3dir home"><svg width="32" height="32" viewBox="0 0 34 34" aria-hidden="true"><path d="M3 8h12l3 4h13v17H3zM8 3h18v9H8z"/></svg><b>s3dir</b></a><nav aria-label="Primary"><a href="/demo/" aria-current="page">Demo</a><a href="/#how">How it maps</a><a href="/privacy/">Privacy</a></nav></header>
   <main id="main" class="demo-page">
     <aside class="demo-banner" aria-label="Demo mode"><b>Demo — sample data, nothing is saved to your project.</b><span><button id="reset-demo" type="button">Reset demo</button><a href="/#install">Start for real</a></span></aside>
-    <section class="demo-intro"><p class="eyebrow">Bundled CLI sample</p><h1>Try local S3 with sample files.</h1><p>Run one command to start a temporary server with an assets bucket and local-stack fixture.</p></section>
+    <section class="demo-intro"><p class="eyebrow">Bundled CLI sample</p><h1 tabindex="-1">Try local S3 with sample files.</h1><p>Run one command to start a temporary server with an assets bucket and local-stack fixture.</p></section>
     <section class="demo-terminal-panel" aria-labelledby="demo-terminal-title"><div class="terminal demo-terminal"><div><span></span><span></span><span></span><b id="demo-terminal-title">recorded terminal</b></div><pre id="terminal-output" tabindex="0" aria-label="Recorded s3dir demo terminal"><code><i>$</i> s3dir demo --port 9000
 
 <span>demo files</span>   /tmp/s3dir-demo-2ef5
@@ -25,6 +25,6 @@ Welcome to the s3dir sample bucket.</code></pre><button id="copy-demo" type="but
       <div class="sample-files"><p class="eyebrow">Sample files</p><h2>Open these files in the local console.</h2><ul><li><code>assets/welcome.txt</code><span>Text object for a first GET.</span></li><li><code>assets/receipts/may-2026.txt</code><span>Nested object for a key path.</span></li><li><code>fixtures/local-stack.json</code><span>Fixture for an application endpoint.</span></li></ul><p>The temporary directory is separate from your project.</p></div>
     </section>
   </main>
-  <footer><a class="logo" href="/" aria-label="s3dir home">s3dir</a><p>Local S3-compatible development server.</p><span class="build-id">Build 0.1.0</span><nav aria-label="Footer"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-s3-dir-dev-server">Source (external)</a></nav></footer>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div><script type="module" src="/sw-register.js"></script><script type="module" src="/demo.js"></script>
+  <footer><a class="logo" href="/" aria-label="s3dir home">s3dir</a><p>Local S3-compatible development server.</p><span class="build-id">Build 0.1.0</span><span>Built by Param Factory</span><nav aria-label="Footer"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-s3-dir-dev-server">Source (external)</a></nav></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div><div class="route-status" role="status" aria-live="polite" aria-atomic="true"></div><script type="module" src="/sw-register.js"></script><script type="module" src="/route-focus.js"></script><script type="module" src="/demo.js"></script>
 </body></html>

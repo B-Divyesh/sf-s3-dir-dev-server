@@ -51,7 +51,7 @@ Every bucket name and object key is validated before filesystem access. The serv
 docker compose up --build
 ```
 
-The supplied `compose.yaml` maps `./dev-data` to `/data`. On a fresh Linux checkout, the image entrypoint takes ownership of the bind source and then runs the server as its unprivileged `s3dir` user. The endpoint is `http://localhost:9000`.
+The supplied `compose.yaml` maps `./dev-data` to `/data`. On Linux, the entrypoint makes the bind mount writable. It then runs the server as the unprivileged `s3dir` user. The endpoint is `http://localhost:9000`.
 
 ## Privacy and static documentation
 
