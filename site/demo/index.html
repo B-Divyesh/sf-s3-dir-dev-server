@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Try the bundled s3dir sample in an isolated temporary directory."><meta name="theme-color" content="#101b24"><title>Demo — s3dir</title>
+  <link rel="canonical" href="https://s3-dir-dev-server.sociobot.in/demo/"><link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
+  <meta property="og:type" content="website"><meta property="og:title" content="Demo — s3dir"><meta property="og:description" content="Try the bundled s3dir sample in an isolated temporary directory."><meta property="og:url" content="https://s3-dir-dev-server.sociobot.in/demo/"><meta property="og:image" content="https://s3-dir-dev-server.sociobot.in/assets/social-card.webp"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Demo — s3dir"><meta name="twitter:description" content="Try the bundled s3dir sample in an isolated temporary directory.">
+</head>
+<body>
+  <a href="#main" class="skip">Skip to content</a>
+  <header class="nav"><a class="logo" href="/" aria-label="s3dir home"><svg width="32" height="32" viewBox="0 0 34 34" aria-hidden="true"><path d="M3 8h12l3 4h13v17H3zM8 3h18v9H8z"/></svg><b>s3dir</b></a><nav aria-label="Primary"><a href="/demo/" aria-current="page">Demo</a><a href="/#how">How it maps</a><a href="/privacy/">Privacy</a></nav></header>
+  <main id="main" class="demo-page">
+    <aside class="demo-banner" aria-label="Demo mode"><b>Demo — sample data, nothing is saved to your project.</b><span><button id="reset-demo" type="button">Reset demo</button><a href="/#install">Start for real</a></span></aside>
+    <section class="demo-intro"><p class="eyebrow">Bundled CLI sample</p><h1>Try local S3 with sample files.</h1><p>Run one command to start a temporary server with an assets bucket and local-stack fixture.</p></section>
+    <section class="demo-terminal-panel" aria-labelledby="demo-terminal-title"><div class="terminal demo-terminal"><div><span></span><span></span><span></span><b id="demo-terminal-title">recorded terminal</b></div><pre id="terminal-output" tabindex="0" aria-label="Recorded s3dir demo terminal"><code><i>$</i> s3dir demo --port 9000
+
+<span>demo files</span>   /tmp/s3dir-demo-2ef5
+<span>s3dir ready</span>  http://127.0.0.1:9000
+<span>console</span>      http://127.0.0.1:9000/ui
+<span>directory</span>    /tmp/s3dir-demo-2ef5
+<span>seeded</span>       3 files
+
+<i>$</i> curl http://127.0.0.1:9000/assets/welcome.txt
+Welcome to the s3dir sample bucket.</code></pre><button id="copy-demo" type="button" data-copy="s3dir demo --port 9000">Copy demo command</button></div>
+      <div class="sample-files"><p class="eyebrow">Sample files</p><h2>Open these files in the local console.</h2><ul><li><code>assets/welcome.txt</code><span>Text object for a first GET.</span></li><li><code>assets/receipts/may-2026.txt</code><span>Nested object for a key path.</span></li><li><code>fixtures/local-stack.json</code><span>Fixture for an application endpoint.</span></li></ul><p>The temporary directory is separate from your project.</p></div>
+    </section>
+  </main>
+  <footer><a class="logo" href="/" aria-label="s3dir home">s3dir</a><p>Local S3-compatible development server.</p><span class="build-id">Build 0.1.0</span><nav aria-label="Footer"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-s3-dir-dev-server">Source (external)</a></nav></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div><script type="module" src="/sw-register.js"></script><script type="module" src="/demo.js"></script>
+</body></html>

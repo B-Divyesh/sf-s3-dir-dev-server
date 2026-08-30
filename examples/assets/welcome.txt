@@ -1,0 +1,4 @@
+Welcome to the s3dir sample bucket.
+
+This object was placed in an ordinary directory and is available through the
+same local S3 endpoint your application can use in development.

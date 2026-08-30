@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://s3-dir-dev-server.sociobot.in/sitemap.xml

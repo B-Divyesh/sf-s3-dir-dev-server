@@ -1,0 +1,4 @@
+Receipt 0042
+Customer: Northwind Field Notes
+Amount: $18.40
+Status: paid

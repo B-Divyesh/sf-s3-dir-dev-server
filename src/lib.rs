@@ -1,7 +1,7 @@
 use axum::{
     Router,
     body::Body,
-    extract::{Request, State},
+    extract::{ConnectInfo, Request, State},
     http::{HeaderMap, HeaderValue, Method, StatusCode, header},
     response::{IntoResponse, Response},
     routing::get,
@@ -12,15 +12,20 @@ use percent_encoding::percent_decode_str;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::{BTreeSet, HashMap},
+    net::SocketAddr,
     path::{Component, Path, PathBuf},
     sync::Arc,
+    time::{Duration, Instant},
 };
-use tokio::{fs, io::AsyncWriteExt};
+use tokio::{fs, sync::Mutex};
 use walkdir::WalkDir;
 
 const UI_HTML: &str = include_str!("ui.html");
 const UI_CSS: &str = include_str!("ui.css");
 const UI_JS: &str = include_str!("ui.js");
+const BUILD_ID: &str = env!("S3DIR_BUILD_ID");
+const DEFAULT_REQUEST_LIMIT: u32 = 300;
+const REQUEST_WINDOW: Duration = Duration::from_secs(60);
 
 #[derive(Clone)]
 pub struct AppState {
@@ -28,6 +33,14 @@ pub struct AppState {
     pub cors: Arc<Vec<String>>,
     pub events: Option<String>,
     client: reqwest::Client,
+    request_limit: u32,
+    request_windows: Arc<Mutex<HashMap<String, RequestWindow>>>,
+}
+
+#[derive(Clone)]
+struct RequestWindow {
+    started: Instant,
+    used: u32,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -81,6 +94,15 @@ struct EventObject {
 }
 
 pub fn app(root: PathBuf, cors: Vec<String>, events: Option<String>) -> Router {
+    app_with_request_limit(root, cors, events, DEFAULT_REQUEST_LIMIT)
+}
+
+pub fn app_with_request_limit(
+    root: PathBuf,
+    cors: Vec<String>,
+    events: Option<String>,
+    request_limit: u32,
+) -> Router {
     // The CLI creates the directory before building the router. Keeping this
     // canonical form in state gives every subsequent containment check one
     // stable root to compare against, even when the user supplied a relative
@@ -91,11 +113,14 @@ pub fn app(root: PathBuf, cors: Vec<String>, events: Option<String>) -> Router {
         cors: Arc::new(cors),
         events,
         client: reqwest::Client::new(),
+        request_limit: request_limit.max(1),
+        request_windows: Arc::new(Mutex::new(HashMap::new())),
     };
     Router::new()
         // Keep Chromium from emitting a 404 console error for its automatic
         // favicon probe when the local console is opened.
         .route("/favicon.ico", get(favicon))
+        .route("/health", get(health))
         .route("/ui", get(ui_html))
         .route("/ui/", get(ui_html))
         .route("/ui/app.css", get(ui_css))
@@ -106,6 +131,14 @@ pub fn app(root: PathBuf, cors: Vec<String>, events: Option<String>) -> Router {
 
 async fn favicon() -> StatusCode {
     StatusCode::NO_CONTENT
+}
+
+async fn health() -> Response {
+    json_response(&serde_json::json!({
+        "status": "ready",
+        "build": BUILD_ID,
+        "version": env!("CARGO_PKG_VERSION")
+    }))
 }
 
 async fn ui_html() -> impl IntoResponse {
@@ -141,6 +174,14 @@ async fn handle(State(state): State<AppState>, req: Request) -> Response {
     if method == Method::OPTIONS {
         return cors_response(&state, &headers, StatusCode::NO_CONTENT.into_response());
     }
+    let client = req
+        .extensions()
+        .get::<ConnectInfo<SocketAddr>>()
+        .map(|peer| peer.0.ip().to_string())
+        .unwrap_or_else(|| "in-process".to_owned());
+    if let Some(response) = take_request_allowance(&state, client).await {
+        return cors_response(&state, &headers, response);
+    }
     let result = if raw_path.starts_with("/_s3dir/api") {
         api_handle(
             &state,
@@ -163,6 +204,37 @@ async fn handle(State(state): State<AppState>, req: Request) -> Response {
         .await
     };
     cors_response(&state, &headers, result)
+}
+
+async fn take_request_allowance(state: &AppState, client: String) -> Option<Response> {
+    let now = Instant::now();
+    let mut windows = state.request_windows.lock().await;
+    let window = windows.entry(client).or_insert(RequestWindow {
+        started: now,
+        used: 0,
+    });
+    if now.duration_since(window.started) >= REQUEST_WINDOW {
+        window.started = now;
+        window.used = 0;
+    }
+    if window.used < state.request_limit {
+        window.used += 1;
+        return None;
+    }
+    let retry_after = REQUEST_WINDOW
+        .saturating_sub(now.duration_since(window.started))
+        .as_secs()
+        .max(1);
+    let mut response = s3_error(
+        StatusCode::TOO_MANY_REQUESTS,
+        "SlowDown",
+        "Request allowance exceeded; retry after the stated delay",
+    );
+    response.headers_mut().insert(
+        header::RETRY_AFTER,
+        HeaderValue::from_str(&retry_after.to_string()).unwrap(),
+    );
+    Some(response)
 }
 
 fn cors_response(
@@ -775,18 +847,18 @@ async fn get_object(
     let side = read_sidecar(state, bucket, key).await.unwrap_or_default();
     let total = bytes.len();
     let (status, data, range) = if !head {
-        if let Some(r) = headers
+        match headers
             .get(header::RANGE)
             .and_then(|v| v.to_str().ok())
-            .and_then(|v| parse_range(v, total))
+            .map(|v| parse_range(v, total))
         {
-            (
+            Some(ParsedRange::Satisfiable(r)) => (
                 StatusCode::PARTIAL_CONTENT,
                 bytes[r.0..=r.1].to_vec(),
                 Some(r),
-            )
-        } else {
-            (StatusCode::OK, bytes, None)
+            ),
+            Some(ParsedRange::Unsatisfiable) => return invalid_range_response(total),
+            Some(ParsedRange::Ignore) | None => (StatusCode::OK, bytes, None),
         }
     } else {
         (StatusCode::OK, vec![], None)
@@ -959,6 +1031,20 @@ async fn multipart_request(
             "Multipart upload does not exist",
         );
     }
+    let target: (String, String) = match fs::read(dir.join("target.json"))
+        .await
+        .ok()
+        .and_then(|contents| serde_json::from_slice::<(String, String)>(&contents).ok())
+    {
+        Some(target) if target.0 == bucket && target.1 == key => target,
+        _ => {
+            return s3_error(
+                StatusCode::BAD_REQUEST,
+                "InvalidRequest",
+                "This upload ID belongs to a different object",
+            );
+        }
+    };
     if method == Method::PUT {
         let n = match part.and_then(|v| v.parse::<u16>().ok()).filter(|n| *n > 0) {
             Some(n) => n,
@@ -995,6 +1081,26 @@ async fn multipart_request(
             "Unsupported multipart operation",
         );
     }
+    let manifest_body = match axum::body::to_bytes(body, 1024 * 1024).await {
+        Ok(body) => body,
+        Err(_) => {
+            return s3_error(
+                StatusCode::BAD_REQUEST,
+                "MalformedXML",
+                "Could not read the multipart completion manifest",
+            );
+        }
+    };
+    let manifest = match parse_completion_manifest(&String::from_utf8_lossy(&manifest_body)) {
+        Some(manifest) => manifest,
+        None => {
+            return s3_error(
+                StatusCode::BAD_REQUEST,
+                "MalformedXML",
+                "CompleteMultipartUpload requires ordered part numbers and ETags",
+            );
+        }
+    };
     let path = match object_path_for_write(state, bucket, key).await {
         Ok(path) => path,
         Err(ObjectWritePathError::KeyPathConflict) => {
@@ -1012,32 +1118,32 @@ async fn multipart_request(
             );
         }
     };
-    let mut out = match fs::File::create(&path).await {
-        Ok(f) => f,
-        Err(e) => return io_error(e),
-    };
-    let mut parts: Vec<_> = WalkDir::new(&dir)
-        .min_depth(1)
-        .max_depth(1)
-        .into_iter()
-        .filter_map(Result::ok)
-        .filter(|e| e.file_name().to_string_lossy().starts_with("part-"))
-        .map(|e| e.path().to_path_buf())
-        .collect();
-    parts.sort();
-    for p in parts {
-        match fs::read(p).await {
-            Ok(bytes) => {
-                if let Err(e) = out.write_all(&bytes).await {
-                    return io_error(e);
-                }
+    let mut bytes = Vec::new();
+    for part in manifest {
+        let part_path = dir.join(format!("part-{:05}", part.number));
+        let part_bytes = match fs::read(&part_path).await {
+            Ok(bytes) => bytes,
+            Err(_) => {
+                return s3_error(
+                    StatusCode::BAD_REQUEST,
+                    "InvalidPart",
+                    "The completion manifest names a missing part",
+                );
             }
-            Err(e) => return io_error(e),
+        };
+        let actual = format!("{:x}", md5::compute(&part_bytes));
+        if actual != part.etag {
+            return s3_error(
+                StatusCode::BAD_REQUEST,
+                "InvalidPart",
+                "The completion manifest ETag does not match the uploaded part",
+            );
         }
+        bytes.extend_from_slice(&part_bytes);
     }
-    let _ = out.flush().await;
-    drop(out);
-    let bytes = fs::read(&path).await.unwrap_or_default();
+    if let Err(e) = fs::write(&path, &bytes).await {
+        return io_error(e);
+    }
     let etag = format!("{:x}", md5::compute(&bytes));
     let _ = fs::remove_dir_all(dir).await;
     notify(
@@ -1050,8 +1156,8 @@ async fn multipart_request(
     );
     xml_response(format!(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CompleteMultipartUploadResult><Location>/{}/{}</Location><Bucket>{}</Bucket><Key>{}</Key><ETag>&quot;{}&quot;</ETag></CompleteMultipartUploadResult>",
-        xml(bucket),
-        xml(key),
+        xml(&target.0),
+        xml(&target.1),
         xml(bucket),
         xml(key),
         etag
@@ -1290,32 +1396,165 @@ pub async fn seed(root: &Path, fixtures: &Path) -> std::io::Result<usize> {
     }
     Ok(count)
 }
+
+/// Writes the bundled, opinionated sample used by `s3dir demo`. The bytes are
+/// compiled into the binary so a demo works without a checkout or network.
+pub async fn write_demo_samples(root: &Path) -> std::io::Result<usize> {
+    let files = [
+        (
+            "assets/welcome.txt",
+            include_bytes!("../examples/assets/welcome.txt").as_slice(),
+        ),
+        (
+            "assets/receipts/may-2026.txt",
+            include_bytes!("../examples/assets/receipts/may-2026.txt").as_slice(),
+        ),
+        (
+            "fixtures/local-stack.json",
+            include_bytes!("../examples/fixtures/local-stack.json").as_slice(),
+        ),
+    ];
+    let mut count = 0;
+    for (relative, bytes) in files {
+        let destination = root.join(relative);
+        if let Some(parent) = destination.parent() {
+            fs::create_dir_all(parent).await?;
+        }
+        fs::write(destination, bytes).await?;
+        count += 1;
+    }
+    Ok(count)
+}
 fn etag_path(path: &Path) -> String {
     std::fs::read(path)
         .map(|v| format!("{:x}", md5::compute(v)))
         .unwrap_or_default()
 }
-fn parse_range(value: &str, len: usize) -> Option<(usize, usize)> {
-    let r = value.strip_prefix("bytes=")?;
-    let (a, b) = r.split_once('-')?;
-    let start = a.parse().ok()?;
-    let end = if b.is_empty() {
-        len.checked_sub(1)?
-    } else {
-        b.parse().ok()?
+enum ParsedRange {
+    Satisfiable((usize, usize)),
+    Unsatisfiable,
+    Ignore,
+}
+
+fn parse_range(value: &str, len: usize) -> ParsedRange {
+    let Some(range) = value.strip_prefix("bytes=") else {
+        return ParsedRange::Ignore;
     };
-    if start <= end && end < len {
-        Some((start, end))
-    } else {
-        None
+    if range.contains(',') {
+        return ParsedRange::Ignore;
     }
+    let Some((start, end)) = range.split_once('-') else {
+        return ParsedRange::Ignore;
+    };
+    if len == 0 {
+        return ParsedRange::Unsatisfiable;
+    }
+    if start.is_empty() {
+        let Ok(suffix) = end.parse::<usize>() else {
+            return ParsedRange::Ignore;
+        };
+        if suffix == 0 {
+            return ParsedRange::Unsatisfiable;
+        }
+        let first = len.saturating_sub(suffix);
+        return ParsedRange::Satisfiable((first, len - 1));
+    }
+    let Ok(first) = start.parse::<usize>() else {
+        return ParsedRange::Ignore;
+    };
+    if first >= len {
+        return ParsedRange::Unsatisfiable;
+    }
+    let last = if end.is_empty() {
+        len - 1
+    } else {
+        match end.parse::<usize>() {
+            Ok(last) if last >= first => last.min(len - 1),
+            Ok(_) => return ParsedRange::Unsatisfiable,
+            Err(_) => return ParsedRange::Ignore,
+        }
+    };
+    ParsedRange::Satisfiable((first, last))
+}
+
+fn invalid_range_response(total: usize) -> Response {
+    let mut response = s3_error(
+        StatusCode::RANGE_NOT_SATISFIABLE,
+        "InvalidRange",
+        "The requested range is not satisfiable",
+    );
+    response.headers_mut().insert(
+        header::CONTENT_RANGE,
+        HeaderValue::from_str(&format!("bytes */{total}")).unwrap(),
+    );
+    response
+}
+
+#[derive(Debug)]
+struct CompletedPart {
+    number: u16,
+    etag: String,
+}
+
+fn parse_completion_manifest(xml_body: &str) -> Option<Vec<CompletedPart>> {
+    let body = xml_body.trim();
+    let open = body.find("<CompleteMultipartUpload")?;
+    if open != 0 {
+        return None;
+    }
+    let content_start = body[open..].find('>')? + 1;
+    let close = body.rfind("</CompleteMultipartUpload>")?;
+    if close < content_start
+        || !body[close + "</CompleteMultipartUpload>".len()..]
+            .trim()
+            .is_empty()
+    {
+        return None;
+    }
+    let mut remainder = &body[content_start..close];
+    let mut parts = Vec::new();
+    let mut prior = 0;
+    while !remainder.trim().is_empty() {
+        let trimmed = remainder.trim_start();
+        let part = trimmed.strip_prefix("<Part>")?;
+        let end = part.find("</Part>")?;
+        let part_body = &part[..end];
+        let number = manifest_field(part_body, "PartNumber")?
+            .parse::<u16>()
+            .ok()?;
+        let etag = manifest_field(part_body, "ETag")?
+            .trim_matches('"')
+            .to_ascii_lowercase();
+        if number == 0 || number <= prior || etag.is_empty() {
+            return None;
+        }
+        parts.push(CompletedPart { number, etag });
+        prior = number;
+        remainder = &part[end + "</Part>".len()..];
+    }
+    (!parts.is_empty()).then_some(parts)
+}
+
+fn manifest_field(part: &str, name: &str) -> Option<String> {
+    let open = format!("<{name}>");
+    let close = format!("</{name}>");
+    let start = part.find(&open)? + open.len();
+    let end = part[start..].find(&close)? + start;
+    let value = part[start..end].trim();
+    (!value.is_empty()).then(|| value.to_owned())
 }
 fn parse_form(value: &str) -> HashMap<String, String> {
     value
         .split('&')
         .filter_map(|p| p.split_once('='))
-        .map(|(k, v)| (k.to_string(), v.to_string()))
+        .filter_map(|(k, v)| Some((decode_form_component(k)?, decode_form_component(v)?)))
         .collect()
+}
+fn decode_form_component(value: &str) -> Option<String> {
+    percent_decode_str(&value.replace('+', " "))
+        .decode_utf8()
+        .ok()
+        .map(|value| value.to_string())
 }
 fn parse_tag_xml(v: &str) -> HashMap<String, String> {
     let mut out = HashMap::new();
@@ -1718,31 +1957,45 @@ mod tests {
             .split("</UploadId>")
             .next()
             .unwrap();
+        let mut completed = Vec::new();
         for (n, v) in [(1, "hello "), (2, "world")] {
             let uri = format!("/assets/big.txt?uploadId={id}&partNumber={n}");
-            assert_eq!(
-                app.clone()
-                    .oneshot(
-                        Request::builder()
-                            .method("PUT")
-                            .uri(uri)
-                            .body(Body::from(v))
-                            .unwrap()
-                    )
-                    .await
+            let response = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .method("PUT")
+                        .uri(uri)
+                        .body(Body::from(v))
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(response.status(), 200);
+            completed.push((
+                n,
+                response.headers()[header::ETAG]
+                    .to_str()
                     .unwrap()
-                    .status(),
-                200
-            )
+                    .to_owned(),
+            ));
         }
         let uri = format!("/assets/big.txt?uploadId={id}");
+        let manifest = completed
+            .iter()
+            .map(|(number, etag)| {
+                format!("<Part><PartNumber>{number}</PartNumber><ETag>{etag}</ETag></Part>")
+            })
+            .collect::<String>();
         assert_eq!(
             app.clone()
                 .oneshot(
                     Request::builder()
                         .method("POST")
                         .uri(uri)
-                        .body(Body::empty())
+                        .body(Body::from(format!(
+                            "<CompleteMultipartUpload>{manifest}</CompleteMultipartUpload>"
+                        )))
                         .unwrap()
                 )
                 .await
@@ -1754,6 +2007,195 @@ mod tests {
             fs::read(tmp.path().join("assets/big.txt")).await.unwrap(),
             b"hello world"
         );
+    }
+
+    #[tokio::test]
+    async fn multipart_completion_rejects_empty_or_mismatched_manifests() {
+        let tmp = tempfile::tempdir().unwrap();
+        fs::create_dir(tmp.path().join("assets")).await.unwrap();
+        let app = app(tmp.path().into(), vec![], None);
+        let start = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/assets/report.txt?uploads")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let body =
+            String::from_utf8(to_bytes(start.into_body(), 9999).await.unwrap().to_vec()).unwrap();
+        let id = body
+            .split("<UploadId>")
+            .nth(1)
+            .unwrap()
+            .split("</UploadId>")
+            .next()
+            .unwrap();
+        let complete = |manifest: String| {
+            Request::builder()
+                .method("POST")
+                .uri(format!("/assets/report.txt?uploadId={id}"))
+                .body(Body::from(manifest))
+                .unwrap()
+        };
+        let empty = app
+            .clone()
+            .oneshot(complete("<CompleteMultipartUpload/>".into()))
+            .await
+            .unwrap();
+        assert_eq!(empty.status(), StatusCode::BAD_REQUEST);
+        assert!(
+            String::from_utf8_lossy(&to_bytes(empty.into_body(), 9999).await.unwrap())
+                .contains("MalformedXML")
+        );
+
+        let uploaded = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri(format!("/assets/report.txt?uploadId={id}&partNumber=1"))
+                    .body(Body::from("one"))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(uploaded.status(), StatusCode::OK);
+        let mismatched = app
+            .clone()
+            .oneshot(complete(
+                "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>not-the-part</ETag></Part></CompleteMultipartUpload>".into(),
+            ))
+            .await
+            .unwrap();
+        assert_eq!(mismatched.status(), StatusCode::BAD_REQUEST);
+        assert!(
+            String::from_utf8_lossy(&to_bytes(mismatched.into_body(), 9999).await.unwrap())
+                .contains("InvalidPart")
+        );
+        assert!(!tmp.path().join("assets/report.txt").exists());
+    }
+
+    #[tokio::test]
+    async fn suffix_and_unsatisfiable_ranges_follow_http_rules() {
+        let tmp = tempfile::tempdir().unwrap();
+        fs::create_dir(tmp.path().join("assets")).await.unwrap();
+        fs::write(tmp.path().join("assets/hello.txt"), b"hello world")
+            .await
+            .unwrap();
+        let app = app(tmp.path().into(), vec![], None);
+        let suffix = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/assets/hello.txt")
+                    .header(header::RANGE, "bytes=-5")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(suffix.status(), StatusCode::PARTIAL_CONTENT);
+        assert_eq!(suffix.headers()[header::CONTENT_RANGE], "bytes 6-10/11");
+        assert_eq!(
+            &to_bytes(suffix.into_body(), 99).await.unwrap()[..],
+            b"world"
+        );
+        let missing = app
+            .oneshot(
+                Request::builder()
+                    .uri("/assets/hello.txt")
+                    .header(header::RANGE, "bytes=99-100")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(missing.status(), StatusCode::RANGE_NOT_SATISFIABLE);
+        assert_eq!(missing.headers()[header::CONTENT_RANGE], "bytes */11");
+    }
+
+    #[tokio::test]
+    async fn url_encoded_tag_headers_round_trip_decoded_values() {
+        let tmp = tempfile::tempdir().unwrap();
+        fs::create_dir(tmp.path().join("assets")).await.unwrap();
+        let app = app(tmp.path().into(), vec![], None);
+        let put = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri("/assets/note.txt")
+                    .header("x-amz-tagging", "label=hello%20world&owner=ada%2Blovelace")
+                    .body(Body::from("note"))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(put.status(), StatusCode::OK);
+        let tags = app
+            .oneshot(
+                Request::builder()
+                    .uri("/assets/note.txt?tagging")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(tags.status(), StatusCode::OK);
+        let tags =
+            String::from_utf8(to_bytes(tags.into_body(), 9999).await.unwrap().to_vec()).unwrap();
+        assert!(tags.contains("<Value>hello world</Value>"));
+        assert!(tags.contains("<Value>ada+lovelace</Value>"));
+    }
+
+    #[tokio::test]
+    async fn health_identity_and_request_allowance_are_exposed() {
+        let tmp = tempfile::tempdir().unwrap();
+        let app = app_with_request_limit(tmp.path().into(), vec![], None, 2);
+        let health = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/health")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(health.status(), StatusCode::OK);
+        let health =
+            String::from_utf8(to_bytes(health.into_body(), 9999).await.unwrap().to_vec()).unwrap();
+        assert!(health.contains("\"status\":\"ready\""));
+        assert!(health.contains(BUILD_ID));
+        for _ in 0..2 {
+            assert_eq!(
+                app.clone()
+                    .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
+                    .await
+                    .unwrap()
+                    .status(),
+                StatusCode::OK
+            );
+        }
+        let limited = app
+            .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(limited.status(), StatusCode::TOO_MANY_REQUESTS);
+        assert!(limited.headers().contains_key(header::RETRY_AFTER));
+    }
+
+    #[tokio::test]
+    async fn bundled_demo_samples_are_written_to_an_isolated_root() {
+        let tmp = tempfile::tempdir().unwrap();
+        assert_eq!(write_demo_samples(tmp.path()).await.unwrap(), 3);
+        assert!(tmp.path().join("assets/welcome.txt").is_file());
+        assert!(tmp.path().join("assets/receipts/may-2026.txt").is_file());
+        assert!(tmp.path().join("fixtures/local-stack.json").is_file());
     }
 
     #[test]

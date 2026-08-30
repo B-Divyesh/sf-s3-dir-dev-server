@@ -1,10 +1,20 @@
 # s3-dir-dev-server
 
-A small, development-only S3-compatible server that stores objects as ordinary files and includes a browser console. It is for application developers who want `docker compose up` to provide an inspectable S3 endpoint without running a production object store.
+Run a local S3-compatible endpoint from an ordinary directory. It is for application developers who need inspectable object storage during development and tests.
 
-> Not production software. There is no IAM enforcement, versioning, replication, encryption, or durability guarantee.
+> Development use only. s3dir does not provide IAM, versioning, replication, encryption, or durability guarantees.
 
-## Run it
+## Try the bundled sample
+
+```sh
+cargo run -- demo --port 9000
+```
+
+The command creates a unique temporary directory, writes three bundled sample objects, and starts the normal server. It prints the directory and its local `/ui` browser console. It does not read or write your project directory. Press Ctrl-C to leave demo mode and delete the sample directory.
+
+The shipped sample files are `assets/welcome.txt`, `assets/receipts/may-2026.txt`, and `fixtures/local-stack.json`. See [`.factory/demo.md`](.factory/demo.md) for sandbox details.
+
+## Run against your directory
 
 ```sh
 cargo build --release
@@ -13,7 +23,9 @@ cargo build --release
   --events http://localhost:4000/s3-events --cors http://localhost:5173
 ```
 
-The endpoint is `http://localhost:9000`; the console is `/ui`. AWS SDKs can use any non-empty development credentials. Signatures and presigned query parameters are accepted but intentionally not authenticated:
+The endpoint is `http://localhost:9000`; the browser console is `/ui`; readiness and build identity are available at `/health`. The default request allowance is 300 requests per client per 60 seconds. Additional requests receive `429 SlowDown` with `Retry-After`. Pass `--request-limit` to use a different development allowance.
+
+AWS SDKs can use any non-empty development credentials. Signatures and presigned query parameters are accepted but intentionally not authenticated:
 
 ```ts
 const s3 = new S3Client({
@@ -25,40 +37,41 @@ const s3 = new S3Client({
 await s3.send(new PutObjectCommand({ Bucket: "assets", Key: "hello.txt", Body: "hello" }));
 ```
 
-Supported: create/list/head/delete buckets; put/get/head/delete objects; ListObjectsV2; multipart create/upload/complete/abort; presigned GET/PUT; CORS/preflight; `x-amz-meta-*`; object tagging; fixture seeding; object-created/removed webhook events. Run `s3dir serve --help` for all options and `s3dir serve --json` for a machine-readable startup record.
+The documented local S3 workflow covers bucket and object operations, ListObjectsV2, valid multipart uploads, metadata, and object tags. Multipart completion requires an ordered manifest with each uploaded part number and ETag. Run `s3dir serve --help` for additional development options.
 
-On disk, `bucket/path/file.ext` is the object. Metadata and tags live in hidden `bucket/.s3dir/*.json` sidecars. A file key such as `foo` cannot coexist with `foo/bar`; either file-versus-directory direction returns `409 Conflict` with the S3 error code `KeyPathConflict`.
-
-The public documentation URL is a static installation guide and visual tour. It does not run an S3 endpoint: start `s3dir` locally, then use the printed local endpoint and its `/ui` console.
+On disk, `bucket/path/file.ext` is the object. Metadata and tags use hidden `bucket/.s3dir/*.json` sidecars. A file key such as `foo` cannot coexist with `foo/bar`; either direction returns `409 KeyPathConflict`.
 
 ## Filesystem boundary
 
-Every bucket name and object key is validated before it reaches the filesystem. The server stores a canonical data-root path, rejects traversal and internal `.s3dir` segments, and refuses bucket, object-parent, sidecar, and multipart paths that are symlinks or canonically resolve outside that root. This is a development safeguard, not a reason to expose the unauthenticated server to untrusted users or networks.
+Every bucket name and object key is validated before filesystem access. The server rejects traversal, `.s3dir` segments, symlink paths, and canonical paths outside the selected root. This is a development safeguard, not a reason to expose the unauthenticated server to untrusted users.
 
 ## Docker Compose
 
-```yaml
-services:
-  s3:
-    build: .
-    command: ["serve", "/data", "--host", "0.0.0.0", "--port", "9000", "--cors", "http://localhost:5173"]
-    ports: ["9000:9000"]
-    volumes: ["./dev-data:/data"]
+```sh
+docker compose up --build
 ```
 
-## Develop, test, and package
+The supplied `compose.yaml` maps `./dev-data` to `/data`. On a fresh Linux checkout, the image entrypoint takes ownership of the bind source and then runs the server as its unprivileged `s3dir` user. The endpoint is `http://localhost:9000`.
+
+## Privacy and static documentation
+
+The CLI has no accounts, analytics, telemetry, or remote storage. The only optional server egress is the webhook URL passed with `--events`. The documentation site uses no third-party runtime requests and caches visited public pages for offline reading. Its static deployment artifact is `dist/site`.
+
+## Develop, test, package, and deploy
 
 ```sh
-cargo test
 npm ci
-npx playwright install chromium # once, for the local console browser test
 npm test
-npm run build       # complete quality gate; site lands in dist/site
-npm run build:site  # static landing only
+npm run build
+cargo fmt --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo build --release
 cargo package --allow-dirty
 ```
 
-The static documentation site deploys from `dist/site`. The server UI is compiled into the Rust binary. No telemetry or third-party runtime requests are present.
+`npm run build` runs the Rust suite, browser checks, claim tests, and the static production build. `cargo package --allow-dirty` produces the ready-to-publish crate; do not publish from this repository. The factory deploys `dist/site` as the static documentation site.
+
+Every public claim is listed with its sandbox command in [`.factory/claims.json`](.factory/claims.json).
 
 ## License
 

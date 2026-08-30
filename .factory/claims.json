@@ -1,0 +1,72 @@
+[
+  {
+    "id": "demo-cli",
+    "claim": "Try the bundled sample without touching your project directory.",
+    "where": "Landing action, /demo, README",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:demo-cli' tests/claims.test.js",
+    "sandbox": "Runs s3dir demo with a fresh temporary directory and verifies the bundled objects and health endpoint."
+  },
+  {
+    "id": "directory-mapping",
+    "claim": "Stores S3 objects as ordinary files in the selected directory.",
+    "where": "Landing mapping section, README",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:directory-mapping' tests/claims.test.js",
+    "sandbox": "Starts a fresh server, writes an object through S3, and reads the mapped file from disk."
+  },
+  {
+    "id": "api-workflow",
+    "claim": "Supports the documented local S3 workflow for objects, multipart uploads, byte ranges, metadata, and tags.",
+    "where": "Landing Local S3 workflow section, README",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:api-workflow' tests/claims.test.js",
+    "sandbox": "Uses a fresh endpoint to complete multipart upload and verify range, tag, and build-health behavior."
+  },
+  {
+    "id": "request-allowance",
+    "claim": "Allows 300 requests per client every 60 seconds, then returns 429 with Retry-After.",
+    "where": "Landing installation section, README",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:request-allowance' tests/claims.test.js",
+    "sandbox": "Makes the first 301 requests from one fresh client and checks the final response."
+  },
+  {
+    "id": "browser-console",
+    "claim": "Includes a browser console at the local /ui endpoint.",
+    "where": "Landing Browser console section, README",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:browser-console' tests/claims.test.js",
+    "sandbox": "Loads the console at 390px from a fresh local server and checks its reachable heading and touch target."
+  },
+  {
+    "id": "no-telemetry",
+    "claim": "The documentation site makes no third-party runtime requests.",
+    "where": "Landing privacy fact, Privacy page, README",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:no-telemetry' tests/claims.test.js",
+    "sandbox": "Records every browser request while loading the built landing page and permits only its local origin."
+  },
+  {
+    "id": "offline-docs",
+    "claim": "Public documentation pages reload offline after the first visit.",
+    "where": "Privacy page, README",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:offline-docs' tests/claims.test.js",
+    "sandbox": "Uses a fresh browser context, activates the service worker, goes offline, and reloads Privacy."
+  },
+  {
+    "id": "filesystem-boundary",
+    "claim": "Rejects object paths outside the selected directory.",
+    "where": "README Filesystem boundary",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:filesystem-boundary' tests/claims.test.js",
+    "sandbox": "Attempts an encoded traversal write against a fresh server and checks that no outside file exists."
+  },
+  {
+    "id": "privacy-default",
+    "claim": "Sends object events only to a webhook URL you explicitly configure.",
+    "where": "README Privacy and static documentation, Privacy page",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:privacy-default' tests/claims.test.js",
+    "sandbox": "Configures a fresh local webhook receiver, writes one object, and asserts that it receives one event."
+  },
+  {
+    "id": "compose-bind-mount",
+    "claim": "The supplied Compose image makes a fresh /data bind mount writable before running s3dir unprivileged.",
+    "where": "README Docker Compose, compose.yaml",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:compose-bind-mount' tests/claims.test.js",
+    "sandbox": "Checks the shipped image entrypoint contract: chown occurs before su-exec drops to the s3dir user."
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "service": "image-worker",
+  "endpoint": "http://127.0.0.1:9000",
+  "bucket": "assets",
+  "sample_key": "welcome.txt"
+}

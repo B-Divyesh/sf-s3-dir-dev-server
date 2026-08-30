@@ -65,6 +65,9 @@ tr:focus-visible {
   left: 16px;
   top: -80px;
   padding: 12px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
   background: white;
   color: var(--ink);
   z-index: 10;
@@ -86,6 +89,8 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 44px;
+  min-height: 44px;
   color: white;
   text-decoration: none;
 }

@@ -6,7 +6,9 @@ license = "Apache-2.0"
 description = "A development-only S3-compatible server backed by an ordinary directory"
 repository = "https://github.com/B-Divyesh/sf-s3-dir-dev-server"
 readme = "README.md"
-include = ["src/**", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE", "CHANGELOG.md"]
+# Leading slashes keep Cargo from treating matching documentation files in a
+# consumer's node_modules directory as crate sources.
+include = ["/src/**", "/examples/**", "/Cargo.toml", "/Cargo.lock", "/build.rs", "/README.md", "/LICENSE", "/CHANGELOG.md"]
 
 [[bin]]
 name = "s3dir"
