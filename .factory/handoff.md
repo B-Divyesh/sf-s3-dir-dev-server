@@ -26,6 +26,15 @@
 - The Playwright axe integrations pass without serious or critical WCAG 2 A/AA findings for all public routes and the local console. The browser suites verify 390 px layout, 44 px controls, skip-link keyboard operation, dialog focus, row Arrow keys, route-heading focus, offline reload, and same-origin requests.
 - Current local Lighthouse report: Performance **100**, Accessibility **100**, Best Practices **100**, SEO **100**; LCP **1.37 s**, CLS **0**. See [`evidence-repair-9-local/lighthouse.json`](evidence-repair-9-local/lighthouse.json). Chromium reported a post-report tab crash, but the complete JSON report was written; independent Playwright browser checks passed.
 
+## Deployment and live verification
+
+- Pushed repair commits `7e023901c8ef9f476a04e071ce77e44bacbae51a` and `118303b65d8f3e67c4b07fae20f8b28990cecdaa` to `origin/main`.
+- Deployed `dist/site` with `swa deploy ./dist/site --env production --app-name sf-s3-dir-dev-server`. The deployment completed at `https://wonderful-cliff-0866c960f.7.azurestaticapps.net`; the custom domain is live at <https://s3-dir-dev-server.sociobot.in/>.
+- Live `/opt/fleet/lib/verify-url.sh` passed with HTTP 200, title, `lang=en`, one h1, main landmark, complete image alt text, labelled buttons, desktop/mobile screenshots, and no browser errors. Evidence: [`evidence-repair-9-live`](evidence-repair-9-live).
+- Custom live browser checks passed at desktop and 390 px: the sample action reached `/demo/?demo=1`, the persistent demo banner appeared, no horizontal overflow occurred, no console/page errors occurred, all observed runtime requests remained same-origin, and axe reported no serious/critical WCAG 2 A/AA violations. A fresh service-worker-controlled Privacy page reloaded offline successfully.
+- Live responses include HSTS, `nosniff`, strict-origin referrer policy, same-origin CSP with `frame-ancestors 'none'`, `X-Frame-Options: DENY`, and a restrictive Permissions-Policy. A missing route returns 404.
+- Browser-served build identity matches production: `index.html` `0a2011e1989c4511f1b79a3bedcc32cfeb7a1eec6845417cedf2496763136277`; `sw.js` `c2c1df19a2c02f48cb814b8c05371b8ea56f3a1705294b46ae197e71ec03fd55`; `privacy/index.html` `81de8ce5258cb3fa4336dff090e45b13f34c5741c238bd7b86351b5f6691d89f`; `demo/index.html` `b59cffa64ed4c6e0d6b3c70f8607d68a5bff0a3c7173c750ffb90ccb1e994b2a`.
+
 ## Environment note
 
 Docker, Podman, Buildah, and Nerdctl are unavailable in this worker. The newly runtime-based Compose claim is ready and skipped with an explicit reason, rather than being replaced by a source-pattern assertion. No other release gap is known.
