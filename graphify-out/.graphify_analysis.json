@@ -1,98 +1,112 @@
 {
   "communities": {
     "0": [
-      "hashmap",
+      "instant",
       "intoresponse",
       "router",
       "src_lib",
       "src_lib_app",
+      "src_lib_app_with_request_limit",
       "src_lib_blocks_traversal_and_nonempty_bucket_delete",
       "src_lib_bucketinfo",
+      "src_lib_bundled_demo_samples_are_written_to_an_isolated_root",
       "src_lib_collect_objects",
+      "src_lib_completedpart",
       "src_lib_concurrent_puts_create_every_object_under_a_new_shared_prefix",
       "src_lib_console_api_rejects_traversal_bucket_segments_and_escape_writes",
       "src_lib_decode_aws_chunked",
+      "src_lib_decode_form_component",
       "src_lib_decodes_sigv4_streaming_payloads",
       "src_lib_documented_put_get_list_flow",
       "src_lib_eventbucket",
       "src_lib_eventobject",
       "src_lib_eventrecord",
       "src_lib_events3",
-      "src_lib_json_buckets",
-      "src_lib_json_response",
+      "src_lib_health_identity_and_request_allowance_are_exposed",
+      "src_lib_manifest_field",
       "src_lib_multipart_assembles_parts",
+      "src_lib_multipart_completion_rejects_empty_or_mismatched_manifests",
       "src_lib_objectinfo",
       "src_lib_objectwritepatherror",
+      "src_lib_parse_completion_manifest",
       "src_lib_parse_form",
       "src_lib_parse_range",
-      "src_lib_parse_tag_xml",
-      "src_lib_query_params",
+      "src_lib_parsedrange",
       "src_lib_rejects_bucket_and_object_symlinks_outside_the_canonical_root",
       "src_lib_reports_documented_key_path_conflicts_for_file_directory_pairs",
+      "src_lib_requestwindow",
+      "src_lib_rs_string",
+      "src_lib_rs_vec",
+      "src_lib_suffix_and_unsatisfiable_ranges_follow_http_rules",
       "src_lib_ui_css",
       "src_lib_ui_html",
       "src_lib_ui_js",
-      "src_lib_xml",
-      "string",
-      "value",
-      "vec"
+      "src_lib_url_encoded_tag_headers_round_trip_decoded_values",
+      "src_lib_xml"
     ],
     "1": [
+      "arc",
       "body",
-      "error",
+      "client",
+      "hashmap",
       "headermap",
       "method",
+      "mutex",
       "request",
       "response",
       "src_lib_api_handle",
+      "src_lib_appstate",
       "src_lib_bucket_request",
       "src_lib_cors_response",
-      "src_lib_favicon",
+      "src_lib_delete_object",
       "src_lib_get_object",
       "src_lib_handle",
+      "src_lib_invalid_range_response",
       "src_lib_io_error",
-      "src_lib_json_error",
+      "src_lib_json_buckets",
       "src_lib_list_buckets",
       "src_lib_list_objects",
       "src_lib_multipart_request",
       "src_lib_multipart_start",
+      "src_lib_notify",
+      "src_lib_parse_tag_xml",
       "src_lib_put_object",
+      "src_lib_rs_error",
       "src_lib_s3_error",
       "src_lib_s3_handle",
       "src_lib_tagging_request",
+      "src_lib_take_request_allowance",
       "src_lib_valid_bucket",
       "src_lib_xml_response",
-      "state",
-      "statuscode"
+      "state"
     ],
     "2": [
-      "arc",
-      "client",
-      "option",
       "path",
-      "pathbuf",
-      "result",
-      "src_lib_appstate",
       "src_lib_canonically_contained",
-      "src_lib_delete_object",
       "src_lib_etag_path",
       "src_lib_existing_bucket_path",
       "src_lib_existing_object_path",
       "src_lib_json_objects",
-      "src_lib_notify",
       "src_lib_object_path_for_write",
+      "src_lib_query_params",
       "src_lib_read_sidecar",
+      "src_lib_rs_option",
+      "src_lib_rs_pathbuf",
+      "src_lib_rs_result",
       "src_lib_safe_bucket_path",
       "src_lib_safe_object_path",
       "src_lib_seed",
       "src_lib_sidecar",
       "src_lib_sidecar_path",
       "src_lib_uploads_dir",
+      "src_lib_write_demo_samples",
       "src_lib_write_sidecar"
     ],
     "3": [
+      "axe_core",
       "package",
       "package_devdependencies",
+      "package_devdependencies_axe_core",
       "package_devdependencies_playwright",
       "package_devdependencies_vite",
       "package_name",
@@ -109,6 +123,24 @@
       "vite"
     ],
     "4": [
+      "box",
+      "ipaddr",
+      "src_main",
+      "src_main_cli",
+      "src_main_command",
+      "src_main_demo",
+      "src_main_main",
+      "src_main_rs_error",
+      "src_main_rs_option",
+      "src_main_rs_pathbuf",
+      "src_main_rs_result",
+      "src_main_rs_string",
+      "src_main_rs_vec",
+      "src_main_serve",
+      "src_main_serveoptions",
+      "src_main_wait_for_shutdown"
+    ],
+    "5": [
       "src_ui",
       "src_ui_choose",
       "src_ui_els",
@@ -126,22 +158,18 @@
       "src_ui_tell",
       "src_ui_uploadfiles"
     ],
-    "5": [
-      "box",
-      "ipaddr",
-      "src_main",
-      "src_main_cli",
-      "src_main_command",
-      "src_main_main",
-      "src_main_rs_error",
-      "src_main_rs_option",
-      "src_main_rs_pathbuf",
-      "src_main_rs_result",
-      "src_main_rs_string",
-      "src_main_rs_vec",
-      "src_main_serve"
-    ],
     "6": [
+      "tests_claims_test",
+      "tests_claims_test_assertnoseriousaxe",
+      "tests_claims_test_chromiumexecutable",
+      "tests_claims_test_contenttype",
+      "tests_claims_test_rawrequest",
+      "tests_claims_test_starts3",
+      "tests_claims_test_startserver",
+      "tests_claims_test_startstaticsite",
+      "tests_claims_test_stop"
+    ],
+    "7": [
       "tests_ui_browser_test",
       "tests_ui_browser_test_assertonlystate",
       "tests_ui_browser_test_chromiumexecutable",
@@ -151,69 +179,101 @@
       "tests_ui_browser_test_statesnapshot",
       "tests_ui_browser_test_stopserver"
     ],
-    "7": [
+    "8": [
+      "src_lib_favicon",
+      "src_lib_health",
+      "src_lib_json_error",
+      "src_lib_json_response",
+      "statuscode",
+      "value"
+    ],
+    "9": [
+      "site_demo",
+      "site_demo_announce",
+      "site_demo_copy",
+      "site_demo_reset",
+      "site_demo_toast"
+    ],
+    "10": [
       "site_main",
       "site_main_copy",
       "site_main_toast"
     ],
-    "8": [
+    "11": [
+      "build",
+      "build_main"
+    ],
+    "12": [
+      "docker_entrypoint",
+      "docker_entrypoint_sh__entry"
+    ],
+    "13": [
       "site_public_sw",
       "site_public_sw_shell"
     ],
-    "9": [
+    "14": [
       "tests_site_test",
       "tests_site_test_execfileasync"
     ],
-    "10": [
-      "pkg_s3_dir_dev_server"
-    ],
-    "11": [
-      "site_vite_config"
-    ],
-    "12": [
-      "src_lib_rs_error"
-    ],
-    "13": [
-      "src_lib_rs_option"
-    ],
-    "14": [
-      "src_lib_rs_pathbuf"
-    ],
     "15": [
-      "src_lib_rs_result"
+      "error"
     ],
     "16": [
-      "src_lib_rs_string"
+      "option"
     ],
     "17": [
-      "src_lib_rs_vec"
+      "pathbuf"
+    ],
+    "18": [
+      "pkg_s3_dir_dev_server"
+    ],
+    "19": [
+      "result"
+    ],
+    "20": [
+      "site_sw_register"
+    ],
+    "21": [
+      "site_vite_config"
+    ],
+    "22": [
+      "string"
+    ],
+    "23": [
+      "vec"
     ]
   },
   "cohesion": {
-    "0": 0.10420168067226891,
-    "1": 0.23384615384615384,
-    "2": 0.2450592885375494,
-    "3": 0.125,
-    "4": 0.3416666666666667,
-    "5": 0.24358974358974358,
-    "6": 0.32142857142857145,
-    "7": 0.6666666666666666,
-    "8": 1.0,
-    "9": 1.0,
-    "10": 1.0,
+    "0": 0.09175377468060394,
+    "1": 0.19607843137254902,
+    "2": 0.24736842105263157,
+    "3": 0.1111111111111111,
+    "4": 0.26666666666666666,
+    "5": 0.3416666666666667,
+    "6": 0.2777777777777778,
+    "7": 0.32142857142857145,
+    "8": 0.26666666666666666,
+    "9": 0.4,
+    "10": 0.6666666666666666,
     "11": 1.0,
     "12": 1.0,
     "13": 1.0,
     "14": 1.0,
     "15": 1.0,
     "16": 1.0,
-    "17": 1.0
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0
   },
   "gods": [
     {
       "id": "src_lib_appstate",
       "label": "AppState",
-      "degree": 30
+      "degree": 34
     },
     {
       "id": "src_lib_s3_handle",
@@ -226,6 +286,11 @@
       "degree": 18
     },
     {
+      "id": "src_lib_app",
+      "label": "app()",
+      "degree": 17
+    },
+    {
       "id": "src_lib_put_object",
       "label": "put_object()",
       "degree": 16
@@ -233,7 +298,7 @@
     {
       "id": "src_lib_multipart_request",
       "label": "multipart_request()",
-      "degree": 15
+      "degree": 16
     },
     {
       "id": "src_lib_tagging_request",
@@ -241,14 +306,9 @@
       "degree": 14
     },
     {
-      "id": "src_lib_app",
-      "label": "app()",
-      "degree": 13
-    },
-    {
-      "id": "src_lib_bucket_request",
-      "label": "bucket_request()",
-      "degree": 13
+      "id": "src_lib_s3_error",
+      "label": "s3_error()",
+      "degree": 14
     },
     {
       "id": "src_lib_canonically_contained",
@@ -263,7 +323,7 @@
   ],
   "surprises": [
     {
-      "source": "bucket_request()",
+      "source": "parse_form()",
       "target": "HashMap",
       "source_files": [
         "src/lib.rs",
@@ -271,22 +331,11 @@
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 0 \u2192 community 1"
+      "note": "Bridges community 1 \u2192 community 0"
     },
     {
-      "source": "Sidecar",
+      "source": "query_params()",
       "target": "HashMap",
-      "source_files": [
-        "src/lib.rs",
-        ""
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "note": "Bridges community 0 \u2192 community 2"
-    },
-    {
-      "source": "delete_object()",
-      "target": "Response",
       "source_files": [
         "src/lib.rs",
         ""
@@ -294,6 +343,39 @@
       "confidence": "EXTRACTED",
       "relation": "references",
       "note": "Bridges community 1 \u2192 community 2"
+    },
+    {
+      "source": "health()",
+      "target": "Response",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 1 \u2192 community 8"
+    },
+    {
+      "source": "app()",
+      "target": "Option",
+      "source_files": [
+        "src/lib.rs",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 2 \u2192 community 0"
+    },
+    {
+      "source": "json_objects()",
+      "target": "json_error()",
+      "source_files": [
+        "src/lib.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 2 \u2192 community 8"
     }
   ],
   "tokens": {
