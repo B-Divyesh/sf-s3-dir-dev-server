@@ -12,6 +12,7 @@ Verification completed:
 - The full build includes 14 Rust tests, static/site regressions, browser/390px tests, all claim tests, same-origin privacy checks, offline reload, and axe serious/critical checks.
 - `/opt/fleet/lib/verify-url.sh` passed locally against the final build and cold against production. Evidence and desktop/mobile screenshots: [`evidence-polish-1-local`](evidence-polish-1-local) and [`evidence-polish-1-live`](evidence-polish-1-live).
 - Cold production Playwright recheck passed F-1-1 through F-1-4 with no console errors or third-party requests. `https://s3-dir-dev-server.sociobot.in/missing-review-route` returned 404 with its description, canonical, Open Graph, Twitter, and apple-touch metadata. The exact result is [`evidence-polish-1-live/live-findings.json`](evidence-polish-1-live/live-findings.json).
+- Live Lighthouse: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.06 s and CLS 0. See [`evidence-polish-1-live/lighthouse.json`](evidence-polish-1-live/lighthouse.json).
 
 No review finding remains. Docker-family tooling is unavailable in this worker, so the existing Compose source-contract claim was verified but an actual container runtime smoke test could not run.
 

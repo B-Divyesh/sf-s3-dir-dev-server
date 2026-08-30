@@ -25,5 +25,6 @@ Only [`review-1.md`](review-1.md) exists among the required earlier review and p
 - Clean clone: `npm ci`, `npm run build`, every exact `.factory/claims.json` command, `cargo fmt --check`, strict Clippy, and `cargo build --release --locked` all exited 0.
 - Local production artifact: `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/ .factory/evidence-polish-1-local` passed with no browser errors. Screenshots are in `evidence-polish-1-local/`.
 - Deployed with `swa deploy ./dist/site --env production --app-name sf-s3-dir-dev-server`. The cold live checker passed at the deployed URL with no console errors or third-party requests; the designed missing route returned HTTP 404 with complete metadata.
+- Live Lighthouse report: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.06 s and CLS 0. The report is `evidence-polish-1-live/lighthouse.json`.
 
 There are no unresolved findings from the cumulative review record.
