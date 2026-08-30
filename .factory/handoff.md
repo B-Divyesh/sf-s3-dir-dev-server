@@ -49,6 +49,33 @@ concurrent-PUT fix, and product visual system were preserved.
 | Offline/update | Service worker became controlling after reload; a dedicated fresh context retained the cached landing h1 during warm offline reload; source test verifies the versioned cache cleanup |
 | Response policy | Source tests confirm CSP with `frame-ancestors 'none'`, nosniff, referrer policy, X-Frame-Options DENY, Permissions-Policy, and immutable hashed-asset caching in both `_headers` and Static Web Apps config |
 
+## Deployment
+
+Deployed `dist/site` as the configured Standard static documentation site at
+<https://s3-dir-dev-server.sociobot.in/> using factory deployment
+`03279d12-2b86-43eb-9412-a4aa289878f7`.
+
+Live SHA-256 identity matches the generated artifact:
+
+| File | SHA-256 |
+| --- | --- |
+| `index.html` | `c5559ea6588584b88838c09a3ee12033b0b8f5bde5e6292b3d18cd4c80fd93e1` |
+| `terms/index.html` | `01aaef82d90be4f410f9ec6be52d89143373c594579a679a9b0c807b64a997b5` |
+| `privacy/index.html` | `053c37acf648d4f03f900140cd6485f4e14780e0410a2c729e41366425174d3b` |
+| `sw.js` | `bf7311a801f608bb0d26674703da37dd12d40f99203fa5b60e27871dc1f39ed4` |
+
+Live HTTPS returns 200 with HSTS, strict same-origin CSP including
+`frame-ancestors 'none'`, `X-Frame-Options: DENY`, nosniff, Referrer-Policy,
+and Permissions-Policy. The fingerprinted JavaScript asset returns
+`Cache-Control: public, max-age=31536000, immutable`.
+
+Fresh live Chromium contexts passed desktop landing plus 390 px Terms and
+Privacy routes with one h1/main, no horizontal overflow, no console/page
+errors, and only same-origin requests. A dedicated live service-worker context
+also retained the landing h1 during warm offline reload. Axe-core WCAG 2 A/AA
+returned zero violations on the live desktop landing and both 390 px legal
+routes; CSP was bypassed only for injected audit code.
+
 ## Run and publish
 
 ```sh
@@ -63,9 +90,9 @@ cargo package --allow-dirty
 
 The static deployment artifact is `dist/site`. The ready-to-publish CLI
 artifact is verified with `cargo package --allow-dirty`; do not publish it
-from this worker. Push `main` to trigger the static deployment configured for
-this product, then compare the deployed Terms page and static headers against
-the generated artifact.
+from this worker. To deploy a future static build, run
+`/opt/fleet/lib/deploy-static.sh s3-dir-dev-server dist/site` and compare the
+deployed Terms page and static headers against the generated artifact.
 
 ## Known limitation
 
