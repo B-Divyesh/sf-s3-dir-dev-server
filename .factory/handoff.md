@@ -1,4 +1,18 @@
-# Verification handoff — PASS
+# Review handoff — FAIL
+
+## Review-1 handoff — FAIL
+
+Reviewer-only work order `s3-dir-dev-server-review-1` completed without product-code changes. The review is in [`review-1.md`](review-1.md).
+
+- Clean clone at `d0fca1eb69d1053ec9d150d8170f7ea9b0cce7d6`: all 15 exact claim commands, `npm test`, and `npm run build` passed; `dist/site` was produced.
+- Live cold-browser checks at 390 px and desktop, route crawl, request log, demo path, claim/privacy checks, and earlier-finding regressions were performed.
+- Direct `s3dir demo` check created a unique temporary sample directory, served health 200, and removed it after Ctrl-C.
+- Verdict is **FAIL** with five minor findings: one unclear privacy fact, one generic heading, one 24-word README sentence, missing route-change focus, and missing 404 metadata. No code was changed.
+- Docker-family tooling is absent, so Compose runtime remains unexercised.
+
+---
+
+## Prior verification handoff — PASS
 
 **Verification work order:** `s3-dir-dev-server-verify-8`
 **Candidate:** `b7192257f2d6ba0ddd64f5464f4c03238bead695`
