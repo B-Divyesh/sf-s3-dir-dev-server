@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Changed the distributed project license and all public license declarations
+  to Apache-2.0, as required for this product.
 - Fixed concurrent object PUTs under a newly created shared prefix so valid
   requests no longer fail with `InvalidObjectName`.
 

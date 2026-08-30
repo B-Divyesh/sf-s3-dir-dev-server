@@ -62,4 +62,4 @@ The static documentation site deploys from `dist/site`. The server UI is compile
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).

@@ -130,6 +130,34 @@ test('Create bucket accepts a valid Chromium bucket name without console errors'
   assert.deepEqual(errors, []);
 });
 
+test('Keyboard users can skip to the console and open or dismiss Create bucket', async (t) => {
+  const { child, endpoint } = await startServer();
+  t.after(() => stopServer(child));
+  const browser = await chromium.launch({ executablePath: chromiumExecutable() });
+  t.after(() => browser.close());
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+
+  await page.goto(`${endpoint}/ui`, { waitUntil: 'networkidle' });
+  await page.keyboard.press('Tab');
+  assert.equal(await page.evaluate(() => document.activeElement?.className), 'skip');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.evaluate(() => location.hash), '#workspace');
+
+  const create = page.getByRole('button', { name: 'Create bucket' });
+  await create.focus();
+  await page.keyboard.press('Enter');
+  await page.locator('#bucket-dialog[open]').waitFor();
+  assert.equal(await page.evaluate(() => document.activeElement?.id), 'bucket-name');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => !document.querySelector('#bucket-dialog')?.open);
+  assert.deepEqual(errors, []);
+});
+
 test('Console state panels are mutually exclusive on desktop and 390px mobile', async (t) => {
   const { child, endpoint } = await startServer();
   t.after(() => stopServer(child));
