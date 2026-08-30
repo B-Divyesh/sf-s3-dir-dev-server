@@ -291,19 +291,14 @@
       "degree": 17
     },
     {
-      "id": "src_lib_put_object",
-      "label": "put_object()",
-      "degree": 16
-    },
-    {
       "id": "src_lib_multipart_request",
       "label": "multipart_request()",
       "degree": 16
     },
     {
-      "id": "src_lib_tagging_request",
-      "label": "tagging_request()",
-      "degree": 14
+      "id": "src_lib_put_object",
+      "label": "put_object()",
+      "degree": 16
     },
     {
       "id": "src_lib_s3_error",
@@ -311,27 +306,43 @@
       "degree": 14
     },
     {
-      "id": "src_lib_canonically_contained",
-      "label": "canonically_contained()",
+      "id": "src_lib_tagging_request",
+      "label": "tagging_request()",
+      "degree": 14
+    },
+    {
+      "id": "src_lib_bucket_request",
+      "label": "bucket_request()",
       "degree": 13
     },
     {
-      "id": "src_lib_existing_bucket_path",
-      "label": "existing_bucket_path()",
+      "id": "src_lib_get_object",
+      "label": "get_object()",
       "degree": 13
     }
   ],
   "surprises": [
     {
-      "source": "parse_form()",
-      "target": "HashMap",
+      "source": "app()",
+      "target": "Option",
       "source_files": [
         "src/lib.rs",
         ""
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 1 \u2192 community 0"
+      "note": "Bridges community 0 \u2192 community 2"
+    },
+    {
+      "source": "json_buckets()",
+      "target": "collect_objects()",
+      "source_files": [
+        "src/lib.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 0 \u2192 community 1"
     },
     {
       "source": "query_params()",
@@ -354,17 +365,6 @@
       "confidence": "EXTRACTED",
       "relation": "references",
       "note": "Bridges community 1 \u2192 community 8"
-    },
-    {
-      "source": "app()",
-      "target": "Option",
-      "source_files": [
-        "src/lib.rs",
-        ""
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "note": "Bridges community 2 \u2192 community 0"
     },
     {
       "source": "json_objects()",
