@@ -246,6 +246,11 @@
       "degree": 13
     },
     {
+      "id": "src_lib_bucket_request",
+      "label": "bucket_request()",
+      "degree": 13
+    },
+    {
       "id": "src_lib_canonically_contained",
       "label": "canonically_contained()",
       "degree": 13
@@ -253,11 +258,6 @@
     {
       "id": "src_lib_existing_bucket_path",
       "label": "existing_bucket_path()",
-      "degree": 13
-    },
-    {
-      "id": "src_lib_bucket_request",
-      "label": "bucket_request()",
       "degree": 13
     }
   ],
@@ -285,11 +285,11 @@
       "note": "Bridges community 0 \u2192 community 2"
     },
     {
-      "source": "list_objects()",
-      "target": "AppState",
+      "source": "delete_object()",
+      "target": "Response",
       "source_files": [
         "src/lib.rs",
-        "src/lib.rs"
+        ""
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
