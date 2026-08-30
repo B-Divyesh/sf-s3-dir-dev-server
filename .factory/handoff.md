@@ -1,8 +1,9 @@
-# Repair handoff — ready for deployment
+# Repair handoff — deployed
 
 **Work order:** `s3-dir-dev-server-repair-7`
 **Base verifier report:** [`verification-6.md`](verification-6.md) for candidate `b8107d1ae4fd142d3f9fe29d018f7c95e4ea2f1a`
 **Artifact / deployment:** Rust CLI with a static Vite documentation site in `dist/site`
+**Repair commit:** `29c2ec6c1ab1636053c93c7541b257148b977f0a`
 
 ## Repaired findings
 
@@ -31,7 +32,7 @@ cargo package --allow-dirty
 
 - `npm run build` passed: 13 Rust unit regressions and 26 Node/Playwright checks. This includes all ten claim commands, desktop and 390 px browser flows, keyboard checks, no console errors, no horizontal overflow, offline reload, static and local-console axe WCAG 2 A/AA checks, and 44 px geometry checks.
 - `cargo fmt --check` and strict Clippy passed.
-- Release build passed. `cargo package --allow-dirty` passed with 16 intended files, 162.0 KiB unpacked / 42.4 KiB compressed, and Cargo's package verification build passed.
+- Release build passed. `cargo package --allow-dirty` passed with 16 intended files, 162.3 KiB unpacked / 42.5 KiB compressed, and Cargo's package verification build passed.
 - A fresh `cargo install --path . --root /tmp/s3dir-consumer…` passed. Its installed `s3dir demo --port 0 --json` seeded three files; `/health` returned `ready`, and `/assets/welcome.txt` returned the bundled object.
 - `verify-url.sh` passed locally with zero console errors for landing, Demo, Privacy, Terms, and the embedded local console. Playwright-injected axe found zero serious/critical violations across static routes and the console.
 - Local mobile Lighthouse (12.8.2) scored Performance 100, Accessibility 100, Best Practices 100, and SEO 100. LCP was 1.4 s, TBT 0 ms, and CLS 0. Initial JS is 0.83 kB gzip, CSS is 3.25 kB gzip, and the hero is 41.72 kB.
@@ -40,6 +41,10 @@ cargo package --allow-dirty
 
 Docker, Podman, Buildah, and Nerdctl are unavailable in this worker, so an actual image build and `docker compose up` run could not be performed here. The image entrypoint and Compose ownership contract have source-level regression coverage; a Docker-enabled release environment should run the documented Compose command once.
 
-## Deploy
+## Deployment evidence
 
-Push the repair commit on `main`; the factory static deployment consumes `dist/site`. After the deployment completes, verify the live root, `/demo/`, Privacy, Terms, `/robots.txt`, `/sitemap.xml`, the designed 404, headers, service-worker update, and candidate asset identity.
+- Pushed `29c2ec6c1ab1636053c93c7541b257148b977f0a` to `origin/main` and deployed the tested `dist/site` with `swa deploy ./dist/site --env production` to the work-order Static Web App `sf-s3-dir-dev-server`. Azure confirmed production deployment to `wonderful-cliff-0866c960f.7.azurestaticapps.net`; the custom domain <https://s3-dir-dev-server.sociobot.in/> serves the same revision.
+- Live asset identity matches the local production build exactly: `index.html` SHA-256 `05d845d60b64c92a9ab17d80a708cb5f3ddd3217172e8f54799cd6052dde5f4a`; `sw.js` SHA-256 `082a013e9b80ef29f7c6aa1809b547b6fe0c9b57a9165e26e59d8212ec899752`.
+- Live `verify-url.sh` passed at the custom domain: HTTP 200, title `s3dir — Local S3 from a directory`, `lang=en`, one h1, one main landmark, all image alt checks, and no console errors. `/demo/`, `/privacy/`, `/terms/`, `/robots.txt`, and `/sitemap.xml` return 200; an unknown URL returns the designed 404.
+- Live desktop and 390 px Playwright checks passed: keyboard skip link, zero horizontal overflow, 44 px Reset demo target, no console errors, no serious/critical axe WCAG 2 A/AA findings, and same-origin-only request traffic. A fresh service-worker-controlled mobile context reloaded `/demo/` offline with its heading present.
+- Live response policy has HSTS, `nosniff`, strict-origin referrer policy, `frame-ancestors 'none'`, same-origin CSP, `X-Frame-Options: DENY`, and restrictive Permissions-Policy headers on both 200 and 404 responses.
