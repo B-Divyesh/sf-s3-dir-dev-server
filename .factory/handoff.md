@@ -7,7 +7,7 @@
 
 ## Release-blocker repairs
 
-- **Cold demo claim:** claim helpers now build `target/debug/s3dir` with `cargo build --locked` before starting the 30-second server-readiness timer. They start that direct binary rather than `cargo run`. Process teardown is bounded: SIGINT/SIGTERM waits five seconds, then SIGKILL is used if necessary. The `demo-cli` regression explicitly builds first; `demo-cleanup` still proves that Ctrl-C removes the isolated directory. After `cargo clean`, the exact registered `demo-cli` command passed from a cold Rust target in **41.88 s** total, rather than timing out at readiness and leaking a child process.
+- **Cold demo claim:** claim helpers now build `target/debug/s3dir` with `cargo build --locked` before starting the 30-second server-readiness timer. They start that direct binary rather than `cargo run`. Process teardown is bounded: SIGINT/SIGTERM waits five seconds, then SIGKILL is used if necessary. The `demo-cli` regression explicitly builds first; `demo-cleanup` still proves that Ctrl-C removes the isolated directory. In a new local clone after `npm ci` and `cargo clean`, the exact registered `demo-cli` command passed from a cold Rust target in **40.99 s** total, rather than timing out at readiness and leaking a child process.
 - **Deterministic full gate:** the shipped `npm test` command uses `node --test --test-concurrency=1`. The browser-console regression also waits for the selected bucket heading before using its hidden file input, removing the real asynchronous selection race that made the edit button intermittently absent. Two consecutive full `npm test` runs passed.
 - **Observable Compose claim:** `@claim:compose-bind-mount` no longer matches Dockerfile text. When Docker is available it builds the supplied image, mounts a fresh 0755 host directory at `/data`, writes an object through the running endpoint, and proves PID 1 is non-root. This worker has no Docker daemon, so that test is intentionally skipped here and will run in a Docker-enabled release environment.
 - **Claim inventory:** added the public `multipart-rejection` claim and its fresh-endpoint 400-status regression. Expanded `filesystem-boundary` to prove encoded traversal, reserved `.s3dir`, and a symlink escape write are all rejected.
@@ -16,6 +16,7 @@
 ## Verification
 
 - `npm ci` completed with 46 packages and no reported vulnerabilities.
+- A fresh local clone of repair commit `7e023901c8ef9f476a04e071ce77e44bacbae51a` passed `npm ci`, `cargo clean`, the exact cold `demo-cli` command, and `npm run build`.
 - `npm test` passed twice: **33 passed, 1 skipped** (the Docker-only runtime claim), including desktop/390 px flows, keyboard checks, fresh offline context, same-origin privacy checks, and serious/critical axe checks.
 - `npm run build` passed and produced `dist/site`.
 - All 16 exact commands registered in [`.factory/claims.json`](claims.json) passed. The Docker-only command completed as a documented skip because this worker has no Docker daemon.
