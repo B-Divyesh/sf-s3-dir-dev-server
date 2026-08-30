@@ -1,4 +1,4 @@
-# Repair handoff — local verification complete
+# Repair handoff — deployed
 
 **Work order:** `s3-dir-dev-server-repair-8`
 **Base verifier report:** [`verification-7.md`](verification-7.md), candidate `57d030afe0985ac6e13d98d5ba98a168611ffa29`
@@ -32,6 +32,14 @@ cargo package --locked --allow-dirty
 - `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/ .factory/evidence-repair` passed against the final static build: HTTP 200, title, `lang=en`, one h1, main landmark, alt text, labelled buttons, and no browser errors. Its desktop/mobile screenshots and report are in `.factory/evidence-repair/`.
 - Lighthouse 12.8.2 report: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.2 s, TBT 0 ms, CLS 0. Chromium printed a post-audit tab-crash warning after the report was written; the report and all Playwright console-error checks completed successfully.
 
+## Deployment and live verification
+
+- Pushed repair commit `47c33becd2116cacdd0bb89cdb63cc397c30652b` to `origin/main` and deployed `dist/site` to production with `swa deploy ./dist/site --env production --app-name sf-s3-dir-dev-server`.
+- The live custom domain <https://s3-dir-dev-server.sociobot.in/> matches the deployed build exactly: `index.html` SHA-256 `e91641ac3bee7bbb22df72b01cf9ab935889828094fdc9e856ec6a4ec178830b`; `sw.js` SHA-256 `f65ad4bad529d9faed94fd62fc0a5e0dc3f4f733e5e96fe6433c985b3d48618a`.
+- Live `verify-url.sh` passed with HTTP 200, title, `lang=en`, one h1, main, image alt text, labelled buttons, desktop/390 px screenshots, and no browser errors. Evidence is in `.factory/evidence-repair-live/`.
+- Live 390 px Playwright verification found no horizontal overflow or undersized visible controls, no serious/critical axe WCAG 2 A/AA findings, same-origin-only requests, and no console/page errors. A fresh controlled browser installed `s3dir-site-v4` and reloaded Privacy offline.
+- `/demo/`, `/privacy/`, `/terms/`, `/robots.txt`, and `/sitemap.xml` return 200; an unknown route returns the designed 404. Live documents return HSTS, `nosniff`, strict-origin referrer policy, same-origin CSP with `frame-ancestors 'none'`, `X-Frame-Options: DENY`, and restrictive Permissions-Policy.
+
 ## Known environment gap
 
-Docker, Podman, Buildah, and Nerdctl are unavailable in this worker, so a live image/Compose smoke test could not run. The shipped entrypoint/Compose ownership behavior remains source-level regression-covered. Production deployment and live verification are recorded after the release commit.
+Docker, Podman, Buildah, and Nerdctl are unavailable in this worker, so a live image/Compose smoke test could not run. The shipped entrypoint/Compose ownership behavior remains source-level regression-covered.

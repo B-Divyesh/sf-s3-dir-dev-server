@@ -4,3 +4,5 @@
 /dev-data/
 /output/imagegen/*.png
 *.tmp
+
+.env
