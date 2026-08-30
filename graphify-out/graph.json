@@ -405,24 +405,24 @@
       "source_location": "L67"
     },
     {
-      "id": "src_lib_favicon",
-      "label": "favicon()",
+      "id": "src_lib_json_buckets",
+      "label": "json_buckets()",
       "_origin": "ast",
       "community": 0,
       "file_type": "code",
-      "norm_label": "favicon()",
+      "norm_label": "json_buckets()",
       "source_file": "src/lib.rs",
-      "source_location": "L107"
+      "source_location": "L1154"
     },
     {
-      "id": "src_lib_list_objects",
-      "label": "list_objects()",
+      "id": "src_lib_json_response",
+      "label": "json_response()",
       "_origin": "ast",
       "community": 0,
       "file_type": "code",
-      "norm_label": "list_objects()",
+      "norm_label": "json_response()",
       "source_file": "src/lib.rs",
-      "source_location": "L581"
+      "source_location": "L1384"
     },
     {
       "id": "src_lib_multipart_assembles_parts",
@@ -565,6 +565,16 @@
       "source_location": ""
     },
     {
+      "id": "value",
+      "label": "Value",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "value",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "vec",
       "label": "Vec",
       "_origin": "ast",
@@ -575,134 +585,144 @@
       "source_location": ""
     },
     {
-      "id": "arc",
-      "label": "Arc",
+      "id": "body",
+      "label": "Body",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "arc",
+      "norm_label": "body",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "client",
-      "label": "Client",
+      "id": "error",
+      "label": "Error",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "client",
+      "norm_label": "error",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "option",
-      "label": "Option",
+      "id": "headermap",
+      "label": "HeaderMap",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "option",
+      "norm_label": "headermap",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "path",
-      "label": "Path",
+      "id": "method",
+      "label": "Method",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "path",
+      "norm_label": "method",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "pathbuf",
-      "label": "PathBuf",
+      "id": "request",
+      "label": "Request",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "pathbuf",
+      "norm_label": "request",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "result",
-      "label": "Result",
+      "id": "response",
+      "label": "Response",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "result",
+      "norm_label": "response",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "src_lib_appstate",
-      "label": "AppState",
+      "id": "src_lib_api_handle",
+      "label": "api_handle()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "appstate",
+      "norm_label": "api_handle()",
       "source_file": "src/lib.rs",
-      "source_location": "L26"
+      "source_location": "L1081"
     },
     {
-      "id": "src_lib_canonically_contained",
-      "label": "canonically_contained()",
+      "id": "src_lib_bucket_request",
+      "label": "bucket_request()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "canonically_contained()",
+      "norm_label": "bucket_request()",
       "source_file": "src/lib.rs",
-      "source_location": "L333"
+      "source_location": "L434"
     },
     {
-      "id": "src_lib_delete_object",
-      "label": "delete_object()",
+      "id": "src_lib_cors_response",
+      "label": "cors_response()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "delete_object()",
+      "norm_label": "cors_response()",
       "source_file": "src/lib.rs",
-      "source_location": "L832"
+      "source_location": "L168"
     },
     {
-      "id": "src_lib_etag_path",
-      "label": "etag_path()",
+      "id": "src_lib_favicon",
+      "label": "favicon()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "etag_path()",
+      "norm_label": "favicon()",
       "source_file": "src/lib.rs",
-      "source_location": "L1293"
+      "source_location": "L107"
     },
     {
-      "id": "src_lib_existing_bucket_path",
-      "label": "existing_bucket_path()",
+      "id": "src_lib_get_object",
+      "label": "get_object()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "existing_bucket_path()",
+      "norm_label": "get_object()",
       "source_file": "src/lib.rs",
-      "source_location": "L339"
+      "source_location": "L757"
     },
     {
-      "id": "src_lib_existing_object_path",
-      "label": "existing_object_path()",
+      "id": "src_lib_handle",
+      "label": "handle()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "existing_object_path()",
+      "norm_label": "handle()",
       "source_file": "src/lib.rs",
-      "source_location": "L349"
+      "source_location": "L136"
     },
     {
-      "id": "src_lib_json_objects",
-      "label": "json_objects()",
+      "id": "src_lib_io_error",
+      "label": "io_error()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "json_objects()",
+      "norm_label": "io_error()",
       "source_file": "src/lib.rs",
-      "source_location": "L1177"
+      "source_location": "L1405"
+    },
+    {
+      "id": "src_lib_json_error",
+      "label": "json_error()",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "json_error()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1394"
     },
     {
       "id": "src_lib_list_buckets",
@@ -713,6 +733,16 @@
       "norm_label": "list_buckets()",
       "source_file": "src/lib.rs",
       "source_location": "L511"
+    },
+    {
+      "id": "src_lib_list_objects",
+      "label": "list_objects()",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "list_objects()",
+      "source_file": "src/lib.rs",
+      "source_location": "L581"
     },
     {
       "id": "src_lib_multipart_request",
@@ -735,104 +765,54 @@
       "source_location": "L892"
     },
     {
-      "id": "src_lib_notify",
-      "label": "notify()",
+      "id": "src_lib_put_object",
+      "label": "put_object()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "notify()",
+      "norm_label": "put_object()",
       "source_file": "src/lib.rs",
-      "source_location": "L1237"
+      "source_location": "L654"
     },
     {
-      "id": "src_lib_object_path_for_write",
-      "label": "object_path_for_write()",
+      "id": "src_lib_s3_error",
+      "label": "s3_error()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "object_path_for_write()",
+      "norm_label": "s3_error()",
       "source_file": "src/lib.rs",
-      "source_location": "L368"
+      "source_location": "L1402"
     },
     {
-      "id": "src_lib_read_sidecar",
-      "label": "read_sidecar()",
+      "id": "src_lib_s3_handle",
+      "label": "s3_handle()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "read_sidecar()",
+      "norm_label": "s3_handle()",
       "source_file": "src/lib.rs",
-      "source_location": "L1218"
+      "source_location": "L213"
     },
     {
-      "id": "src_lib_safe_bucket_path",
-      "label": "safe_bucket_path()",
+      "id": "src_lib_tagging_request",
+      "label": "tagging_request()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "safe_bucket_path()",
+      "norm_label": "tagging_request()",
       "source_file": "src/lib.rs",
-      "source_location": "L324"
+      "source_location": "L846"
     },
     {
-      "id": "src_lib_safe_object_path",
-      "label": "safe_object_path()",
+      "id": "src_lib_valid_bucket",
+      "label": "valid_bucket()",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "safe_object_path()",
+      "norm_label": "valid_bucket()",
       "source_file": "src/lib.rs",
-      "source_location": "L307"
-    },
-    {
-      "id": "src_lib_seed",
-      "label": "seed()",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "seed()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1267"
-    },
-    {
-      "id": "src_lib_sidecar",
-      "label": "Sidecar",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "sidecar",
-      "source_file": "src/lib.rs",
-      "source_location": "L34"
-    },
-    {
-      "id": "src_lib_sidecar_path",
-      "label": "sidecar_path()",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "sidecar_path()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1197"
-    },
-    {
-      "id": "src_lib_uploads_dir",
-      "label": "uploads_dir()",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "uploads_dir()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1061"
-    },
-    {
-      "id": "src_lib_write_sidecar",
-      "label": "write_sidecar()",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "write_sidecar()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1224"
+      "source_location": "L298"
     },
     {
       "id": "src_lib_xml_response",
@@ -845,290 +825,10 @@
       "source_location": "L1377"
     },
     {
-      "id": "site_vite_config",
-      "label": "vite.config.js",
-      "_origin": "ast",
-      "community": 10,
-      "file_type": "code",
-      "norm_label": "vite.config.js",
-      "source_file": "site/vite.config.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_rs_error",
-      "label": "Error",
-      "_origin": "ast",
-      "community": 11,
-      "file_type": "code",
-      "norm_label": "error",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_lib_rs_option",
-      "label": "Option",
-      "_origin": "ast",
-      "community": 12,
-      "file_type": "code",
-      "norm_label": "option",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_lib_rs_pathbuf",
-      "label": "PathBuf",
-      "_origin": "ast",
-      "community": 13,
-      "file_type": "code",
-      "norm_label": "pathbuf",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_lib_rs_result",
-      "label": "Result",
-      "_origin": "ast",
-      "community": 14,
-      "file_type": "code",
-      "norm_label": "result",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_lib_rs_string",
-      "label": "String",
-      "_origin": "ast",
-      "community": 15,
-      "file_type": "code",
-      "norm_label": "string",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_lib_rs_vec",
-      "label": "Vec",
-      "_origin": "ast",
-      "community": 16,
-      "file_type": "code",
-      "norm_label": "vec",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "tests_site_test",
-      "label": "site.test.js",
-      "_origin": "ast",
-      "community": 17,
-      "file_type": "code",
-      "norm_label": "site.test.js",
-      "source_file": "tests/site.test.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "body",
-      "label": "Body",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "body",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "error",
-      "label": "Error",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "error",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "headermap",
-      "label": "HeaderMap",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "headermap",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "method",
-      "label": "Method",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "method",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "request",
-      "label": "Request",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "response",
-      "label": "Response",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "response",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_lib_api_handle",
-      "label": "api_handle()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "api_handle()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1081"
-    },
-    {
-      "id": "src_lib_bucket_request",
-      "label": "bucket_request()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "bucket_request()",
-      "source_file": "src/lib.rs",
-      "source_location": "L434"
-    },
-    {
-      "id": "src_lib_cors_response",
-      "label": "cors_response()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "cors_response()",
-      "source_file": "src/lib.rs",
-      "source_location": "L168"
-    },
-    {
-      "id": "src_lib_get_object",
-      "label": "get_object()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "get_object()",
-      "source_file": "src/lib.rs",
-      "source_location": "L757"
-    },
-    {
-      "id": "src_lib_handle",
-      "label": "handle()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "handle()",
-      "source_file": "src/lib.rs",
-      "source_location": "L136"
-    },
-    {
-      "id": "src_lib_io_error",
-      "label": "io_error()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "io_error()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1405"
-    },
-    {
-      "id": "src_lib_json_buckets",
-      "label": "json_buckets()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "json_buckets()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1154"
-    },
-    {
-      "id": "src_lib_json_error",
-      "label": "json_error()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "json_error()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1394"
-    },
-    {
-      "id": "src_lib_json_response",
-      "label": "json_response()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "json_response()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1384"
-    },
-    {
-      "id": "src_lib_put_object",
-      "label": "put_object()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "put_object()",
-      "source_file": "src/lib.rs",
-      "source_location": "L654"
-    },
-    {
-      "id": "src_lib_s3_error",
-      "label": "s3_error()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "s3_error()",
-      "source_file": "src/lib.rs",
-      "source_location": "L1402"
-    },
-    {
-      "id": "src_lib_s3_handle",
-      "label": "s3_handle()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "s3_handle()",
-      "source_file": "src/lib.rs",
-      "source_location": "L213"
-    },
-    {
-      "id": "src_lib_tagging_request",
-      "label": "tagging_request()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "tagging_request()",
-      "source_file": "src/lib.rs",
-      "source_location": "L846"
-    },
-    {
-      "id": "src_lib_valid_bucket",
-      "label": "valid_bucket()",
-      "_origin": "ast",
-      "community": 2,
-      "file_type": "code",
-      "norm_label": "valid_bucket()",
-      "source_file": "src/lib.rs",
-      "source_location": "L298"
-    },
-    {
       "id": "state",
       "label": "State",
       "_origin": "ast",
-      "community": 2,
+      "community": 1,
       "file_type": "code",
       "norm_label": "state",
       "source_file": "",
@@ -1138,21 +838,324 @@
       "id": "statuscode",
       "label": "StatusCode",
       "_origin": "ast",
-      "community": 2,
+      "community": 1,
       "file_type": "code",
       "norm_label": "statuscode",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "value",
-      "label": "Value",
+      "id": "pkg_s3_dir_dev_server",
+      "label": "s3-dir-dev-server",
+      "_origin": "ast",
+      "community": 10,
+      "ecosystem": "cargo",
+      "file_type": "code",
+      "norm_label": "s3-dir-dev-server",
+      "source_file": "Cargo.toml",
+      "source_location": "L1",
+      "type": "package",
+      "version": "0.1.0"
+    },
+    {
+      "id": "site_vite_config",
+      "label": "vite.config.js",
+      "_origin": "ast",
+      "community": 11,
+      "file_type": "code",
+      "norm_label": "vite.config.js",
+      "source_file": "site/vite.config.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_rs_error",
+      "label": "Error",
+      "_origin": "ast",
+      "community": 12,
+      "file_type": "code",
+      "norm_label": "error",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_lib_rs_option",
+      "label": "Option",
+      "_origin": "ast",
+      "community": 13,
+      "file_type": "code",
+      "norm_label": "option",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_lib_rs_pathbuf",
+      "label": "PathBuf",
+      "_origin": "ast",
+      "community": 14,
+      "file_type": "code",
+      "norm_label": "pathbuf",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_lib_rs_result",
+      "label": "Result",
+      "_origin": "ast",
+      "community": 15,
+      "file_type": "code",
+      "norm_label": "result",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_lib_rs_string",
+      "label": "String",
+      "_origin": "ast",
+      "community": 16,
+      "file_type": "code",
+      "norm_label": "string",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_lib_rs_vec",
+      "label": "Vec",
+      "_origin": "ast",
+      "community": 17,
+      "file_type": "code",
+      "norm_label": "vec",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "arc",
+      "label": "Arc",
       "_origin": "ast",
       "community": 2,
       "file_type": "code",
-      "norm_label": "value",
+      "norm_label": "arc",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "client",
+      "label": "Client",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "client",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "option",
+      "label": "Option",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "option",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "path",
+      "label": "Path",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "path",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "pathbuf",
+      "label": "PathBuf",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "pathbuf",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "result",
+      "label": "Result",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "result",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_lib_appstate",
+      "label": "AppState",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "appstate",
+      "source_file": "src/lib.rs",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_lib_canonically_contained",
+      "label": "canonically_contained()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "canonically_contained()",
+      "source_file": "src/lib.rs",
+      "source_location": "L333"
+    },
+    {
+      "id": "src_lib_delete_object",
+      "label": "delete_object()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "delete_object()",
+      "source_file": "src/lib.rs",
+      "source_location": "L832"
+    },
+    {
+      "id": "src_lib_etag_path",
+      "label": "etag_path()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "etag_path()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1293"
+    },
+    {
+      "id": "src_lib_existing_bucket_path",
+      "label": "existing_bucket_path()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "existing_bucket_path()",
+      "source_file": "src/lib.rs",
+      "source_location": "L339"
+    },
+    {
+      "id": "src_lib_existing_object_path",
+      "label": "existing_object_path()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "existing_object_path()",
+      "source_file": "src/lib.rs",
+      "source_location": "L349"
+    },
+    {
+      "id": "src_lib_json_objects",
+      "label": "json_objects()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "json_objects()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1177"
+    },
+    {
+      "id": "src_lib_notify",
+      "label": "notify()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "notify()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1237"
+    },
+    {
+      "id": "src_lib_object_path_for_write",
+      "label": "object_path_for_write()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "object_path_for_write()",
+      "source_file": "src/lib.rs",
+      "source_location": "L368"
+    },
+    {
+      "id": "src_lib_read_sidecar",
+      "label": "read_sidecar()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "read_sidecar()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1218"
+    },
+    {
+      "id": "src_lib_safe_bucket_path",
+      "label": "safe_bucket_path()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "safe_bucket_path()",
+      "source_file": "src/lib.rs",
+      "source_location": "L324"
+    },
+    {
+      "id": "src_lib_safe_object_path",
+      "label": "safe_object_path()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "safe_object_path()",
+      "source_file": "src/lib.rs",
+      "source_location": "L307"
+    },
+    {
+      "id": "src_lib_seed",
+      "label": "seed()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "seed()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1267"
+    },
+    {
+      "id": "src_lib_sidecar",
+      "label": "Sidecar",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "sidecar",
+      "source_file": "src/lib.rs",
+      "source_location": "L34"
+    },
+    {
+      "id": "src_lib_sidecar_path",
+      "label": "sidecar_path()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "sidecar_path()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1197"
+    },
+    {
+      "id": "src_lib_uploads_dir",
+      "label": "uploads_dir()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "uploads_dir()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1061"
+    },
+    {
+      "id": "src_lib_write_sidecar",
+      "label": "write_sidecar()",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "write_sidecar()",
+      "source_file": "src/lib.rs",
+      "source_location": "L1224"
     },
     {
       "id": "package",
@@ -1525,17 +1528,24 @@
       "source_location": "L1"
     },
     {
-      "id": "pkg_s3_dir_dev_server",
-      "label": "s3-dir-dev-server",
+      "id": "tests_site_test",
+      "label": "site.test.js",
       "_origin": "ast",
       "community": 9,
-      "ecosystem": "cargo",
       "file_type": "code",
-      "norm_label": "s3-dir-dev-server",
-      "source_file": "Cargo.toml",
-      "source_location": "L1",
-      "type": "package",
-      "version": "0.1.0"
+      "norm_label": "site.test.js",
+      "source_file": "tests/site.test.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_site_test_execfileasync",
+      "label": "execFileAsync",
+      "_origin": "ast",
+      "community": 9,
+      "file_type": "code",
+      "norm_label": "execfileasync",
+      "source_file": "tests/site.test.js",
+      "source_location": "L2"
     }
   ],
   "links": [
@@ -6183,6 +6193,17 @@
       "weight": 1.0
     },
     {
+      "source": "tests_site_test",
+      "target": "tests_site_test_execfileasync",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/site.test.js",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "tests_ui_browser_test",
       "target": "tests_ui_browser_test_startserver",
       "relation": "contains",
@@ -6273,5 +6294,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "527acef81bf20d2c8c717b828c40cf73c9703a2e"
+  "built_at_commit": "b8107d1ae4fd142d3f9fe29d018f7c95e4ea2f1a"
 }

@@ -18,8 +18,8 @@
       "src_lib_eventobject",
       "src_lib_eventrecord",
       "src_lib_events3",
-      "src_lib_favicon",
-      "src_lib_list_objects",
+      "src_lib_json_buckets",
+      "src_lib_json_response",
       "src_lib_multipart_assembles_parts",
       "src_lib_objectinfo",
       "src_lib_objectwritepatherror",
@@ -34,9 +34,38 @@
       "src_lib_ui_js",
       "src_lib_xml",
       "string",
+      "value",
       "vec"
     ],
     "1": [
+      "body",
+      "error",
+      "headermap",
+      "method",
+      "request",
+      "response",
+      "src_lib_api_handle",
+      "src_lib_bucket_request",
+      "src_lib_cors_response",
+      "src_lib_favicon",
+      "src_lib_get_object",
+      "src_lib_handle",
+      "src_lib_io_error",
+      "src_lib_json_error",
+      "src_lib_list_buckets",
+      "src_lib_list_objects",
+      "src_lib_multipart_request",
+      "src_lib_multipart_start",
+      "src_lib_put_object",
+      "src_lib_s3_error",
+      "src_lib_s3_handle",
+      "src_lib_tagging_request",
+      "src_lib_valid_bucket",
+      "src_lib_xml_response",
+      "state",
+      "statuscode"
+    ],
+    "2": [
       "arc",
       "client",
       "option",
@@ -50,9 +79,6 @@
       "src_lib_existing_bucket_path",
       "src_lib_existing_object_path",
       "src_lib_json_objects",
-      "src_lib_list_buckets",
-      "src_lib_multipart_request",
-      "src_lib_multipart_start",
       "src_lib_notify",
       "src_lib_object_path_for_write",
       "src_lib_read_sidecar",
@@ -62,33 +88,7 @@
       "src_lib_sidecar",
       "src_lib_sidecar_path",
       "src_lib_uploads_dir",
-      "src_lib_write_sidecar",
-      "src_lib_xml_response"
-    ],
-    "2": [
-      "body",
-      "error",
-      "headermap",
-      "method",
-      "request",
-      "response",
-      "src_lib_api_handle",
-      "src_lib_bucket_request",
-      "src_lib_cors_response",
-      "src_lib_get_object",
-      "src_lib_handle",
-      "src_lib_io_error",
-      "src_lib_json_buckets",
-      "src_lib_json_error",
-      "src_lib_json_response",
-      "src_lib_put_object",
-      "src_lib_s3_error",
-      "src_lib_s3_handle",
-      "src_lib_tagging_request",
-      "src_lib_valid_bucket",
-      "state",
-      "statuscode",
-      "value"
+      "src_lib_write_sidecar"
     ],
     "3": [
       "package",
@@ -161,37 +161,38 @@
       "site_public_sw_shell"
     ],
     "9": [
-      "pkg_s3_dir_dev_server"
+      "tests_site_test",
+      "tests_site_test_execfileasync"
     ],
     "10": [
-      "site_vite_config"
+      "pkg_s3_dir_dev_server"
     ],
     "11": [
-      "src_lib_rs_error"
+      "site_vite_config"
     ],
     "12": [
-      "src_lib_rs_option"
+      "src_lib_rs_error"
     ],
     "13": [
-      "src_lib_rs_pathbuf"
+      "src_lib_rs_option"
     ],
     "14": [
-      "src_lib_rs_result"
+      "src_lib_rs_pathbuf"
     ],
     "15": [
-      "src_lib_rs_string"
+      "src_lib_rs_result"
     ],
     "16": [
-      "src_lib_rs_vec"
+      "src_lib_rs_string"
     ],
     "17": [
-      "tests_site_test"
+      "src_lib_rs_vec"
     ]
   },
   "cohesion": {
-    "0": 0.11051693404634581,
-    "1": 0.21937321937321938,
-    "2": 0.233201581027668,
+    "0": 0.10420168067226891,
+    "1": 0.23384615384615384,
+    "2": 0.2450592885375494,
     "3": 0.125,
     "4": 0.3416666666666667,
     "5": 0.24358974358974358,
@@ -270,7 +271,7 @@
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 0 \u2192 community 2"
+      "note": "Bridges community 0 \u2192 community 1"
     },
     {
       "source": "Sidecar",
@@ -281,14 +282,14 @@
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 0 \u2192 community 1"
+      "note": "Bridges community 0 \u2192 community 2"
     },
     {
-      "source": "api_handle()",
-      "target": "Option",
+      "source": "list_objects()",
+      "target": "AppState",
       "source_files": [
         "src/lib.rs",
-        ""
+        "src/lib.rs"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
