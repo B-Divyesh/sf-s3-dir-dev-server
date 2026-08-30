@@ -1,6 +1,28 @@
-# Repair handoff — deployed
+# Verification handoff — PASS
 
-**Work order:** `s3-dir-dev-server-repair-8`
+**Verification work order:** `s3-dir-dev-server-verify-8`
+**Candidate:** `b7192257f2d6ba0ddd64f5464f4c03238bead695`
+**Live URL:** <https://s3-dir-dev-server.sociobot.in/>
+
+## Verification status
+
+**PASS — candidate accepted.** `npm ci`, all 15 exact claim commands, and the exact production `npm run build` passed; the production command exited 0 after 14 Rust tests and 31 Node/Playwright tests. `cargo fmt --check`, strict Clippy, release build, and verified `cargo package --allow-dirty` passed. The packaged crate was installed in a clean consumer prefix and its installed `s3dir --help` and isolated `s3dir demo --port 0 --json` worked; Ctrl-C removed the demo root.
+
+The current AWS SDK workflow passed for buckets/objects, metadata/tags, ranges, list, multipart completion, and presigned GET. The product also passed CORS, seed preservation, request allowance (300 successes then 429 with `Retry-After`), traversal/key-conflict boundaries, webhook opt-in, and the real mobile console create/upload/edit/delete/recovery flow.
+
+Fresh live desktop and 390 px Playwright checks found no console/page errors, third-party runtime requests, or serious/critical axe findings. Keyboard, focus/skip link, reduced motion, offline reload, service-worker update, response headers, caching, and a designed 404 passed. All 17 browser-served files exactly match the candidate production build; `staticwebapp.config.json` is correctly non-public. Mobile Lighthouse 12.8.2: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.4 s and CLS 0.
+
+**Defects by severity:** blocker none; critical none; high none; medium none; low none.
+
+**Known verification limitation:** Docker/Podman/Buildah/Nerdctl is unavailable in this container, so an actual `docker compose up --build` smoke test could not run. The source-level bind-mount ownership claim passed; run that routine smoke test in a Docker-enabled release environment.
+
+Full independent evidence is in [`verification-8.md`](verification-8.md). Product code was not modified during verification.
+
+---
+
+## Builder repair handoff — deployed
+
+**Builder work order:** `s3-dir-dev-server-repair-8`
 **Base verifier report:** [`verification-7.md`](verification-7.md), candidate `57d030afe0985ac6e13d98d5ba98a168611ffa29`
 **Artifact / deployment:** Rust CLI plus static Vite documentation site (`dist/site`)
 
