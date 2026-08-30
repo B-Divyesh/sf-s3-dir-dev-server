@@ -1497,11 +1497,18 @@ struct CompletedPart {
 }
 
 fn parse_completion_manifest(xml_body: &str) -> Option<Vec<CompletedPart>> {
-    let body = xml_body.trim();
-    let open = body.find("<CompleteMultipartUpload")?;
-    if open != 0 {
+    // AWS SDKs serialize the normal completion body with an XML declaration
+    // and encode the quotes around the ETag as `&quot;`. Accept both that
+    // standards-compliant form and the compact form people often send by hand.
+    let mut body = xml_body.trim();
+    if body.starts_with("<?xml") {
+        let end = body.find("?>")?;
+        body = body[end + 2..].trim_start();
+    }
+    if !body.starts_with("<CompleteMultipartUpload") {
         return None;
     }
+    let open = 0;
     let content_start = body[open..].find('>')? + 1;
     let close = body.rfind("</CompleteMultipartUpload>")?;
     if close < content_start
@@ -1522,7 +1529,7 @@ fn parse_completion_manifest(xml_body: &str) -> Option<Vec<CompletedPart>> {
         let number = manifest_field(part_body, "PartNumber")?
             .parse::<u16>()
             .ok()?;
-        let etag = manifest_field(part_body, "ETag")?
+        let etag = xml_unescape(&manifest_field(part_body, "ETag")?)?
             .trim_matches('"')
             .to_ascii_lowercase();
         if number == 0 || number <= prior || etag.is_empty() {
@@ -1533,6 +1540,33 @@ fn parse_completion_manifest(xml_body: &str) -> Option<Vec<CompletedPart>> {
         remainder = &part[end + "</Part>".len()..];
     }
     (!parts.is_empty()).then_some(parts)
+}
+
+fn xml_unescape(value: &str) -> Option<String> {
+    let mut out = String::with_capacity(value.len());
+    let mut remainder = value;
+    while let Some(start) = remainder.find('&') {
+        out.push_str(&remainder[..start]);
+        let entity_end = remainder[start + 1..].find(';')? + start + 1;
+        let entity = &remainder[start + 1..entity_end];
+        match entity {
+            "amp" => out.push('&'),
+            "lt" => out.push('<'),
+            "gt" => out.push('>'),
+            "quot" => out.push('"'),
+            "apos" => out.push('\''),
+            decimal if decimal.starts_with("#x") || decimal.starts_with("#X") => out.push(
+                char::from_u32(u32::from_str_radix(&decimal[2..], 16).ok()?)?,
+            ),
+            decimal if decimal.starts_with('#') => {
+                out.push(char::from_u32(decimal[1..].parse::<u32>().ok()?)?)
+            }
+            _ => return None,
+        }
+        remainder = &remainder[entity_end + 1..];
+    }
+    out.push_str(remainder);
+    Some(out)
 }
 
 fn manifest_field(part: &str, name: &str) -> Option<String> {
@@ -2007,6 +2041,23 @@ mod tests {
             fs::read(tmp.path().join("assets/big.txt")).await.unwrap(),
             b"hello world"
         );
+    }
+
+    #[test]
+    fn parses_the_xml_declaration_namespace_and_encoded_etag_used_by_aws_sdks() {
+        let manifest = parse_completion_manifest(
+            r#"<?xml version="1.0" encoding="UTF-8"?>
+<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+  <Part>
+    <ETag>&quot;71ccb7a35a452ea8153b6d920f9f190e&quot;</ETag>
+    <PartNumber>1</PartNumber>
+  </Part>
+</CompleteMultipartUpload>"#,
+        )
+        .expect("AWS SDK completion XML must parse");
+        assert_eq!(manifest.len(), 1);
+        assert_eq!(manifest[0].number, 1);
+        assert_eq!(manifest[0].etag, "71ccb7a35a452ea8153b6d920f9f190e");
     }
 
     #[tokio::test]

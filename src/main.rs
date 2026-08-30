@@ -140,6 +140,11 @@ async fn serve(options: ServeOptions) -> Result<(), Box<dyn std::error::Error>> 
     let address = (host, port);
     let listener = tokio::net::TcpListener::bind(address).await?;
     let actual = listener.local_addr()?;
+    // Register SIGINT before telling a demo caller that it is ready. Without
+    // this, an immediate Ctrl-C can take the default signal path before Tokio
+    // has installed its handler and leave the disposable demo directory.
+    #[cfg(unix)]
+    let interrupt = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())?;
     if json {
         println!(
             "{}",
@@ -166,12 +171,21 @@ async fn serve(options: ServeOptions) -> Result<(), Box<dyn std::error::Error>> 
         s3_dir_dev_server::app_with_request_limit(directory, cors, events, request_limit)
             .into_make_service_with_connect_info::<std::net::SocketAddr>(),
     )
-    .with_graceful_shutdown(wait_for_shutdown())
+    .with_graceful_shutdown(shutdown_signal(
+        #[cfg(unix)]
+        interrupt,
+    ))
     .await?;
     Ok(())
 }
 
-async fn wait_for_shutdown() {
+#[cfg(unix)]
+async fn shutdown_signal(mut interrupt: tokio::signal::unix::Signal) {
+    interrupt.recv().await;
+}
+
+#[cfg(not(unix))]
+async fn shutdown_signal() {
     let _ = tokio::signal::ctrl_c().await;
 }
 
@@ -205,8 +219,13 @@ async fn demo(
         preseeded: seeded,
     })
     .await;
-    if result.is_ok() {
-        let _ = tokio::fs::remove_dir_all(cleanup_directory).await;
+    // A signal can make the HTTP server return an error while it is unwinding.
+    // Demo data is still disposable in that case, so cleanup must not depend
+    // on the server result being `Ok`.
+    if let Err(cleanup_error) = tokio::fs::remove_dir_all(cleanup_directory).await
+        && result.is_ok()
+    {
+        return Err(Box::new(cleanup_error));
     }
     result
 }

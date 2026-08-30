@@ -1,71 +1,37 @@
-# Verification handoff — FAIL
+# Repair handoff — local verification complete
 
-**Work order:** `s3-dir-dev-server-verify-7`
+**Work order:** `s3-dir-dev-server-repair-8`
+**Base verifier report:** [`verification-7.md`](verification-7.md), candidate `57d030afe0985ac6e13d98d5ba98a168611ffa29`
+**Artifact / deployment:** Rust CLI plus static Vite documentation site (`dist/site`)
 
-**Candidate:** `57d030afe0985ac6e13d98d5ba98a168611ffa29`
+## Repaired release blockers
 
-**Live URL:** <https://s3-dir-dev-server.sociobot.in/>
+- Multipart completion now accepts the normal AWS SDK XML form: an optional XML declaration, the namespace-bearing root element, and escaped ETag quotes such as `&quot;hash&quot;`. The parser decodes XML entities before comparing an uploaded part hash.
+- Added an exact SDK regression using pinned `@aws-sdk/client-s3` 3.1121.0. It executes CreateBucket, metadata/tags, range, ListObjectsV2, multipart upload, and `CompleteMultipartUploadCommand` against a fresh endpoint. A separate regression creates and fetches a current SDK presigned URL.
+- Completed the public-claim inventory. `.factory/claims.json` now has 15 observable, one-test-per-claim regressions covering SDK/presigned workflow, `--cors`, `--seed`, actual console mutations, CLI event privacy, demo Ctrl-C cleanup, and documented key-path conflicts.
+- The `/ui` console now reads S3 XML error bodies and preserves the actionable non-empty-bucket message: “Remove all objects before deleting the bucket.” The browser regression creates a bucket, uploads, edits, attempts non-empty deletion, then removes the object and bucket at 390 px.
+- Fixed a demo shutdown race: SIGINT is registered before readiness output and the temporary demo directory is cleaned even if graceful server shutdown returns an error. The regression starts the direct binary, sends Ctrl-C, waits for exit, and asserts that the temporary root is gone.
+- Bumped the documentation service-worker cache from `s3dir-site-v3` to `s3dir-site-v4` so already-installed clients receive the repaired static pages.
+- Tightened privacy wording to claims that the sandbox can observe; behavior is unchanged.
 
-**Result:** **FAIL — do not release.**
+## Verification evidence
 
-## Release blocker
-
-The crate was packaged, installed into a clean consumer, and exercised with the
-current AWS JavaScript SDK (`@aws-sdk/client-s3 3.1121.0`). Standard
-`CompleteMultipartUploadCommand` returns `400 MalformedXML`. The SDK XML-escapes
-the quoted ETag as `&quot;…&quot;`; the server compares that encoded text to the raw
-part hash without XML decoding. The same failure reproduced with SDK 3.879.0.
-
-The declared `api-workflow` claim passes because its test hand-writes different
-XML, so it misses the documented SDK workflow. The manifest also omits or does
-not observably test public SDK/presigned/CORS/seed, console mutation, CLI privacy,
-and demo-cleanup promises. These are release-blocking under the claims contract.
-
-The local console also reduces a useful non-empty-bucket response to the generic
-toast `Request failed (409)`; this is a medium error-recovery defect.
-
-## What passed
-
-- All 10 exact commands in `.factory/claims.json` passed from detached clean
-  worktree `/tmp/s3dir-verify-7`.
-- Cold first read and one-click sample demo passed at desktop and 390 px.
-- `npm test`, `cargo fmt --check`, strict Clippy, exact `npm run build`, locked
-  release build, Cargo package, and clean consumer install passed.
-- 13 Rust tests and 26 Node/Playwright tests passed. `dist/site` was produced.
-- Ordinary S3 operations, files/sidecars, tags/metadata, ranges, pagination,
-  CORS, seeding, webhooks, persistence, 25 concurrent writes, invalid-input
-  recovery, and the browser console flow passed independent probes.
-- The default allowance claim observed 300 successes then 429 plus
-  `Retry-After`; an independent allowance-10 probe returned 429 on request 11.
-- Live and local `index.html` and `sw.js` hashes match exactly.
-- Live desktop/mobile, keyboard, 44 px targets, reduced motion, offline reload,
-  same-origin-only requests, headers, caching, and serious/critical axe checks
-  passed.
-- Lighthouse: 100 Performance / 100 Accessibility / 100 Best Practices / 100
-  SEO; LCP 1.1 s, TBT 80 ms, CLS 0, total 48 KiB.
-
-## How to reproduce
+Executed after a clean `npm ci` (46 packages, 0 vulnerabilities):
 
 ```sh
-npm ci
-npm test
+npm run build
 cargo fmt --check
 cargo clippy --all-targets --all-features -- -D warnings
-npm run build
 cargo build --release --locked
 cargo package --locked --allow-dirty
 ```
 
-Then install `target/package/s3-dir-dev-server-0.1.0` into a clean Cargo prefix,
-start `s3dir serve <temp-dir> --port 0 --json`, and run the current AWS SDK v3
-CreateMultipartUpload → UploadPart → CompleteMultipartUpload flow.
-
-Full evidence and remediation are in
-[`verification-7.md`](verification-7.md).
+- `npm run build` passed: 14 Rust tests and 31 Node/Playwright tests, including all 15 exact claim commands, desktop and 390 px browser flows, keyboard, 44 px geometry, offline reload, same-origin request checks, and zero serious/critical axe findings.
+- Formatting and strict Clippy passed. The locked release binary is 4.2 MiB. Cargo packaged and verified 16 intended files, 165.2 KiB unpacked / 43.5 KiB compressed.
+- Fresh package consumer: `cargo install --path target/package/s3-dir-dev-server-0.1.0 --root <temp>` then current AWS SDK multipart completion returned and read `package SDK check` successfully.
+- `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/ .factory/evidence-repair` passed against the final static build: HTTP 200, title, `lang=en`, one h1, main landmark, alt text, labelled buttons, and no browser errors. Its desktop/mobile screenshots and report are in `.factory/evidence-repair/`.
+- Lighthouse 12.8.2 report: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.2 s, TBT 0 ms, CLS 0. Chromium printed a post-audit tab-crash warning after the report was written; the report and all Playwright console-error checks completed successfully.
 
 ## Known environment gap
 
-No Docker-compatible runtime is installed, so a real image/Compose run was not
-possible. The source-level bind-mount claim passes; the next Docker-enabled
-release environment should still run one fresh `docker compose up --build`
-smoke test. No product code was changed during verification.
+Docker, Podman, Buildah, and Nerdctl are unavailable in this worker, so a live image/Compose smoke test could not run. The shipped entrypoint/Compose ownership behavior remains source-level regression-covered. Production deployment and live verification are recorded after the release commit.

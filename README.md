@@ -10,7 +10,7 @@ Run a local S3-compatible endpoint from an ordinary directory. It is for applica
 cargo run -- demo --port 9000
 ```
 
-The command creates a unique temporary directory, writes three bundled sample objects, and starts the normal server. It prints the directory and its local `/ui` browser console. It does not read or write your project directory. Press Ctrl-C to leave demo mode and delete the sample directory.
+The command creates a unique temporary directory, writes three bundled sample objects, and starts the normal server. It prints the directory and its local `/ui` browser console. Press Ctrl-C to leave demo mode and delete the sample directory.
 
 The shipped sample files are `assets/welcome.txt`, `assets/receipts/may-2026.txt`, and `fixtures/local-stack.json`. See [`.factory/demo.md`](.factory/demo.md) for sandbox details.
 
@@ -55,7 +55,7 @@ The supplied `compose.yaml` maps `./dev-data` to `/data`. On a fresh Linux check
 
 ## Privacy and static documentation
 
-The CLI has no accounts, analytics, telemetry, or remote storage. The only optional server egress is the webhook URL passed with `--events`. The documentation site uses no third-party runtime requests and caches visited public pages for offline reading. Its static deployment artifact is `dist/site`.
+The CLI stores object bytes, metadata, and tags in the directory you choose. It sends object events only to the webhook URL passed with `--events`. The documentation site makes no third-party runtime requests and caches visited public pages for offline reading. Its static deployment artifact is `dist/site`.
 
 ## Develop, test, package, and deploy
 

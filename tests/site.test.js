@@ -118,7 +118,7 @@ test('package and public terms consistently declare the required Apache-2.0 lice
 
 test('service worker versions, clears, and dynamically caches the offline shell', async () => {
   const [sw, register] = await Promise.all([readFile('site/public/sw.js', 'utf8'), readFile('site/sw-register.js', 'utf8')]);
-  assert.match(sw, /s3dir-site-v3/);
+  assert.match(sw, /s3dir-site-v4/);
   assert.match(sw, /keys\.filter\(key=>key!==CACHE\)/);
   assert.match(sw, /cache\.put\(event\.request,response\.clone\(\)\)/);
   assert.match(register, /serviceWorker\.register\('\/sw\.js'\)/);

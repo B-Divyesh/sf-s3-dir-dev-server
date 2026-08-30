@@ -4,8 +4,11 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Run a local S3-compatible endpoint from a directory, with sample files and a browser console for application developers.">
   <meta name="theme-color" content="#101b24"><title>s3dir — Local S3 from a directory</title>
-  <link rel="canonical" href="https://s3-dir-dev-server.sociobot.in/"><link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
+  <link rel="canonical" href="https://s3-dir-dev-server.sociobot.in/"><link rel="icon" href="/assets/mark-DYr8SVrC.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/apple-touch-icon-DX4QIYCV.png">
   <meta property="og:type" content="website"><meta property="og:title" content="s3dir — Local S3 from a directory"><meta property="og:description" content="Run a local S3-compatible endpoint from a directory, with sample files and a browser console."><meta property="og:url" content="https://s3-dir-dev-server.sociobot.in/"><meta property="og:image" content="https://s3-dir-dev-server.sociobot.in/assets/social-card.webp"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="s3dir — Local S3 from a directory"><meta name="twitter:description" content="Run a local S3-compatible endpoint from a directory, with sample files and a browser console."><meta name="twitter:image" content="https://s3-dir-dev-server.sociobot.in/assets/social-card.webp">
+  <script type="module" crossorigin src="/assets/index-KzZJiD0N.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/sw-register-CCLFReNt.js">
+  <link rel="stylesheet" crossorigin href="/assets/styles-B2vE1peP.css">
 </head>
 <body>
   <a href="#main" class="skip">Skip to content</a>
@@ -13,7 +16,7 @@
   <main id="main">
     <section class="hero">
       <div class="hero-copy"><p class="eyebrow">Local development server</p><h1>Run local S3<br>from a <em>directory.</em></h1><p class="lede">For application developers who need an inspectable local S3 endpoint without a production object store.</p><div class="hero-actions"><a class="button" href="/demo/">Try it with sample data</a><span class="action-note">Opens an isolated sample terminal and console.</span><a class="text-link" href="#install">See installation <span aria-hidden="true">↓</span></a></div><dl><div><dt>Sample</dt><dd>Temp directory</dd></div><div><dt>Console</dt><dd>Built in</dd></div><div><dt>Docs</dt><dd>Same-origin only</dd></div></dl></div>
-      <figure><img src="./assets/impossible-archive.webp" width="1152" height="768" fetchpriority="high" alt="A filing cabinet maps directory folders to floating object-storage cubes"><figcaption><span>DIRECTORY</span><i></i><span>S3 OBJECTS</span></figcaption></figure>
+      <figure><img src="/assets/impossible-archive-DSW0gZs0.webp" width="1152" height="768" fetchpriority="high" alt="A filing cabinet maps directory folders to floating object-storage cubes"><figcaption><span>DIRECTORY</span><i></i><span>S3 OBJECTS</span></figcaption></figure>
     </section>
     <section class="route" id="how" aria-labelledby="route-title"><div><p class="eyebrow">How it maps</p><h2 id="route-title">Map one directory to local S3.</h2><p>Buckets are folders. Keys are paths. Metadata and tags use hidden sidecar files.</p></div><div class="mapping" aria-label="Mapping example"><code>./data/<strong>assets</strong>/<b>avatars/ada.webp</b></code><span aria-hidden="true">→</span><code>s3://<strong>assets</strong>/<b>avatars/ada.webp</b></code></div></section>
     <section class="console-section" id="console" aria-labelledby="console-title"><div class="section-copy"><p class="eyebrow">Browser console</p><h2 id="console-title">Inspect local uploads in your browser.</h2><p>Use the local <code>/ui</code> console to browse buckets, edit text, upload files, and remove test data.</p><p>The public site is a recorded sample. Your local server provides the working console.</p></div><div class="demo" role="img" aria-label="Sample local console showing the assets bucket and its objects"><div class="demo-top"><b>s3dir</b><span><i></i> Local endpoint</span></div><aside><small>FILESYSTEM ROOT</small><strong>Buckets</strong><span class="demo-bucket selected">assets <span>2</span></span><span class="demo-bucket">fixtures <span>1</span></span></aside><div class="demo-main"><small>S3 OBJECTS</small><h3>assets</h3><code>./data/assets/</code><div class="demo-row"><b>receipts/may-2026.txt</b><span>72 B</span></div><div class="demo-row"><b>welcome.txt</b><span>177 B</span></div></div></div></section>
@@ -26,5 +29,5 @@
 <span>directory</span>    ./data</code></pre><button id="copy" type="button" data-copy="cargo install --path .&#10;s3dir serve ./data --port 9000">Copy commands</button></div></section>
   </main>
   <footer><a class="logo" href="/"><svg width="28" height="28" viewBox="0 0 34 34" aria-hidden="true"><path d="M3 8h12l3 4h13v17H3zM8 3h18v9H8z"/></svg><b>s3dir</b></a><p>Local S3-compatible development server.</p><span class="build-id">Build 0.1.0</span><nav aria-label="Footer"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-s3-dir-dev-server">Source (external)</a></nav></footer>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div><script type="module" src="/sw-register.js"></script><script type="module" src="/main.js"></script>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body></html>

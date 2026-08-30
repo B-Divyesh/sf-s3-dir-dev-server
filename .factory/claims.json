@@ -7,6 +7,13 @@
     "sandbox": "Runs s3dir demo with a fresh temporary directory and verifies the bundled objects and health endpoint."
   },
   {
+    "id": "demo-cleanup",
+    "claim": "Ctrl-C deletes the isolated demo directory.",
+    "where": "README, .factory/demo.md",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:demo-cleanup' tests/claims.test.js",
+    "sandbox": "Starts s3dir demo in a fresh process, sends Ctrl-C, waits for exit, and checks that its temporary directory no longer exists."
+  },
+  {
     "id": "directory-mapping",
     "claim": "Stores S3 objects as ordinary files in the selected directory.",
     "where": "Landing mapping section, README",
@@ -15,10 +22,31 @@
   },
   {
     "id": "api-workflow",
-    "claim": "Supports the documented local S3 workflow for objects, multipart uploads, byte ranges, metadata, and tags.",
+    "claim": "Supports the documented local S3 workflow through the current AWS JavaScript SDK, including multipart uploads, byte ranges, metadata, and tags.",
     "where": "Landing Local S3 workflow section, README",
     "test": "npm run build:site && node --test --test-name-pattern '@claim:api-workflow' tests/claims.test.js",
-    "sandbox": "Uses a fresh endpoint to complete multipart upload and verify range, tag, and build-health behavior."
+    "sandbox": "Uses @aws-sdk/client-s3 3.1121.0 against a fresh endpoint to complete multipart upload and verify range, tag, metadata, list, and build-health behavior."
+  },
+  {
+    "id": "presigned-requests",
+    "claim": "Accepts a current AWS SDK presigned GET request.",
+    "where": "README AWS SDK usage",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:presigned-requests' tests/claims.test.js",
+    "sandbox": "Uses @aws-sdk/s3-request-presigner 3.1121.0 to generate a GET URL for an object on a fresh local endpoint and fetches its bytes."
+  },
+  {
+    "id": "cors-control",
+    "claim": "Allows only browser origins configured with --cors.",
+    "where": "CLI --help, README run command",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:cors-control' tests/claims.test.js",
+    "sandbox": "Starts a fresh server with one allowed origin and observes that it receives the CORS origin response header while a different origin does not."
+  },
+  {
+    "id": "fixture-seeding",
+    "claim": "Copies missing fixture files before serving without replacing existing data.",
+    "where": "CLI --help, README run command",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:fixture-seeding' tests/claims.test.js",
+    "sandbox": "Starts a fresh server with --seed, verifies a missing fixture is copied, and verifies an existing destination file remains unchanged."
   },
   {
     "id": "request-allowance",
@@ -29,10 +57,10 @@
   },
   {
     "id": "browser-console",
-    "claim": "Includes a browser console at the local /ui endpoint.",
+    "claim": "The local /ui console browses buckets, uploads files, edits text, and removes test data.",
     "where": "Landing Browser console section, README",
     "test": "npm run build:site && node --test --test-name-pattern '@claim:browser-console' tests/claims.test.js",
-    "sandbox": "Loads the console at 390px from a fresh local server and checks its reachable heading and touch target."
+    "sandbox": "Uses the console at 390px on a fresh local server to create a bucket, upload and edit a text object, preserve the actionable non-empty-bucket error, then remove the object and bucket."
   },
   {
     "id": "no-telemetry",
@@ -54,6 +82,13 @@
     "where": "README Filesystem boundary",
     "test": "npm run build:site && node --test --test-name-pattern '@claim:filesystem-boundary' tests/claims.test.js",
     "sandbox": "Attempts an encoded traversal write against a fresh server and checks that no outside file exists."
+  },
+  {
+    "id": "key-path-conflict",
+    "claim": "Returns 409 KeyPathConflict when a file key and a directory key would occupy the same path.",
+    "where": "README Filesystem mapping",
+    "test": "npm run build:site && node --test --test-name-pattern '@claim:key-path-conflict' tests/claims.test.js",
+    "sandbox": "Writes foo then foo/bar, and nested/child then nested, on a fresh endpoint and checks both incompatible paths return 409."
   },
   {
     "id": "privacy-default",

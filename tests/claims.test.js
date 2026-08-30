@@ -1,13 +1,27 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { createServer, request as httpRequest } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join, normalize, extname } from 'node:path';
 import { spawn } from 'node:child_process';
+import { once } from 'node:events';
 import test from 'node:test';
 import { chromium } from 'playwright';
 import axe from 'axe-core';
+import {
+  CompleteMultipartUploadCommand,
+  CreateBucketCommand,
+  CreateMultipartUploadCommand,
+  GetObjectCommand,
+  GetObjectTaggingCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+  UploadPartCommand,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 function chromiumExecutable() {
   for (const candidate of [process.env.CHROMIUM_PATH, process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH]) {
@@ -29,8 +43,30 @@ function stop(child) {
   }
 }
 
-async function startS3(args) {
-  const child = spawn('cargo', ['run', '--quiet', '--', ...args], {
+async function interruptDemo(child) {
+  if (process.platform === 'win32') child.kill('SIGINT');
+  else process.kill(-child.pid, 'SIGINT');
+  await once(child, 'exit');
+}
+
+function sdkClient(endpoint) {
+  return new S3Client({
+    endpoint,
+    region: 'us-east-1',
+    forcePathStyle: true,
+    credentials: { accessKeyId: 'local', secretAccessKey: 'local' },
+  });
+}
+
+async function buildDebugBinary() {
+  const child = spawn('cargo', ['build', '--quiet'], { cwd: process.cwd(), stdio: 'ignore' });
+  const [code] = await once(child, 'exit');
+  assert.equal(code, 0, 'cargo build must produce the direct CLI test binary');
+}
+
+async function startS3(args, { directBinary = false } = {}) {
+  const binary = join(process.cwd(), 'target', 'debug', process.platform === 'win32' ? 's3dir.exe' : 's3dir');
+  const child = spawn(directBinary ? binary : 'cargo', directBinary ? args : ['run', '--quiet', '--', ...args], {
     cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'], detached: process.platform !== 'win32',
   });
   let output = '';
@@ -105,13 +141,21 @@ async function assertNoSeriousAxe(page, label) {
 
 test('@claim:demo-cli starts an isolated bundled sample', async (t) => {
   const server = await startS3(['demo', '--port', '0', '--json']);
-  t.after(() => stop(server.child));
+  t.after(() => interruptDemo(server.child));
   assert.equal(server.demo, true);
   assert.equal(server.seeded, 3);
   assert.match(server.directory, /s3dir-demo-/);
   assert.equal((await fetch(`${server.endpoint}/health`)).status, 200);
   assert.match(await readFile(join(server.directory, 'assets/welcome.txt'), 'utf8'), /s3dir sample bucket/);
   assert.ok(existsSync(join(server.directory, 'fixtures/local-stack.json')));
+});
+
+test('@claim:demo-cleanup removes the isolated sample directory after Ctrl-C', async () => {
+  await buildDebugBinary();
+  const server = await startS3(['demo', '--port', '0', '--json'], { directBinary: true });
+  assert.ok(existsSync(server.directory));
+  await interruptDemo(server.child);
+  assert.equal(existsSync(server.directory), false);
 });
 
 test('@claim:directory-mapping stores objects as ordinary files', async (t) => {
@@ -122,33 +166,77 @@ test('@claim:directory-mapping stores objects as ordinary files', async (t) => {
   assert.equal(await readFile(join(server.directory, 'assets/notes/hello.txt'), 'utf8'), 'mapped bytes');
 });
 
-test('@claim:api-workflow completes multipart, range, tags, and health', async (t) => {
+test('@claim:api-workflow completes the documented workflow through the current AWS SDK', async (t) => {
   const server = await startServer();
   t.after(() => stop(server.child));
-  const endpoint = server.endpoint;
-  assert.equal((await fetch(`${endpoint}/assets`, { method: 'PUT' })).status, 200);
-  const object = await fetch(`${endpoint}/assets/hello.txt`, { method: 'PUT', headers: { 'x-amz-tagging': 'label=hello%20world', 'x-amz-meta-owner': 'qa' }, body: 'hello world' });
-  assert.equal(object.status, 200);
-  assert.equal((await fetch(`${endpoint}/assets/hello.txt`, { method: 'HEAD' })).headers.get('x-amz-meta-owner'), 'qa');
-  assert.match(await (await fetch(`${endpoint}/assets?list-type=2`)).text(), /<Key>hello\.txt<\/Key>/);
-  const range = await fetch(`${endpoint}/assets/hello.txt`, { headers: { Range: 'bytes=-5' } });
-  assert.equal(range.status, 206);
-  assert.equal(await range.text(), 'world');
-  assert.match(await (await fetch(`${endpoint}/assets/hello.txt?tagging`)).text(), /hello world/);
-  const started = await (await fetch(`${endpoint}/assets/report.txt?uploads`, { method: 'POST' })).text();
-  const id = started.match(/<UploadId>([^<]+)<\/UploadId>/)?.[1];
-  assert.ok(id);
+  const s3 = sdkClient(server.endpoint);
+  await s3.send(new CreateBucketCommand({ Bucket: 'assets' }));
+  await s3.send(new PutObjectCommand({
+    Bucket: 'assets', Key: 'hello.txt', Body: 'hello world', Tagging: 'label=hello%20world', Metadata: { owner: 'qa' },
+  }));
+  const head = await s3.send(new HeadObjectCommand({ Bucket: 'assets', Key: 'hello.txt' }));
+  assert.equal(head.Metadata?.owner, 'qa');
+  const listed = await s3.send(new ListObjectsV2Command({ Bucket: 'assets' }));
+  assert.deepEqual(listed.Contents?.map((object) => object.Key), ['hello.txt']);
+  const ranged = await s3.send(new GetObjectCommand({ Bucket: 'assets', Key: 'hello.txt', Range: 'bytes=-5' }));
+  assert.equal(await ranged.Body?.transformToString(), 'world');
+  const tags = await s3.send(new GetObjectTaggingCommand({ Bucket: 'assets', Key: 'hello.txt' }));
+  assert.deepEqual(tags.TagSet, [{ Key: 'label', Value: 'hello world' }]);
+  assert.ok(readdirSync(join(server.directory, 'assets', '.s3dir')).some((name) => name.endsWith('.json')));
+  const started = await s3.send(new CreateMultipartUploadCommand({ Bucket: 'assets', Key: 'report.txt' }));
+  assert.ok(started.UploadId);
   const parts = [];
-  for (const [number, body] of [[1, 'one-'], [2, 'two']]) {
-    const part = await fetch(`${endpoint}/assets/report.txt?uploadId=${id}&partNumber=${number}`, { method: 'PUT', body });
-    parts.push([number, part.headers.get('etag')]);
+  for (const [PartNumber, Body] of [[1, 'one-'], [2, 'two']]) {
+    const part = await s3.send(new UploadPartCommand({ Bucket: 'assets', Key: 'report.txt', UploadId: started.UploadId, PartNumber, Body }));
+    assert.ok(part.ETag);
+    parts.push({ ETag: part.ETag, PartNumber });
   }
-  const manifest = parts.map(([number, etag]) => `<Part><PartNumber>${number}</PartNumber><ETag>${etag}</ETag></Part>`).join('');
-  assert.equal((await fetch(`${endpoint}/assets/report.txt?uploadId=${id}`, { method: 'POST', body: `<CompleteMultipartUpload>${manifest}</CompleteMultipartUpload>` })).status, 200);
-  assert.equal(await (await fetch(`${endpoint}/assets/report.txt`)).text(), 'one-two');
-  const health = await (await fetch(`${endpoint}/health`)).json();
+  await s3.send(new CompleteMultipartUploadCommand({
+    Bucket: 'assets', Key: 'report.txt', UploadId: started.UploadId, MultipartUpload: { Parts: parts },
+  }));
+  const completed = await s3.send(new GetObjectCommand({ Bucket: 'assets', Key: 'report.txt' }));
+  assert.equal(await completed.Body?.transformToString(), 'one-two');
+  const health = await (await fetch(`${server.endpoint}/health`)).json();
   assert.equal(health.status, 'ready');
   assert.ok(health.build);
+});
+
+test('@claim:presigned-requests accepts a current AWS SDK presigned URL', async (t) => {
+  const server = await startServer();
+  t.after(() => stop(server.child));
+  const s3 = sdkClient(server.endpoint);
+  await s3.send(new CreateBucketCommand({ Bucket: 'assets' }));
+  await s3.send(new PutObjectCommand({ Bucket: 'assets', Key: 'presigned.txt', Body: 'presigned bytes' }));
+  const url = await getSignedUrl(s3, new GetObjectCommand({ Bucket: 'assets', Key: 'presigned.txt' }));
+  assert.match(url, /X-Amz-Signature=/i);
+  const response = await fetch(url);
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), 'presigned bytes');
+});
+
+test('@claim:cors-control returns an allowed origin and omits an unallowed one', async (t) => {
+  const directory = mkdtempSync(join(tmpdir(), 's3dir-cors-'));
+  const server = await startS3(['serve', directory, '--port', '0', '--json', '--cors', 'http://allowed.test']);
+  t.after(() => stop(server.child));
+  const allowed = await fetch(`${server.endpoint}/`, { headers: { Origin: 'http://allowed.test' } });
+  assert.equal(allowed.headers.get('access-control-allow-origin'), 'http://allowed.test');
+  const denied = await fetch(`${server.endpoint}/`, { headers: { Origin: 'http://denied.test' } });
+  assert.equal(denied.headers.get('access-control-allow-origin'), null);
+});
+
+test('@claim:fixture-seeding copies missing fixture files without replacing existing data', async (t) => {
+  const directory = mkdtempSync(join(tmpdir(), 's3dir-seed-data-'));
+  const fixtures = mkdtempSync(join(tmpdir(), 's3dir-seed-source-'));
+  mkdirSync(join(directory, 'assets'), { recursive: true });
+  writeFileSync(join(directory, 'assets', 'existing.txt'), 'keep this');
+  mkdirSync(join(fixtures, 'assets'), { recursive: true });
+  writeFileSync(join(fixtures, 'assets', 'existing.txt'), 'do not replace');
+  writeFileSync(join(fixtures, 'assets', 'new.txt'), 'copy this');
+  const server = await startS3(['serve', directory, '--seed', fixtures, '--port', '0', '--json']);
+  t.after(() => { stop(server.child); rmSync(fixtures, { recursive: true, force: true }); });
+  assert.equal(server.seeded, 1);
+  assert.equal(await readFile(join(directory, 'assets', 'existing.txt'), 'utf8'), 'keep this');
+  assert.equal(await readFile(join(directory, 'assets', 'new.txt'), 'utf8'), 'copy this');
 });
 
 test('@claim:request-allowance returns 429 and Retry-After after 300 requests', async (t) => {
@@ -162,15 +250,36 @@ test('@claim:request-allowance returns 429 and Retry-After after 300 requests', 
   assert.match(limited.headers.get('retry-after') || '', /^\d+$/);
 });
 
-test('@claim:browser-console is available from the local endpoint', async (t) => {
+test('@claim:browser-console browses, uploads, edits, and removes local data with actionable errors', async (t) => {
   const server = await startServer();
   t.after(() => stop(server.child));
   const browser = await chromium.launch({ executablePath: chromiumExecutable() });
   t.after(() => browser.close());
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const origins = new Set();
+  page.on('request', (request) => origins.add(new URL(request.url()).origin));
   await page.goto(`${server.endpoint}/ui`, { waitUntil: 'networkidle' });
   await assert.doesNotReject(page.getByRole('heading', { name: 'Buckets' }).waitFor());
   assert.equal(await page.locator('.brand').evaluate((element) => Math.round(element.getBoundingClientRect().height)), 44);
+  await page.getByRole('button', { name: 'Create bucket' }).click();
+  await page.locator('#bucket-name').fill('console-data');
+  await page.locator('#bucket-dialog').getByRole('button', { name: 'Create bucket' }).click();
+  await page.setInputFiles('#upload', { name: 'note.txt', mimeType: 'text/plain', buffer: Buffer.from('first draft') });
+  await page.getByRole('button', { name: 'Inspect and edit note.txt' }).click();
+  await page.locator('#editor-content').fill('edited from console');
+  await page.getByRole('button', { name: 'Save to disk' }).click();
+  await assert.doesNotReject(page.getByText('Saved note.txt').waitFor());
+  assert.equal(await (await fetch(`${server.endpoint}/console-data/note.txt`)).text(), 'edited from console');
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Delete bucket' }).click();
+  await assert.doesNotReject(page.getByText('Remove all objects before deleting the bucket').waitFor());
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Delete note.txt' }).click();
+  await page.getByText('This bucket is an empty room').waitFor();
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Delete bucket' }).click();
+  await page.getByText('No buckets yet').waitFor();
+  assert.deepEqual([...origins], [server.endpoint]);
 });
 
 test('@claim:no-telemetry makes only same-origin browser requests', async (t) => {
@@ -211,6 +320,16 @@ test('@claim:filesystem-boundary rejects traversal outside the selected director
   assert.equal(existsSync(join(server.directory, 'escape.txt')), false);
 });
 
+test('@claim:key-path-conflict returns 409 when a file and directory need the same key path', async (t) => {
+  const server = await startServer();
+  t.after(() => stop(server.child));
+  assert.equal((await fetch(`${server.endpoint}/assets`, { method: 'PUT' })).status, 200);
+  assert.equal((await fetch(`${server.endpoint}/assets/foo`, { method: 'PUT', body: 'file first' })).status, 200);
+  assert.equal((await fetch(`${server.endpoint}/assets/foo/bar`, { method: 'PUT', body: 'must conflict' })).status, 409);
+  assert.equal((await fetch(`${server.endpoint}/assets/nested/child`, { method: 'PUT', body: 'directory first' })).status, 200);
+  assert.equal((await fetch(`${server.endpoint}/assets/nested`, { method: 'PUT', body: 'must conflict' })).status, 409);
+});
+
 test('@claim:privacy-default only emits object events to an explicit webhook URL', async (t) => {
   const events = [];
   const receiver = createServer((request, response) => {
@@ -221,6 +340,12 @@ test('@claim:privacy-default only emits object events to an explicit webhook URL
   await new Promise((resolve) => receiver.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => receiver.close(resolve)));
   const endpoint = `http://127.0.0.1:${receiver.address().port}/events`;
+  const localOnly = await startServer();
+  t.after(() => stop(localOnly.child));
+  assert.equal((await fetch(`${localOnly.endpoint}/assets`, { method: 'PUT' })).status, 200);
+  assert.equal((await fetch(`${localOnly.endpoint}/assets/local.txt`, { method: 'PUT', body: 'local' })).status, 200);
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  assert.equal(events.length, 0);
   const directory = mkdtempSync(join(tmpdir(), 's3dir-events-'));
   const server = await startS3(['serve', directory, '--port', '0', '--json', '--events', endpoint]);
   t.after(() => stop(server.child));
