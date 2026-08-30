@@ -1,0 +1,14 @@
+{
+  "url": "https://s3-dir-dev-server.sociobot.in/",
+  "loadMs": 702,
+  "errors": [],
+  "a11y": {
+    "title": "s3dir — Local S3 from a directory",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 0,
+    "textLength": 1798
+  }
+}

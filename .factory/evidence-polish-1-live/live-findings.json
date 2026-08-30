@@ -1,0 +1,20 @@
+{
+  "url": "https://s3-dir-dev-server.sociobot.in/",
+  "cold_browser": {
+    "privacy_fact": true,
+    "supported_operations_heading": true,
+    "demo_banner_reset_namespace": true,
+    "demo_and_back_heading_focus": true,
+    "third_party_origins": [],
+    "console_errors": []
+  },
+  "not_found": {
+    "url": "https://s3-dir-dev-server.sociobot.in/missing-review-route",
+    "status": 404,
+    "description": true,
+    "canonical": "https://s3-dir-dev-server.sociobot.in/404.html",
+    "open_graph": true,
+    "twitter": true,
+    "apple_touch_icon": true
+  }
+}

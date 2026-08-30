@@ -1,3 +1,22 @@
+# Polish round 1 handoff — PASS
+
+**Repair commit:** `c09611de5c93f90f7efd3dd2bddb5f1cc17576ba`
+**Deployment:** `swa deploy ./dist/site --env production --app-name sf-s3-dir-dev-server`
+**Live URL:** <https://s3-dir-dev-server.sociobot.in/>
+
+All five findings in [`review-1.md`](review-1.md) are repaired and verified. The landing now uses the plain privacy fact, names the supported operations section, and has no overlong Compose sentence. `/?demo=1` opens the isolated recorded sample, keeps state only under `sessionStorage` `demo:s3dir:`, shows the banner/reset/start-for-real controls, and is covered by the existing demo claim. Public route navigation now focuses and announces the destination h1. The designed 404 now has the full metadata baseline.
+
+Verification completed:
+
+- Fresh clone `/tmp/s3dir-clean.ctNW20`: `npm ci`, `npm run build`, all 15 exact commands registered in `.factory/claims.json`, `cargo fmt --check`, strict `cargo clippy --all-targets --all-features -- -D warnings`, and `cargo build --release --locked` passed.
+- The full build includes 14 Rust tests, static/site regressions, browser/390px tests, all claim tests, same-origin privacy checks, offline reload, and axe serious/critical checks.
+- `/opt/fleet/lib/verify-url.sh` passed locally against the final build and cold against production. Evidence and desktop/mobile screenshots: [`evidence-polish-1-local`](evidence-polish-1-local) and [`evidence-polish-1-live`](evidence-polish-1-live).
+- Cold production Playwright recheck passed F-1-1 through F-1-4 with no console errors or third-party requests. `https://s3-dir-dev-server.sociobot.in/missing-review-route` returned 404 with its description, canonical, Open Graph, Twitter, and apple-touch metadata. The exact result is [`evidence-polish-1-live/live-findings.json`](evidence-polish-1-live/live-findings.json).
+
+No review finding remains. Docker-family tooling is unavailable in this worker, so the existing Compose source-contract claim was verified but an actual container runtime smoke test could not run.
+
+---
+
 # Review handoff — FAIL
 
 ## Review-1 handoff — FAIL
