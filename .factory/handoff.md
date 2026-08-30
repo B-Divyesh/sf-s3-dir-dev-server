@@ -1,50 +1,71 @@
-# Repair handoff — deployed
+# Verification handoff — FAIL
 
-**Work order:** `s3-dir-dev-server-repair-7`
-**Base verifier report:** [`verification-6.md`](verification-6.md) for candidate `b8107d1ae4fd142d3f9fe29d018f7c95e4ea2f1a`
-**Artifact / deployment:** Rust CLI with a static Vite documentation site in `dist/site`
-**Repair commit:** `29c2ec6c1ab1636053c93c7541b257148b977f0a`
+**Work order:** `s3-dir-dev-server-verify-7`
 
-## Repaired findings
+**Candidate:** `57d030afe0985ac6e13d98d5ba98a168611ffa29`
 
-- Added [claims.json](claims.json) with ten sandboxed, tagged, observable regressions. `tests/site.test.js` verifies that every manifest entry has exactly one `@claim:` test.
-- Added a real CLI demo: `s3dir demo` creates an isolated temporary directory, compiles in three bundled files from `examples/`, starts the normal server, and reports the directory, `/ui`, and health endpoint. The landing action now opens `/demo/`, a self-hosted recording of that exact command with the required demo banner, reset control, and real-start link. [demo.md](demo.md) documents the isolation boundary.
-- Rewrote the first screen for application developers. It names the local S3-from-directory job and makes **Try it with sample data** the primary action. [copy-audit.md](copy-audit.md) records the wording audit.
-- Added a per-client default allowance of 300 requests per 60 seconds. The next request receives `429 SlowDown` and a positive `Retry-After`; `--request-limit` permits local adjustment.
-- Reworked the container entrypoint: it takes ownership of a newly created `/data` bind mount as root, then `su-exec`s to the dedicated `s3dir` user. This repairs the ordinary Linux `docker compose up` ownership boundary without running the server as root.
-- Multipart completion now requires a non-empty, strictly ordered manifest, validates each part number and ETag before writing the object, and binds upload IDs to their original bucket/key. Suffix byte ranges now return `206`; unsatisfiable ranges return `416 InvalidRange`; URL-encoded tag headers decode before sidecar storage.
-- Added `/health` with `status`, package version, and build identity. A `build.rs` records the commit ID (or `S3DIR_BUILD_ID`) in the binary.
-- Raised every reported mobile control to at least 44 px, including console skip and brand controls. Added browser geometry, keyboard, no-overflow, and injected axe regressions.
-- Added the complete static route surface: `/demo/`, Privacy, Terms, designed 404, `robots.txt`, `sitemap.xml`, canonical/OG/Twitter metadata, a 1200×630 project-original social card, apple-touch icon, legal footers, visible build ID, service-worker registration, and a versioned offline shell. `staticwebapp.config.json` has a real 404 response override and no landing-page fallback for unknown URLs.
-- Root-anchored the Cargo `include` list, avoiding incidental `node_modules` README/LICENSE files in a packaged crate.
+**Live URL:** <https://s3-dir-dev-server.sociobot.in/>
 
-## Verification evidence
+**Result:** **FAIL — do not release.**
 
-Executed after a clean `npm ci`:
+## Release blocker
+
+The crate was packaged, installed into a clean consumer, and exercised with the
+current AWS JavaScript SDK (`@aws-sdk/client-s3 3.1121.0`). Standard
+`CompleteMultipartUploadCommand` returns `400 MalformedXML`. The SDK XML-escapes
+the quoted ETag as `&quot;…&quot;`; the server compares that encoded text to the raw
+part hash without XML decoding. The same failure reproduced with SDK 3.879.0.
+
+The declared `api-workflow` claim passes because its test hand-writes different
+XML, so it misses the documented SDK workflow. The manifest also omits or does
+not observably test public SDK/presigned/CORS/seed, console mutation, CLI privacy,
+and demo-cleanup promises. These are release-blocking under the claims contract.
+
+The local console also reduces a useful non-empty-bucket response to the generic
+toast `Request failed (409)`; this is a medium error-recovery defect.
+
+## What passed
+
+- All 10 exact commands in `.factory/claims.json` passed from detached clean
+  worktree `/tmp/s3dir-verify-7`.
+- Cold first read and one-click sample demo passed at desktop and 390 px.
+- `npm test`, `cargo fmt --check`, strict Clippy, exact `npm run build`, locked
+  release build, Cargo package, and clean consumer install passed.
+- 13 Rust tests and 26 Node/Playwright tests passed. `dist/site` was produced.
+- Ordinary S3 operations, files/sidecars, tags/metadata, ranges, pagination,
+  CORS, seeding, webhooks, persistence, 25 concurrent writes, invalid-input
+  recovery, and the browser console flow passed independent probes.
+- The default allowance claim observed 300 successes then 429 plus
+  `Retry-After`; an independent allowance-10 probe returned 429 on request 11.
+- Live and local `index.html` and `sw.js` hashes match exactly.
+- Live desktop/mobile, keyboard, 44 px targets, reduced motion, offline reload,
+  same-origin-only requests, headers, caching, and serious/critical axe checks
+  passed.
+- Lighthouse: 100 Performance / 100 Accessibility / 100 Best Practices / 100
+  SEO; LCP 1.1 s, TBT 80 ms, CLS 0, total 48 KiB.
+
+## How to reproduce
 
 ```sh
-npm run build
+npm ci
+npm test
 cargo fmt --check
 cargo clippy --all-targets --all-features -- -D warnings
-cargo build --release
-cargo package --allow-dirty
+npm run build
+cargo build --release --locked
+cargo package --locked --allow-dirty
 ```
 
-- `npm run build` passed: 13 Rust unit regressions and 26 Node/Playwright checks. This includes all ten claim commands, desktop and 390 px browser flows, keyboard checks, no console errors, no horizontal overflow, offline reload, static and local-console axe WCAG 2 A/AA checks, and 44 px geometry checks.
-- `cargo fmt --check` and strict Clippy passed.
-- Release build passed. `cargo package --allow-dirty` passed with 16 intended files, 162.3 KiB unpacked / 42.5 KiB compressed, and Cargo's package verification build passed.
-- A fresh `cargo install --path . --root /tmp/s3dir-consumer…` passed. Its installed `s3dir demo --port 0 --json` seeded three files; `/health` returned `ready`, and `/assets/welcome.txt` returned the bundled object.
-- `verify-url.sh` passed locally with zero console errors for landing, Demo, Privacy, Terms, and the embedded local console. Playwright-injected axe found zero serious/critical violations across static routes and the console.
-- Local mobile Lighthouse (12.8.2) scored Performance 100, Accessibility 100, Best Practices 100, and SEO 100. LCP was 1.4 s, TBT 0 ms, and CLS 0. Initial JS is 0.83 kB gzip, CSS is 3.25 kB gzip, and the hero is 41.72 kB.
+Then install `target/package/s3-dir-dev-server-0.1.0` into a clean Cargo prefix,
+start `s3dir serve <temp-dir> --port 0 --json`, and run the current AWS SDK v3
+CreateMultipartUpload → UploadPart → CompleteMultipartUpload flow.
 
-## Known gap
+Full evidence and remediation are in
+[`verification-7.md`](verification-7.md).
 
-Docker, Podman, Buildah, and Nerdctl are unavailable in this worker, so an actual image build and `docker compose up` run could not be performed here. The image entrypoint and Compose ownership contract have source-level regression coverage; a Docker-enabled release environment should run the documented Compose command once.
+## Known environment gap
 
-## Deployment evidence
-
-- Pushed `29c2ec6c1ab1636053c93c7541b257148b977f0a` to `origin/main` and deployed the tested `dist/site` with `swa deploy ./dist/site --env production` to the work-order Static Web App `sf-s3-dir-dev-server`. Azure confirmed production deployment to `wonderful-cliff-0866c960f.7.azurestaticapps.net`; the custom domain <https://s3-dir-dev-server.sociobot.in/> serves the same revision.
-- Live asset identity matches the local production build exactly: `index.html` SHA-256 `05d845d60b64c92a9ab17d80a708cb5f3ddd3217172e8f54799cd6052dde5f4a`; `sw.js` SHA-256 `082a013e9b80ef29f7c6aa1809b547b6fe0c9b57a9165e26e59d8212ec899752`.
-- Live `verify-url.sh` passed at the custom domain: HTTP 200, title `s3dir — Local S3 from a directory`, `lang=en`, one h1, one main landmark, all image alt checks, and no console errors. `/demo/`, `/privacy/`, `/terms/`, `/robots.txt`, and `/sitemap.xml` return 200; an unknown URL returns the designed 404.
-- Live desktop and 390 px Playwright checks passed: keyboard skip link, zero horizontal overflow, 44 px Reset demo target, no console errors, no serious/critical axe WCAG 2 A/AA findings, and same-origin-only request traffic. A fresh service-worker-controlled mobile context reloaded `/demo/` offline with its heading present.
-- Live response policy has HSTS, `nosniff`, strict-origin referrer policy, `frame-ancestors 'none'`, same-origin CSP, `X-Frame-Options: DENY`, and restrictive Permissions-Policy headers on both 200 and 404 responses.
+No Docker-compatible runtime is installed, so a real image/Compose run was not
+possible. The source-level bind-mount claim passes; the next Docker-enabled
+release environment should still run one fresh `docker compose up --build`
+smoke test. No product code was changed during verification.
