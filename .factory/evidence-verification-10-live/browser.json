@@ -1,0 +1,129 @@
+{
+  "base": "https://s3-dir-dev-server.sociobot.in",
+  "desktop": {
+    "firstRead": {
+      "job": "Run local S3 from a directory.",
+      "audience": "For application developers who need an inspectable local S3 endpoint without a production object store.",
+      "firstAction": "Try it with sample data",
+      "facts": [
+        "Temp directory",
+        "Built in",
+        "No third-party requests"
+      ],
+      "actionBottom": 540.84375,
+      "viewportHeight": 900
+    },
+    "demo": {
+      "sampleFiles": 3,
+      "reset": true,
+      "demoStorageCleared": true,
+      "realSentinelPreserved": true,
+      "backFocus": "H1"
+    },
+    "keyboard": {
+      "outline": "rgb(255, 255, 255) solid 3px",
+      "opacity": "1"
+    }
+  },
+  "mobile": {
+    "firstRead": {
+      "job": "Run local S3 from a directory.",
+      "audience": "For application developers who need an inspectable local S3 endpoint without a production object store.",
+      "firstAction": "Try it with sample data",
+      "facts": [
+        "Temp directory",
+        "Built in",
+        "No third-party requests"
+      ],
+      "actionBottom": 498.140625,
+      "viewportHeight": 844
+    },
+    "demo": {
+      "sampleFiles": 3,
+      "reset": true,
+      "demoStorageCleared": true,
+      "realSentinelPreserved": true,
+      "backFocus": "H1"
+    },
+    "keyboard": {
+      "outline": "rgb(255, 255, 255) solid 3px",
+      "opacity": "1"
+    }
+  },
+  "routes": {
+    "/": {
+      "status": 200,
+      "title": "s3dir — Local S3 from a directory",
+      "canonical": "https://s3-dir-dev-server.sociobot.in/",
+      "h1": "Run local S3\nfrom a directory.",
+      "motion": {
+        "reduce": true,
+        "htmlScrollBehavior": "auto"
+      }
+    },
+    "/demo/": {
+      "status": 200,
+      "title": "Demo — s3dir",
+      "canonical": "https://s3-dir-dev-server.sociobot.in/demo/",
+      "h1": "Try local S3 with sample files.",
+      "motion": {
+        "reduce": true,
+        "htmlScrollBehavior": "auto"
+      }
+    },
+    "/privacy/": {
+      "status": 200,
+      "title": "Privacy — s3dir",
+      "canonical": "https://s3-dir-dev-server.sociobot.in/privacy/",
+      "h1": "Privacy for local S3 development.",
+      "motion": {
+        "reduce": true,
+        "htmlScrollBehavior": "auto"
+      }
+    },
+    "/terms/": {
+      "status": 200,
+      "title": "Terms — s3dir",
+      "canonical": "https://s3-dir-dev-server.sociobot.in/terms/",
+      "h1": "Terms for s3dir development use.",
+      "motion": {
+        "reduce": true,
+        "htmlScrollBehavior": "auto"
+      }
+    },
+    "/verification-10-missing": {
+      "status": 404,
+      "title": "Page not found — s3dir",
+      "canonical": "https://s3-dir-dev-server.sociobot.in/404.html",
+      "h1": "That page is not in this directory.",
+      "motion": {
+        "reduce": true,
+        "htmlScrollBehavior": "auto"
+      }
+    }
+  },
+  "offline": {
+    "privacyReloaded": true,
+    "registrations": [
+      {
+        "scope": "https://s3-dir-dev-server.sociobot.in/",
+        "active": "https://s3-dir-dev-server.sociobot.in/sw.js"
+      }
+    ]
+  },
+  "errors": [],
+  "axe": {
+    "/": [],
+    "/demo/": [],
+    "/privacy/": [],
+    "/terms/": [],
+    "/verification-10-missing": []
+  },
+  "expectedErrors": [
+    "console https://s3-dir-dev-server.sociobot.in/verification-10-missing: Failed to load resource: the server responded with a status of 404 ()"
+  ],
+  "requestOrigins": [
+    "https://s3-dir-dev-server.sociobot.in"
+  ],
+  "requestCount": 132
+}

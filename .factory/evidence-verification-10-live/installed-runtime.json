@@ -1,0 +1,9 @@
+{
+  "health": 200,
+  "invalidBucket": 400,
+  "invalidRange": 416,
+  "restartPersistence": true,
+  "installedUi": true,
+  "uiSecurityHeaders": true,
+  "separateRootsIsolated": true
+}

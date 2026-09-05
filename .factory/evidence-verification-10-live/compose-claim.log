@@ -1,0 +1,39 @@
+
+> s3-dir-dev-server-site@0.1.0 build:site
+> vite build --config site/vite.config.js
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 11 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/site/assets/mark-DYr8SVrC.svg                  0.20 kB │ gzip: 0.18 kB
+../dist/site/assets/apple-touch-icon-DX4QIYCV.png      1.67 kB
+../dist/site/404.html                                  2.69 kB │ gzip: 1.03 kB
+../dist/site/terms/index.html                          2.90 kB │ gzip: 1.22 kB
+../dist/site/privacy/index.html                        2.98 kB │ gzip: 1.24 kB
+../dist/site/demo/index.html                           4.16 kB │ gzip: 1.63 kB
+../dist/site/index.html                                6.89 kB │ gzip: 2.55 kB
+../dist/site/assets/impossible-archive-DSW0gZs0.webp  41.72 kB
+../dist/site/assets/route-focus-CjFdUiGj.css          10.88 kB │ gzip: 3.30 kB
+../dist/site/assets/sw-register-YXupG7aY.js            0.12 kB │ gzip: 0.12 kB
+../dist/site/assets/index-Dz6a2PdX.js                  0.71 kB │ gzip: 0.42 kB
+../dist/site/assets/demo-CB6NDHtK.js                   1.06 kB │ gzip: 0.53 kB
+../dist/site/assets/route-focus-H7LeRum0.js            1.10 kB │ gzip: 0.61 kB
+✓ built in 152ms
+TAP version 13
+# Subtest: @claim:compose-bind-mount makes a fresh bind mount writable before serving unprivileged
+ok 1 - @claim:compose-bind-mount makes a fresh bind mount writable before serving unprivileged # SKIP Docker daemon unavailable; run this claim in a Docker-enabled release environment.
+  ---
+  duration_ms: 45.343952
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 640.477883

@@ -1,3 +1,23 @@
+# Verification 10 handoff — FAIL
+
+**Work order:** `s3-dir-dev-server-verify-10`
+
+**Implementation candidate:** `7e023901c8ef9f476a04e071ce77e44bacbae51a`
+
+**Documentation SHA:** `4a95f7d4481e98eae9a0265ec178b3946f76818f`
+
+**Live URL:** <https://s3-dir-dev-server.sociobot.in/>
+
+**Verdict: FAIL — 1 finding, 1 untested claim.** No tested product defect was found. Fifteen registered claims passed from a clean checkout, but the exact `compose-bind-mount` command skipped. Docker and Compose were installed; the worker lacks the kernel network capability needed to start the daemon, so the promised image build, fresh bind mount, object write, and non-root PID 1 were not observed. The work order forbids PASS with any untested claim.
+
+The rest of the candidate passed: `npm test` and `npm run build` each completed with 33 Node/Playwright passes plus the one Docker skip; all 15 Rust tests, format, strict Clippy, locked release build, package verification, and clean-prefix install passed. The installed CLI served and cleaned up its demo, preserved data across restart, isolated separate roots, exposed health, rejected invalid input, and served its secured `/ui`.
+
+Fresh live desktop and 390 px checks passed the first-read, one-click demo, sample/reset/storage isolation, keyboard/focus, reduced-motion, 200% text, touch-target, axe, privacy, route-title, legal-page, links, 404, service-worker update, and all-route offline checks. All 17 public build files match production. Lighthouse scored 100/100/100/100 with 1.05 s LCP, 0 ms TBT, and zero CLS.
+
+Full evidence and every earlier finding’s disposition are in [`verification-10.md`](verification-10.md). No product code or pre-existing `graphify-out` change was modified.
+
+---
+
 # Repair 9 handoff — ready to deploy
 
 **Work order:** `s3-dir-dev-server-repair-9`

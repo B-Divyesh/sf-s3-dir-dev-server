@@ -1,0 +1,9 @@
+{
+  "updated": "https://s3-dir-dev-server.sociobot.in/sw.js",
+  "offlineRoutes": {
+    "/": "s3dir — Local S3 from a directory",
+    "/demo/": "Demo — s3dir",
+    "/privacy/": "Privacy — s3dir",
+    "/terms/": "Terms — s3dir"
+  }
+}

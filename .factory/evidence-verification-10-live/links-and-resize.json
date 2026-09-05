@@ -1,0 +1,83 @@
+{
+  "links": [
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/#main",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/demo/",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/#how",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/privacy/",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/?demo=1",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/#install",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/terms/",
+      "status": 200
+    },
+    {
+      "href": "https://github.com/B-Divyesh/sf-s3-dir-dev-server",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/demo/#main",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/privacy/#main",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/terms/#main",
+      "status": 200
+    },
+    {
+      "href": "https://s3-dir-dev-server.sociobot.in/verification-10-missing#main",
+      "status": 404
+    }
+  ],
+  "touchMinimums": {
+    "/": {
+      "minWidth": 47.125,
+      "minHeight": 44,
+      "count": 10
+    },
+    "/demo/": {
+      "minWidth": 47.125,
+      "minHeight": 44,
+      "count": 10
+    },
+    "/privacy/": {
+      "minWidth": 47.015625,
+      "minHeight": 44,
+      "count": 7
+    },
+    "/terms/": {
+      "minWidth": 47.125,
+      "minHeight": 44,
+      "count": 7
+    },
+    "/verification-10-missing": {
+      "minWidth": 47.125,
+      "minHeight": 44,
+      "count": 9
+    }
+  }
+}
