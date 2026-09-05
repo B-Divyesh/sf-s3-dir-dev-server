@@ -1,7 +1,61 @@
 {
   "communities": {
     "0": [
+      "arc",
+      "body",
+      "client",
+      "error",
+      "headermap",
+      "method",
+      "mutex",
+      "option",
+      "pathbuf",
+      "request",
+      "response",
+      "src_lib_api_handle",
+      "src_lib_appstate",
+      "src_lib_bucket_request",
+      "src_lib_canonically_contained",
+      "src_lib_cors_response",
+      "src_lib_delete_object",
+      "src_lib_existing_bucket_path",
+      "src_lib_existing_object_path",
+      "src_lib_get_object",
+      "src_lib_handle",
+      "src_lib_health",
+      "src_lib_invalid_range_response",
+      "src_lib_io_error",
+      "src_lib_json_buckets",
+      "src_lib_json_error",
+      "src_lib_json_objects",
+      "src_lib_json_response",
+      "src_lib_list_buckets",
+      "src_lib_multipart_request",
+      "src_lib_multipart_start",
+      "src_lib_notify",
+      "src_lib_object_path_for_write",
+      "src_lib_objectwritepatherror",
+      "src_lib_put_object",
+      "src_lib_read_sidecar",
+      "src_lib_s3_error",
+      "src_lib_s3_handle",
+      "src_lib_safe_bucket_path",
+      "src_lib_safe_object_path",
+      "src_lib_sidecar",
+      "src_lib_sidecar_path",
+      "src_lib_tagging_request",
+      "src_lib_take_request_allowance",
+      "src_lib_uploads_dir",
+      "src_lib_valid_bucket",
+      "src_lib_write_sidecar",
+      "src_lib_xml_response",
+      "state",
+      "statuscode",
+      "value"
+    ],
+    "1": [
       "hashmap",
+      "instant",
       "intoresponse",
       "router",
       "src_lib",
@@ -18,16 +72,19 @@
       "src_lib_decode_form_component",
       "src_lib_decodes_sigv4_streaming_payloads",
       "src_lib_documented_put_get_list_flow",
+      "src_lib_embedded_console_sends_browser_security_headers",
       "src_lib_eventbucket",
       "src_lib_eventobject",
       "src_lib_eventrecord",
       "src_lib_events3",
+      "src_lib_favicon",
       "src_lib_health_identity_and_request_allowance_are_exposed",
+      "src_lib_list_objects",
+      "src_lib_local_browser_security_headers",
       "src_lib_manifest_field",
       "src_lib_multipart_assembles_parts",
       "src_lib_multipart_completion_rejects_empty_or_mismatched_manifests",
       "src_lib_objectinfo",
-      "src_lib_objectwritepatherror",
       "src_lib_parse_completion_manifest",
       "src_lib_parse_form",
       "src_lib_parse_range",
@@ -37,80 +94,18 @@
       "src_lib_query_params",
       "src_lib_rejects_bucket_and_object_symlinks_outside_the_canonical_root",
       "src_lib_reports_documented_key_path_conflicts_for_file_directory_pairs",
-      "src_lib_rs_string",
-      "src_lib_rs_vec",
+      "src_lib_requestwindow",
       "src_lib_suffix_and_unsatisfiable_ranges_follow_http_rules",
       "src_lib_ui_css",
       "src_lib_ui_html",
       "src_lib_ui_js",
       "src_lib_url_encoded_tag_headers_round_trip_decoded_values",
       "src_lib_xml",
-      "src_lib_xml_unescape"
-    ],
-    "1": [
-      "body",
-      "headermap",
-      "method",
-      "request",
-      "response",
-      "src_lib_api_handle",
-      "src_lib_bucket_request",
-      "src_lib_cors_response",
-      "src_lib_favicon",
-      "src_lib_get_object",
-      "src_lib_handle",
-      "src_lib_health",
-      "src_lib_invalid_range_response",
-      "src_lib_io_error",
-      "src_lib_json_buckets",
-      "src_lib_json_error",
-      "src_lib_json_response",
-      "src_lib_list_buckets",
-      "src_lib_list_objects",
-      "src_lib_multipart_request",
-      "src_lib_multipart_start",
-      "src_lib_put_object",
-      "src_lib_rs_error",
-      "src_lib_s3_error",
-      "src_lib_s3_handle",
-      "src_lib_tagging_request",
-      "src_lib_take_request_allowance",
-      "src_lib_valid_bucket",
-      "src_lib_xml_response",
-      "state",
-      "statuscode",
-      "value"
+      "src_lib_xml_unescape",
+      "string",
+      "vec"
     ],
     "2": [
-      "arc",
-      "client",
-      "instant",
-      "mutex",
-      "path",
-      "src_lib_appstate",
-      "src_lib_canonically_contained",
-      "src_lib_delete_object",
-      "src_lib_etag_path",
-      "src_lib_existing_bucket_path",
-      "src_lib_existing_object_path",
-      "src_lib_json_objects",
-      "src_lib_notify",
-      "src_lib_object_path_for_write",
-      "src_lib_read_sidecar",
-      "src_lib_requestwindow",
-      "src_lib_rs_option",
-      "src_lib_rs_pathbuf",
-      "src_lib_rs_result",
-      "src_lib_safe_bucket_path",
-      "src_lib_safe_object_path",
-      "src_lib_seed",
-      "src_lib_sidecar",
-      "src_lib_sidecar_path",
-      "src_lib_uploads_dir",
-      "src_lib_write_demo_samples",
-      "src_lib_write_sidecar"
-    ],
-    "3": [
       "aws_sdk_client_s3",
       "aws_sdk_s3_request_presigner",
       "axe_core",
@@ -133,6 +128,29 @@
       "package_version",
       "playwright",
       "vite"
+    ],
+    "3": [
+      "tests_claims_test",
+      "tests_claims_test_assertnoseriousaxe",
+      "tests_claims_test_binary",
+      "tests_claims_test_builddebugbinary",
+      "tests_claims_test_chromiumexecutable",
+      "tests_claims_test_contenttype",
+      "tests_claims_test_dockeravailable",
+      "tests_claims_test_execfileasync",
+      "tests_claims_test_hasexited",
+      "tests_claims_test_interruptdemo",
+      "tests_claims_test_rawrequest",
+      "tests_claims_test_rundocker",
+      "tests_claims_test_sdkclient",
+      "tests_claims_test_signalprocess",
+      "tests_claims_test_starts3",
+      "tests_claims_test_startserver",
+      "tests_claims_test_startstaticsite",
+      "tests_claims_test_stop",
+      "tests_claims_test_unusedlocalport",
+      "tests_claims_test_waitforexit",
+      "tests_claims_test_waitforhealth"
     ],
     "4": [
       "box",
@@ -172,30 +190,21 @@
       "src_ui_uploadfiles"
     ],
     "6": [
-      "tests_claims_test",
-      "tests_claims_test_assertnoseriousaxe",
-      "tests_claims_test_builddebugbinary",
-      "tests_claims_test_chromiumexecutable",
-      "tests_claims_test_contenttype",
-      "tests_claims_test_interruptdemo",
-      "tests_claims_test_rawrequest",
-      "tests_claims_test_sdkclient",
-      "tests_claims_test_starts3",
-      "tests_claims_test_startserver",
-      "tests_claims_test_startstaticsite",
-      "tests_claims_test_stop"
-    ],
-    "7": [
       "tests_ui_browser_test",
       "tests_ui_browser_test_assertonlystate",
+      "tests_ui_browser_test_binary",
+      "tests_ui_browser_test_builddebugbinary",
       "tests_ui_browser_test_chromiumexecutable",
       "tests_ui_browser_test_createbucket",
+      "tests_ui_browser_test_hasexited",
       "tests_ui_browser_test_seedconsolestates",
+      "tests_ui_browser_test_signalserver",
       "tests_ui_browser_test_startserver",
       "tests_ui_browser_test_statesnapshot",
-      "tests_ui_browser_test_stopserver"
+      "tests_ui_browser_test_stopserver",
+      "tests_ui_browser_test_waitforexit"
     ],
-    "8": [
+    "7": [
       "site_demo",
       "site_demo_announce",
       "site_demo_cleardemostorage",
@@ -203,6 +212,13 @@
       "site_demo_reset",
       "site_demo_startforreal",
       "site_demo_toast"
+    ],
+    "8": [
+      "path",
+      "result",
+      "src_lib_etag_path",
+      "src_lib_seed",
+      "src_lib_write_demo_samples"
     ],
     "9": [
       "site_route_focus",
@@ -233,43 +249,43 @@
       "tests_site_test_execfileasync"
     ],
     "15": [
-      "error"
-    ],
-    "16": [
-      "option"
-    ],
-    "17": [
-      "pathbuf"
-    ],
-    "18": [
       "pkg_s3_dir_dev_server"
     ],
-    "19": [
-      "result"
-    ],
-    "20": [
+    "16": [
       "site_sw_register"
     ],
-    "21": [
+    "17": [
       "site_vite_config"
     ],
+    "18": [
+      "src_lib_rs_error"
+    ],
+    "19": [
+      "src_lib_rs_option"
+    ],
+    "20": [
+      "src_lib_rs_pathbuf"
+    ],
+    "21": [
+      "src_lib_rs_result"
+    ],
     "22": [
-      "string"
+      "src_lib_rs_string"
     ],
     "23": [
-      "vec"
+      "src_lib_rs_vec"
     ]
   },
   "cohesion": {
-    "0": 0.0898989898989899,
-    "1": 0.1814516129032258,
-    "2": 0.1908831908831909,
-    "3": 0.09090909090909091,
+    "0": 0.14901960784313725,
+    "1": 0.08,
+    "2": 0.09090909090909091,
+    "3": 0.1523809523809524,
     "4": 0.2426470588235294,
     "5": 0.3416666666666667,
-    "6": 0.19696969696969696,
-    "7": 0.32142857142857145,
-    "8": 0.2857142857142857,
+    "6": 0.2692307692307692,
+    "7": 0.2857142857142857,
+    "8": 0.5,
     "9": 0.4,
     "10": 0.6666666666666666,
     "11": 1.0,
@@ -298,19 +314,14 @@
       "degree": 20
     },
     {
-      "id": "src_lib_api_handle",
-      "label": "api_handle()",
+      "id": "src_lib_app",
+      "label": "app()",
       "degree": 18
     },
     {
-      "id": "src_lib_app",
-      "label": "app()",
-      "degree": 17
-    },
-    {
-      "id": "src_lib_multipart_request",
-      "label": "multipart_request()",
-      "degree": 16
+      "id": "src_lib_api_handle",
+      "label": "api_handle()",
+      "degree": 18
     },
     {
       "id": "src_lib_put_object",
@@ -318,9 +329,9 @@
       "degree": 16
     },
     {
-      "id": "src_lib_s3_error",
-      "label": "s3_error()",
-      "degree": 14
+      "id": "src_lib_multipart_request",
+      "label": "multipart_request()",
+      "degree": 16
     },
     {
       "id": "src_lib_tagging_request",
@@ -328,13 +339,18 @@
       "degree": 14
     },
     {
-      "id": "src_lib_bucket_request",
-      "label": "bucket_request()",
+      "id": "src_lib_s3_error",
+      "label": "s3_error()",
+      "degree": 14
+    },
+    {
+      "id": "src_lib_canonically_contained",
+      "label": "canonically_contained()",
       "degree": 13
     },
     {
-      "id": "src_lib_get_object",
-      "label": "get_object()",
+      "id": "src_lib_existing_bucket_path",
+      "label": "existing_bucket_path()",
       "degree": 13
     }
   ],
@@ -348,29 +364,29 @@
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 0 \u2192 community 2"
+      "note": "Bridges community 1 \u2192 community 0"
     },
     {
-      "source": "bucket_request()",
-      "target": "HashMap",
+      "source": "object_path_for_write()",
+      "target": "Result",
       "source_files": [
         "src/lib.rs",
         ""
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 0 \u2192 community 1"
+      "note": "Bridges community 8 \u2192 community 0"
     },
     {
-      "source": "delete_object()",
-      "target": "Response",
+      "source": "collect_objects()",
+      "target": "Path",
       "source_files": [
         "src/lib.rs",
         ""
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 1 \u2192 community 2"
+      "note": "Bridges community 8 \u2192 community 1"
     }
   ],
   "tokens": {
