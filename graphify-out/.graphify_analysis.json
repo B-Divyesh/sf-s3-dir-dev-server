@@ -309,13 +309,13 @@
       "degree": 20
     },
     {
-      "id": "src_lib_api_handle",
-      "label": "api_handle()",
+      "id": "src_lib_app",
+      "label": "app()",
       "degree": 18
     },
     {
-      "id": "src_lib_app",
-      "label": "app()",
+      "id": "src_lib_api_handle",
+      "label": "api_handle()",
       "degree": 18
     },
     {
@@ -351,15 +351,15 @@
   ],
   "surprises": [
     {
-      "source": "app()",
-      "target": "Option",
+      "source": "canonically_contained()",
+      "target": "Path",
       "source_files": [
         "src/lib.rs",
         ""
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "note": "Bridges community 1 \u2192 community 0"
+      "note": "Bridges community 0 \u2192 community 1"
     },
     {
       "source": "health()",
