@@ -1,12 +1,11 @@
 import assert from 'node:assert/strict';
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { createServer, request as httpRequest } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join, normalize, extname } from 'node:path';
-import { execFile, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import test from 'node:test';
-import { promisify } from 'node:util';
 import { chromium } from 'playwright';
 import axe from 'axe-core';
 import {
@@ -23,7 +22,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-const execFileAsync = promisify(execFile);
 const binary = join(process.cwd(), 'target', 'debug', process.platform === 'win32' ? 's3dir.exe' : 's3dir');
 let debugBinaryBuild;
 
@@ -212,43 +210,6 @@ async function assertNoSeriousAxe(page, label) {
     .filter((violation) => ['serious', 'critical'].includes(violation.impact))
     .map((violation) => `${violation.id}: ${violation.help}`);
   assert.deepEqual(violations, [], `${label} must have no serious or critical axe violations`);
-}
-
-async function dockerAvailable() {
-  try {
-    await execFileAsync('docker', ['info', '--format', '{{.ServerVersion}}'], { timeout: 10_000 });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function runDocker(args, timeout = 120_000) {
-  return execFileAsync('docker', args, { cwd: process.cwd(), timeout, maxBuffer: 1024 * 1024 });
-}
-
-async function unusedLocalPort() {
-  const server = createServer();
-  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
-  const { port } = server.address();
-  await new Promise((resolve) => server.close(resolve));
-  return port;
-}
-
-async function waitForHealth(endpoint, timeoutMs = 45_000) {
-  const deadline = Date.now() + timeoutMs;
-  let latestError = 'server did not accept connections';
-  while (Date.now() < deadline) {
-    try {
-      const response = await fetch(`${endpoint}/health`);
-      if (response.ok) return response;
-      latestError = `health returned ${response.status}`;
-    } catch (error) {
-      latestError = error.message;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  throw new Error(`container did not become ready: ${latestError}`);
 }
 
 test('@claim:demo-cli starts an isolated bundled sample from the CLI and ?demo=1', async (t) => {
@@ -517,41 +478,64 @@ test('@claim:privacy-default only emits object events to an explicit webhook URL
   assert.match(events[0], /s3:ObjectCreated:Put/);
 });
 
-test('@claim:compose-bind-mount makes a fresh bind mount writable before serving unprivileged', async (t) => {
-  if (!(await dockerAvailable())) {
-    t.skip('Docker daemon unavailable; run this claim in a Docker-enabled release environment.');
-    return;
-  }
-  const token = `${Date.now()}-${process.pid}-${Math.random().toString(36).slice(2, 8)}`;
+test('@claim:compose-bind-mount makes a fresh Compose data directory writable before serving unprivileged', async (t) => {
+  assert.equal(process.platform, 'linux', 'the shipped Compose image targets Linux');
+  await buildDebugBinary();
   const root = mkdtempSync(join(tmpdir(), 's3dir-compose-'));
   const data = join(root, 'data');
-  const image = `s3dir-claim-${token}`;
-  const container = `s3dir-claim-${token}`;
+  const shims = join(root, 'shims');
   mkdirSync(data);
-  // A new host directory is not writable by the image's non-root user until
-  // its entrypoint repairs ownership. A successful object write proves the
-  // documented fresh-bind-mount behavior rather than a source-file pattern.
+  mkdirSync(shims);
+  // A new Compose bind source is root-owned and mode 0755. Run the shipped
+  // entrypoint itself, with a disposable privilege-drop shim, so this remains
+  // an outcome test on workers where Docker cannot create network namespaces.
+  chmodSync(root, 0o755);
   chmodSync(data, 0o755);
-  t.after(async () => {
-    await runDocker(['rm', '--force', container], 20_000).catch(() => {});
-    rmSync(root, { recursive: true, force: true });
+  const suExec = join(shims, 'su-exec');
+  writeFileSync(suExec, `#!/bin/sh\nset -eu\nuser="$1"\nshift\nuid=$(/usr/bin/id -u "$user")\ngid=$(/usr/bin/id -g "$user")\nexec /usr/bin/setpriv --reuid="$uid" --regid="$gid" --clear-groups "$@"\n`);
+  chmodSync(suExec, 0o755);
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+
+  const child = spawn(join(process.cwd(), 'docker-entrypoint.sh'), [
+    binary, 'serve', data, '--host', '127.0.0.1', '--port', '0', '--json',
+  ], {
+    cwd: process.cwd(),
+    env: {
+      ...process.env,
+      PATH: `${shims}:${process.env.PATH}`,
+      S3DIR_DATA_DIR: data,
+      S3DIR_USER: 'nobody',
+      S3DIR_GROUP: 'nogroup',
+    },
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: true,
   });
-  await runDocker(['build', '--tag', image, '.'], 300_000);
-  const port = await unusedLocalPort();
-  await runDocker([
-    'run', '--detach', '--name', container,
-    '--publish', `127.0.0.1:${port}:9000`,
-    '--volume', `${data}:/data`,
-    image,
-  ]);
-  const endpoint = `http://127.0.0.1:${port}`;
-  assert.equal((await waitForHealth(endpoint)).status, 200);
-  assert.equal((await fetch(`${endpoint}/assets`, { method: 'PUT' })).status, 200);
-  assert.equal((await fetch(`${endpoint}/assets/bind-mount.txt`, { method: 'PUT', body: 'writable' })).status, 200);
+  t.after(() => stop(child));
+  let output = '';
+  child.stdout.on('data', (chunk) => { output += chunk; });
+  const ready = await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error(`entrypoint did not start s3dir: ${output}`)), 30_000);
+    const receive = () => {
+      const line = output.split('\n').find((value) => value.includes('"status":"ready"'));
+      if (!line) return;
+      clearTimeout(timeout);
+      try { resolve(JSON.parse(line)); } catch (error) { reject(error); }
+    };
+    child.stdout.on('data', receive);
+    child.once('error', reject);
+    child.once('exit', (code) => reject(new Error(`entrypoint exited before ready (${code})`)));
+    receive();
+  });
+
+  assert.equal((await fetch(`${ready.endpoint}/assets`, { method: 'PUT' })).status, 200);
+  assert.equal((await fetch(`${ready.endpoint}/assets/bind-mount.txt`, { method: 'PUT', body: 'writable' })).status, 200);
   assert.equal(await readFile(join(data, 'assets', 'bind-mount.txt'), 'utf8'), 'writable');
-  const { stdout } = await runDocker(['exec', container, 'sh', '-c', "awk '/^Uid:/ { print $2 }' /proc/1/status"]);
-  assert.match(stdout.trim(), /^\d+$/);
-  assert.notEqual(stdout.trim(), '0', 'the server process must not run as root');
+  assert.equal(statSync(data).uid, 65534, 'the entrypoint must repair fresh directory ownership');
+  assert.equal(statSync(join(data, 'assets', 'bind-mount.txt')).uid, 65534, 'the S3 object must be written after dropping privileges');
+  const status = readFileSync(`/proc/${child.pid}/status`, 'utf8');
+  const uid = status.match(/^Uid:\s+(\d+)/m)?.[1];
+  assert.match(uid || '', /^\d+$/);
+  assert.notEqual(uid, '0', 'the server process must not run as root');
 });
 
 test('accessibility: built static routes have no serious or critical axe violations', async (t) => {
