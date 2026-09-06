@@ -1,0 +1,151 @@
+{
+  "checkout": "0ee76c1aa3dc3e58f6851b22d131f776cedb8126",
+  "implementation": "d18cb0deb25a97c5c1c21763188a53653908ccbe",
+  "npmCi": "pass",
+  "claims": [
+    {
+      "id": "demo-cli",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:demo-cli' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "demo-cleanup",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:demo-cleanup' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "directory-mapping",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:directory-mapping' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "api-workflow",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:api-workflow' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "presigned-requests",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:presigned-requests' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "cors-control",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:cors-control' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "fixture-seeding",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:fixture-seeding' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "request-allowance",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:request-allowance' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "browser-console",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:browser-console' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "no-telemetry",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:no-telemetry' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "offline-docs",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:offline-docs' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "filesystem-boundary",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:filesystem-boundary' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "multipart-rejection",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:multipart-rejection' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "key-path-conflict",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:key-path-conflict' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "privacy-default",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:privacy-default' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "id": "compose-bind-mount",
+      "test": "npm run build:site && node --test --test-name-pattern '@claim:compose-bind-mount' tests/claims.test.js",
+      "exitCode": 0,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0
+    }
+  ],
+  "npmTest": {
+    "rustPassed": 15,
+    "nodePassed": 34,
+    "failed": 0,
+    "skipped": 0
+  },
+  "npmBuild": "pass",
+  "cargoFmt": "pass",
+  "cargoClippy": "pass",
+  "cargoReleaseBuild": "pass",
+  "cargoPackage": {
+    "result": "pass",
+    "files": 16,
+    "unpackedKiB": 167.5,
+    "compressedKiB": 44
+  }
+}

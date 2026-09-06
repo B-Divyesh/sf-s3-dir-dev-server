@@ -1,0 +1,66 @@
+{
+  "routes": {
+    "/": [
+      "https://s3-dir-dev-server.sociobot.in/#main",
+      "https://s3-dir-dev-server.sociobot.in/",
+      "https://s3-dir-dev-server.sociobot.in/demo/",
+      "https://s3-dir-dev-server.sociobot.in/#how",
+      "https://s3-dir-dev-server.sociobot.in/privacy/",
+      "https://s3-dir-dev-server.sociobot.in/?demo=1",
+      "https://s3-dir-dev-server.sociobot.in/#install",
+      "https://s3-dir-dev-server.sociobot.in/terms/",
+      "https://github.com/B-Divyesh/sf-s3-dir-dev-server"
+    ],
+    "/demo/": [
+      "https://s3-dir-dev-server.sociobot.in/demo/#main",
+      "https://s3-dir-dev-server.sociobot.in/",
+      "https://s3-dir-dev-server.sociobot.in/demo/",
+      "https://s3-dir-dev-server.sociobot.in/#how",
+      "https://s3-dir-dev-server.sociobot.in/privacy/",
+      "https://s3-dir-dev-server.sociobot.in/#install",
+      "https://s3-dir-dev-server.sociobot.in/terms/",
+      "https://github.com/B-Divyesh/sf-s3-dir-dev-server"
+    ],
+    "/privacy/": [
+      "https://s3-dir-dev-server.sociobot.in/privacy/#main",
+      "https://s3-dir-dev-server.sociobot.in/",
+      "https://s3-dir-dev-server.sociobot.in/demo/",
+      "https://s3-dir-dev-server.sociobot.in/terms/",
+      "https://s3-dir-dev-server.sociobot.in/privacy/",
+      "https://github.com/B-Divyesh/sf-s3-dir-dev-server"
+    ],
+    "/terms/": [
+      "https://s3-dir-dev-server.sociobot.in/terms/#main",
+      "https://s3-dir-dev-server.sociobot.in/",
+      "https://s3-dir-dev-server.sociobot.in/demo/",
+      "https://s3-dir-dev-server.sociobot.in/privacy/",
+      "https://s3-dir-dev-server.sociobot.in/terms/",
+      "https://github.com/B-Divyesh/sf-s3-dir-dev-server"
+    ],
+    "/missing-verification-11": [
+      "https://s3-dir-dev-server.sociobot.in/missing-verification-11#main",
+      "https://s3-dir-dev-server.sociobot.in/",
+      "https://s3-dir-dev-server.sociobot.in/demo/",
+      "https://s3-dir-dev-server.sociobot.in/#how",
+      "https://s3-dir-dev-server.sociobot.in/privacy/",
+      "https://s3-dir-dev-server.sociobot.in/?demo=1",
+      "https://s3-dir-dev-server.sociobot.in/terms/",
+      "https://github.com/B-Divyesh/sf-s3-dir-dev-server"
+    ]
+  },
+  "statuses": {
+    "https://s3-dir-dev-server.sociobot.in/#main": "same-page anchor",
+    "https://s3-dir-dev-server.sociobot.in/": 200,
+    "https://s3-dir-dev-server.sociobot.in/demo/": 200,
+    "https://s3-dir-dev-server.sociobot.in/#how": "same-page anchor",
+    "https://s3-dir-dev-server.sociobot.in/privacy/": 200,
+    "https://s3-dir-dev-server.sociobot.in/?demo=1": 200,
+    "https://s3-dir-dev-server.sociobot.in/#install": "same-page anchor",
+    "https://s3-dir-dev-server.sociobot.in/terms/": 200,
+    "https://github.com/B-Divyesh/sf-s3-dir-dev-server": 200,
+    "https://s3-dir-dev-server.sociobot.in/demo/#main": "same-page anchor",
+    "https://s3-dir-dev-server.sociobot.in/privacy/#main": "same-page anchor",
+    "https://s3-dir-dev-server.sociobot.in/terms/#main": "same-page anchor",
+    "https://s3-dir-dev-server.sociobot.in/missing-verification-11#main": "same-page anchor"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "version": "0.1.0",
+  "demoFiles": 3,
+  "demoCleanup": true,
+  "healthReady": true,
+  "restartPersistence": true,
+  "directoryIsolationStatus": 404,
+  "rateLimitStatuses": [
+    200,
+    200,
+    200,
+    429
+  ],
+  "retryAfter": 59,
+  "slowDownBody": true,
+  "invalidPortExit": 2
+}

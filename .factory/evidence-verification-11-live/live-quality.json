@@ -1,0 +1,203 @@
+{
+  "routes": {
+    "/": {
+      "status": 200,
+      "title": "s3dir — Local S3 from a directory",
+      "lang": "en",
+      "h1": "Run local S3\nfrom a directory.",
+      "h1Count": 1,
+      "mainCount": 1,
+      "headerCount": 1,
+      "footerCount": 1,
+      "overflow": 0
+    },
+    "/demo/": {
+      "status": 200,
+      "title": "Demo — s3dir",
+      "lang": "en",
+      "h1": "Try local S3 with sample files.",
+      "h1Count": 1,
+      "mainCount": 1,
+      "headerCount": 1,
+      "footerCount": 1,
+      "overflow": 0
+    },
+    "/privacy/": {
+      "status": 200,
+      "title": "Privacy — s3dir",
+      "lang": "en",
+      "h1": "Privacy for local S3 development.",
+      "h1Count": 1,
+      "mainCount": 1,
+      "headerCount": 1,
+      "footerCount": 1,
+      "overflow": 0
+    },
+    "/terms/": {
+      "status": 200,
+      "title": "Terms — s3dir",
+      "lang": "en",
+      "h1": "Terms for s3dir development use.",
+      "h1Count": 1,
+      "mainCount": 1,
+      "headerCount": 1,
+      "footerCount": 1,
+      "overflow": 0
+    },
+    "/missing-verification-11": {
+      "status": 404,
+      "title": "Page not found — s3dir",
+      "h1": "That page is not in this directory.",
+      "h1Count": 1,
+      "mainCount": 1,
+      "hasHome": true
+    }
+  },
+  "keyboard": {
+    "skip": {
+      "text": "Skip to content",
+      "href": "#main",
+      "outlineWidth": "3px",
+      "outlineColor": "rgb(255, 255, 255)"
+    },
+    "skipDestination": {
+      "hash": "#main",
+      "mainTop": 68
+    },
+    "backFocus": true,
+    "targets": [
+      {
+        "name": "Skip to content",
+        "w": 153.515625,
+        "h": 48.796875
+      },
+      {
+        "name": "s3dir home",
+        "w": 99.203125,
+        "h": 44
+      },
+      {
+        "name": "Privacy",
+        "w": 57.96875,
+        "h": 44
+      },
+      {
+        "name": "Try it with sample data",
+        "w": 253.671875,
+        "h": 50
+      },
+      {
+        "name": "See installation ↓",
+        "w": 154.328125,
+        "h": 44
+      },
+      {
+        "name": "Copy commands",
+        "w": 137.390625,
+        "h": 44
+      },
+      {
+        "name": "s3dir",
+        "w": 350,
+        "h": 44
+      },
+      {
+        "name": "Privacy",
+        "w": 57.9375,
+        "h": 44
+      },
+      {
+        "name": "Terms",
+        "w": 47.125,
+        "h": 44
+      },
+      {
+        "name": "Source (external)",
+        "w": 138.359375,
+        "h": 44
+      }
+    ],
+    "undersized": [],
+    "resize200": {
+      "overflow": 0,
+      "h1Visible": true
+    }
+  },
+  "motion": {
+    "matches": true,
+    "scrollBehavior": "auto",
+    "runningAnimations": 0
+  },
+  "offline": {
+    "serviceWorker": {
+      "scope": "https://s3-dir-dev-server.sociobot.in/",
+      "controlled": true
+    },
+    "/": {
+      "title": "s3dir — Local S3 from a directory",
+      "h1": "Run local S3\nfrom a directory."
+    },
+    "/demo/": {
+      "title": "Demo — s3dir",
+      "h1": "Try local S3 with sample files."
+    },
+    "/privacy/": {
+      "title": "Privacy — s3dir",
+      "h1": "Privacy for local S3 development."
+    },
+    "/terms/": {
+      "title": "Terms — s3dir",
+      "h1": "Terms for s3dir development use."
+    }
+  },
+  "axe": {
+    "/": [],
+    "/demo/": [],
+    "/privacy/": [],
+    "/terms/": [],
+    "/missing-verification-11": []
+  },
+  "links": {
+    "https://s3-dir-dev-server.sociobot.in/#main": 200,
+    "https://s3-dir-dev-server.sociobot.in/": 200,
+    "https://s3-dir-dev-server.sociobot.in/demo/": 200,
+    "https://s3-dir-dev-server.sociobot.in/#how": 200,
+    "https://s3-dir-dev-server.sociobot.in/privacy/": 200,
+    "https://s3-dir-dev-server.sociobot.in/?demo=1": 200,
+    "https://s3-dir-dev-server.sociobot.in/#install": 200,
+    "https://s3-dir-dev-server.sociobot.in/terms/": 200,
+    "https://github.com/B-Divyesh/sf-s3-dir-dev-server": 200
+  },
+  "headers": {
+    "/": {
+      "status": 200,
+      "cache": "public, must-revalidate, max-age=30",
+      "csp": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; form-action 'self'",
+      "hsts": "max-age=10886400; includeSubDomains; preload",
+      "nosniff": "nosniff",
+      "frame": "DENY",
+      "referrer": "strict-origin-when-cross-origin",
+      "permissions": "accelerometer=(), autoplay=(), camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+    },
+    "/assets/impossible-archive-DSW0gZs0.webp": {
+      "status": 200,
+      "cache": "public, max-age=31536000, immutable",
+      "csp": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; form-action 'self'",
+      "hsts": "max-age=10886400; includeSubDomains; preload",
+      "nosniff": "nosniff",
+      "frame": "DENY",
+      "referrer": "strict-origin-when-cross-origin",
+      "permissions": "accelerometer=(), autoplay=(), camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+    },
+    "/sw.js": {
+      "status": 200,
+      "cache": "no-cache",
+      "csp": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; form-action 'self'",
+      "hsts": "max-age=10886400; includeSubDomains; preload",
+      "nosniff": "nosniff",
+      "frame": "DENY",
+      "referrer": "strict-origin-when-cross-origin",
+      "permissions": "accelerometer=(), autoplay=(), camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+    }
+  }
+}

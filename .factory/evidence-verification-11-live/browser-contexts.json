@@ -1,0 +1,96 @@
+{
+  "desktop": {
+    "first": {
+      "status": 200,
+      "title": "s3dir — Local S3 from a directory",
+      "h1": "Run local S3 from a directory.",
+      "audience": "For application developers who need an inspectable local S3 endpoint without a production object store.",
+      "action": "Try it with sample data",
+      "actionBottom": 540.84375,
+      "viewport": 900,
+      "facts": [
+        "Temp directory",
+        "Built in",
+        "No third-party requests"
+      ],
+      "h1Count": 1,
+      "mainCount": 1,
+      "overflow": 0
+    },
+    "demo": {
+      "title": "Demo — s3dir",
+      "banner": "Demo — sample data, nothing is saved to your project.",
+      "files": [
+        "assets/welcome.txt",
+        "assets/receipts/may-2026.txt",
+        "fixtures/local-stack.json"
+      ],
+      "active": "1",
+      "sentinel": "keep"
+    },
+    "persistent": true,
+    "reset": {
+      "active": "1",
+      "dirty": null,
+      "sentinel": "keep",
+      "message": "Sample reset. Run the command to create a new temporary directory."
+    },
+    "exit": {
+      "demoKeys": [],
+      "sentinel": "keep"
+    },
+    "requestCount": 28,
+    "origins": [
+      "https://s3-dir-dev-server.sociobot.in"
+    ],
+    "consoleErrors": [],
+    "pageErrors": []
+  },
+  "phone": {
+    "first": {
+      "status": 200,
+      "title": "s3dir — Local S3 from a directory",
+      "h1": "Run local S3 from a directory.",
+      "audience": "For application developers who need an inspectable local S3 endpoint without a production object store.",
+      "action": "Try it with sample data",
+      "actionBottom": 498.140625,
+      "viewport": 844,
+      "facts": [
+        "Temp directory",
+        "Built in",
+        "No third-party requests"
+      ],
+      "h1Count": 1,
+      "mainCount": 1,
+      "overflow": 1
+    },
+    "demo": {
+      "title": "Demo — s3dir",
+      "banner": "Demo — sample data, nothing is saved to your project.",
+      "files": [
+        "assets/welcome.txt",
+        "assets/receipts/may-2026.txt",
+        "fixtures/local-stack.json"
+      ],
+      "active": "1",
+      "sentinel": "keep"
+    },
+    "persistent": true,
+    "reset": {
+      "active": "1",
+      "dirty": null,
+      "sentinel": "keep",
+      "message": "Sample reset. Run the command to create a new temporary directory."
+    },
+    "exit": {
+      "demoKeys": [],
+      "sentinel": "keep"
+    },
+    "requestCount": 28,
+    "origins": [
+      "https://s3-dir-dev-server.sociobot.in"
+    ],
+    "consoleErrors": [],
+    "pageErrors": []
+  }
+}
