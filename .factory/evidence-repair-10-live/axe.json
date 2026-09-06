@@ -1,0 +1,27 @@
+[
+  {
+    "route": "/",
+    "status": 200,
+    "severe": []
+  },
+  {
+    "route": "/demo/",
+    "status": 200,
+    "severe": []
+  },
+  {
+    "route": "/privacy/",
+    "status": 200,
+    "severe": []
+  },
+  {
+    "route": "/terms/",
+    "status": 200,
+    "severe": []
+  },
+  {
+    "route": "/repair-10-missing-route",
+    "status": 404,
+    "severe": []
+  }
+]

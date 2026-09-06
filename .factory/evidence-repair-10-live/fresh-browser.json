@@ -1,0 +1,42 @@
+[
+  {
+    "label": "desktop",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "job": "Run local S3 from a directory.",
+    "audience": "For application developers who need an inspectable local S3 endpoint without a production object store.",
+    "firstAction": "Try it with sample data",
+    "actionBottom": 541,
+    "samples": [
+      "assets/welcome.txt",
+      "assets/receipts/may-2026.txt",
+      "fixtures/local-stack.json"
+    ],
+    "persistentDemoLabel": true,
+    "realStatePreserved": true,
+    "errors": [],
+    "thirdPartyRequests": []
+  },
+  {
+    "label": "mobile",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "job": "Run local S3 from a directory.",
+    "audience": "For application developers who need an inspectable local S3 endpoint without a production object store.",
+    "firstAction": "Try it with sample data",
+    "actionBottom": 498,
+    "samples": [
+      "assets/welcome.txt",
+      "assets/receipts/may-2026.txt",
+      "fixtures/local-stack.json"
+    ],
+    "persistentDemoLabel": true,
+    "realStatePreserved": true,
+    "errors": [],
+    "thirdPartyRequests": []
+  }
+]

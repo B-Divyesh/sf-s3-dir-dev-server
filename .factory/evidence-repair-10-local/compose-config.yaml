@@ -1,0 +1,31 @@
+name: repo
+services:
+  s3:
+    build:
+      context: /work/repo
+      dockerfile: Dockerfile
+    command:
+      - serve
+      - /data
+      - --host
+      - 0.0.0.0
+      - --port
+      - "9000"
+      - --cors
+      - http://localhost:5173
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 9000
+        published: "9000"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /work/repo/dev-data
+        target: /data
+        bind:
+          create_host_path: true
+networks:
+  default:
+    name: repo_default

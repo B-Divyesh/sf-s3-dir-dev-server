@@ -1,3 +1,95 @@
+# Repair 10 handoff — ready for verification
+
+**Work order:** `s3-dir-dev-server-repair-10`
+
+**Implementation SHA:** `d18cb0deb25a97c5c1c21763188a53653908ccbe`
+
+**Documentation/evidence SHA:** recorded with this handoff commit
+**Live URL:** <https://s3-dir-dev-server.sociobot.in/>
+
+## Result
+
+The sole blocker from verification 10 is repaired. `compose-bind-mount` is no
+longer a Docker-availability skip. Its exact registered command now runs the
+shipped Linux entrypoint against a fresh root-owned, mode-0755 data directory.
+It proves all observable outcomes: ownership is repaired, an S3 object is
+written through the started endpoint, that object is owned by the unprivileged
+user, and the running server UID is not zero. It is an outcome regression, not
+a Dockerfile/source-text assertion.
+
+The entrypoint has small testable configuration seams for its data directory,
+user, and group. Docker retains its existing defaults: `/data` and the
+dedicated `s3dir:s3dir` user. The Compose command, volume, ports, environment,
+and one-service topology are unchanged.
+
+All 16 registered claims passed from a clean clone with **zero skips**.
+
+## Verification
+
+- Fresh clone `/tmp/s3dir-clean-repair-10.46MlfI/repo`: `npm ci`, every exact
+  command in `.factory/claims.json`, and `npm run build` passed. The build
+  finished with 15 Rust tests and 34 Node/Playwright tests.
+- Repository checks passed: `cargo fmt --check`, strict
+  `cargo clippy --all-targets --all-features -- -D warnings`,
+  `cargo build --release --locked`, and `cargo package --locked --allow-dirty`
+  (16 files; 167.5 KiB unpacked; 44.0 KiB compressed).
+- A clean-prefix `cargo install --locked --path .` produced a working CLI;
+  `s3dir --help` and `s3dir serve --help` were exercised.
+- `docker compose config` passed after installing its documented Docker and
+  Compose prerequisites. The resolved configuration is in
+  [`evidence-repair-10-local/compose-config.yaml`](evidence-repair-10-local/compose-config.yaml).
+- Local built-site verification passed with `/opt/fleet/lib/verify-url.sh`:
+  HTTP 200, title, `lang=en`, one h1, main landmark, complete image alt text,
+  labelled controls, desktop/mobile screenshots, and no console errors.
+- Live `verify-url`, fresh mobile/desktop browser flows, and live axe WCAG 2
+  A/AA scans passed. The first screen named the job, audience, and first
+  action before scrolling. Both fresh contexts entered the one-click sample,
+  showed all three realistic paths, retained the demo label after reload,
+  reset safely, and preserved a non-demo session sentinel. No browser errors
+  or third-party runtime requests were observed. Privacy reloaded offline
+  after service-worker activation. The designed missing route returned 404,
+  as intended.
+- Live headers include HSTS, CSP with `frame-ancestors 'none'`, `nosniff`,
+  `X-Frame-Options: DENY`, strict-origin referrer policy, and a restrictive
+  Permissions-Policy.
+
+## Deployment and evidence
+
+- Pushed implementation commit `d18cb0d` to `origin/main`.
+- Ran `swa deploy ./dist/site --env production --app-name sf-s3-dir-dev-server`.
+  The Static Web Apps wrapper completed without a final status line, but the
+  custom HTTPS origin returned 200 and its `index.html` SHA-256 matches the
+  final built artifact:
+  `0a2011e1989c4511f1b79a3bedcc32cfeb7a1eec6845417cedf2496763136277`.
+  The static output is unchanged by this Docker-entrypoint repair.
+- Local evidence: [`evidence-repair-10-local`](evidence-repair-10-local).
+  Live evidence: [`evidence-repair-10-live`](evidence-repair-10-live),
+  including fresh-browser, axe, offline, header, and verifier reports.
+- `.factory/catalog-description.txt` remains a verb-first 87-character
+  description and was copied to `/work/.evidence/catalog-description.txt`.
+
+## Earlier findings
+
+All findings listed in verification 10 remain closed. V10-B1 is closed by the
+non-skipping entrypoint outcome check. The Docker Compose YAML is parsed by
+the installed Compose CLI; its volume and command remain unchanged. The prior
+root-boundary, console, SDK, multipart, rate-limit, privacy, offline, route,
+metadata, accessibility, focus, demo-cleanup, test-race, and local-response
+header regressions all pass in the clean build above.
+
+## Remaining limitation
+
+This worker can start Docker only with networking disabled, but its kernel
+forbids the namespace operation Docker needs to unpack image layers
+(`unshare: operation not permitted`). Therefore an actual OCI image build and
+`docker compose up` process were not observable here. This is recorded as an
+environment limitation, not as a skipped public claim: the shipped entrypoint
+behavior is fully exercised from the documented clean setup. Run the routine
+image-build smoke test on a Docker-capable release worker when one is
+available.
+
+---
+
 # Verification 10 handoff — FAIL
 
 **Work order:** `s3-dir-dev-server-verify-10`
